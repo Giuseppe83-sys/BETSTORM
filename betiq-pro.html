@@ -1,0 +1,1978 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BetIQ Pro — Analisi Statistica per Scommesse Sportive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root {
+  --bg: #070a0f;
+  --bg2: #0d1117;
+  --bg3: #111820;
+  --green: #00e676;
+  --green2: #00c853;
+  --gold: #ffd700;
+  --gold2: #ffab00;
+  --red: #ff5252;
+  --yellow: #ffea00;
+  --text: #e8edf5;
+  --muted: #6b7a8d;
+  --border: rgba(255,255,255,0.07);
+  --glass: rgba(255,255,255,0.04);
+  --glass2: rgba(0,230,118,0.06);
+  --shadow: 0 24px 80px rgba(0,0,0,0.6);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 400;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ===== NOISE OVERLAY ===== */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.4;
+}
+
+h1,h2,h3,h4 { font-family: 'Syne', sans-serif; }
+
+/* ===== NAVBAR ===== */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 18px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(7,10,15,0.7);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  transition: all 0.3s;
+}
+
+.logo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--text);
+}
+
+.logo-icon {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--green), var(--gold));
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+}
+
+.logo span { color: var(--green); }
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  list-style: none;
+}
+
+.nav-links a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--text); }
+
+.nav-cta {
+  display: flex; gap: 12px;
+}
+
+.btn {
+  padding: 10px 22px;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  border: none;
+  transition: all 0.25s;
+  text-decoration: none;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+.btn-outline:hover { border-color: var(--green); color: var(--green); }
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--green), var(--green2));
+  color: #070a0f;
+  font-weight: 700;
+  box-shadow: 0 0 20px rgba(0,230,118,0.3);
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 35px rgba(0,230,118,0.5);
+}
+
+.btn-gold {
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  color: #070a0f;
+  font-weight: 700;
+  box-shadow: 0 0 20px rgba(255,215,0,0.25);
+}
+.btn-gold:hover { transform: translateY(-2px); box-shadow: 0 0 35px rgba(255,215,0,0.4); }
+
+.hamburger { display: none; cursor: pointer; color: var(--text); font-size: 1.4rem; }
+
+/* ===== HERO ===== */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 140px 24px 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(0,230,118,0.12) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 40% at 85% 80%, rgba(255,215,0,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 30% at 15% 90%, rgba(0,200,83,0.05) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(0,230,118,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,230,118,0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+  pointer-events: none;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0,230,118,0.1);
+  border: 1px solid rgba(0,230,118,0.25);
+  border-radius: 50px;
+  padding: 6px 16px;
+  font-size: 0.8rem;
+  color: var(--green);
+  font-weight: 500;
+  margin-bottom: 28px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.hero-badge-dot {
+  width: 7px; height: 7px;
+  background: var(--green);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--green);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.3); }
+}
+
+.hero h1 {
+  font-size: clamp(2.4rem, 6vw, 5rem);
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 24px;
+  letter-spacing: -0.02em;
+}
+
+.hero h1 .gradient-text {
+  background: linear-gradient(135deg, var(--green), var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero p {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: var(--muted);
+  max-width: 560px;
+  margin: 0 auto 40px;
+  line-height: 1.7;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 70px;
+}
+
+.hero-stats {
+  display: flex;
+  gap: 48px;
+  justify-content: center;
+  flex-wrap: wrap;
+  position: relative;
+}
+
+.hero-stats::before {
+  content: '';
+  position: absolute;
+  top: -24px; left: 50%; transform: translateX(-50%);
+  width: 1px; height: 24px;
+  background: linear-gradient(to bottom, transparent, var(--border));
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text);
+  display: block;
+  line-height: 1;
+}
+
+.stat-num .unit { color: var(--green); }
+
+.stat-label {
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 4px;
+  display: block;
+}
+
+.stat-sep {
+  width: 1px;
+  background: var(--border);
+  align-self: stretch;
+}
+
+/* ===== SECTION BASE ===== */
+section { padding: 100px 24px; }
+
+.container { max-width: 1180px; margin: 0 auto; }
+
+.section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--green);
+  margin-bottom: 16px;
+}
+
+.section-label::before {
+  content: '';
+  width: 24px; height: 2px;
+  background: var(--green);
+}
+
+h2.section-title {
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 16px;
+  line-height: 1.15;
+}
+
+.section-sub {
+  color: var(--muted);
+  font-size: 1.05rem;
+  max-width: 520px;
+  line-height: 1.7;
+  margin-bottom: 60px;
+}
+
+/* ===== COMBO CARDS ===== */
+.combos-section { background: var(--bg2); }
+
+.combos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.combo-card {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+
+.combo-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0,230,118,0.03) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.combo-card:hover {
+  border-color: rgba(0,230,118,0.3);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 40px rgba(0,230,118,0.05);
+}
+
+.combo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.badge {
+  padding: 4px 12px;
+  border-radius: 50px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.badge-hot { background: rgba(255,82,82,0.15); color: var(--red); border: 1px solid rgba(255,82,82,0.3); }
+.badge-safe { background: rgba(0,230,118,0.12); color: var(--green); border: 1px solid rgba(0,230,118,0.3); }
+.badge-value { background: rgba(255,215,0,0.12); color: var(--gold); border: 1px solid rgba(255,215,0,0.3); }
+
+.combo-league {
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.combo-teams {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.combo-teams .vs {
+  font-size: 0.75rem;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.combo-type {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+
+.combo-type strong { color: var(--green); }
+
+.progress-container { margin-bottom: 16px; }
+
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 0.8rem;
+}
+
+.progress-pct {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.progress-track {
+  height: 6px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 50px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 50px;
+  width: 0;
+  transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fill-green { background: linear-gradient(90deg, var(--green2), var(--green)); box-shadow: 0 0 10px rgba(0,230,118,0.5); }
+.fill-yellow { background: linear-gradient(90deg, #f57f17, var(--yellow)); }
+.fill-orange { background: linear-gradient(90deg, #bf360c, #ff7043); }
+
+.combo-analysis {
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.6;
+  padding: 12px 14px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 8px;
+  border-left: 2px solid rgba(0,230,118,0.3);
+  margin-bottom: 20px;
+}
+
+.combo-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.combo-quota {
+  display: flex;
+  flex-direction: column;
+}
+
+.combo-quota span:first-child {
+  font-size: 0.7rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.combo-quota strong {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.2rem;
+  color: var(--gold);
+}
+
+.btn-unlock {
+  padding: 9px 18px;
+  font-size: 0.8rem;
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(0,230,118,0.15), rgba(0,230,118,0.08));
+  border: 1px solid rgba(0,230,118,0.3);
+  color: var(--green);
+  cursor: pointer;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s;
+  display: flex; align-items: center; gap: 6px;
+}
+.btn-unlock:hover { background: rgba(0,230,118,0.2); transform: translateY(-1px); }
+
+/* ===== ANALYZER SECTION ===== */
+.analyzer-section { background: var(--bg); }
+
+.analyzer-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 40px;
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+}
+
+.analyzer-card::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(0,230,118,0.08), transparent 70%);
+  pointer-events: none;
+}
+
+#events-container { display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px; }
+
+.event-row {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  gap: 12px;
+  align-items: center;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.event-row input, .event-row select {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.875rem;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.event-row input::placeholder { color: var(--muted); }
+.event-row input:focus, .event-row select:focus { border-color: rgba(0,230,118,0.4); }
+
+.event-row select option { background: var(--bg2); }
+
+.btn-remove {
+  width: 32px; height: 32px;
+  background: rgba(255,82,82,0.1);
+  border: 1px solid rgba(255,82,82,0.2);
+  color: var(--red);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.btn-remove:hover { background: rgba(255,82,82,0.2); }
+
+.analyzer-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-add {
+  flex: 1;
+  padding: 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px dashed rgba(255,255,255,0.15);
+  color: var(--muted);
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.btn-add:hover { border-color: var(--green); color: var(--green); background: rgba(0,230,118,0.04); }
+
+.btn-analyze {
+  flex: 2;
+  padding: 14px 28px;
+  background: linear-gradient(135deg, var(--green), var(--green2));
+  color: #070a0f;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.25s;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  box-shadow: 0 0 25px rgba(0,230,118,0.3);
+}
+.btn-analyze:hover { transform: translateY(-2px); box-shadow: 0 0 40px rgba(0,230,118,0.5); }
+.btn-analyze:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+.result-box {
+  margin-top: 32px;
+  padding: 28px;
+  background: rgba(0,230,118,0.04);
+  border: 1px solid rgba(0,230,118,0.15);
+  border-radius: 14px;
+  display: none;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.result-box.visible { display: block; }
+
+.result-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.result-header h3 {
+  font-size: 1rem;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.result-pct {
+  font-family: 'Syne', sans-serif;
+  font-size: 3.5rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.result-gauge {
+  position: relative;
+  height: 10px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 50px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.result-fill {
+  height: 100%;
+  border-radius: 50px;
+  transition: width 1.5s cubic-bezier(0.4,0,0.2,1);
+}
+
+.result-msg {
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.result-msg strong { color: var(--text); }
+
+/* ===== PRICING ===== */
+.pricing-section { background: var(--bg2); }
+
+.pricing-toggle {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 50px;
+}
+
+.toggle-label { font-size: 0.9rem; color: var(--muted); }
+.toggle-label.active { color: var(--text); }
+
+.toggle-switch {
+  width: 52px; height: 28px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 50px;
+  position: relative;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  transition: background 0.3s;
+}
+
+.toggle-switch.on { background: rgba(0,230,118,0.25); }
+
+.toggle-knob {
+  position: absolute;
+  top: 4px; left: 4px;
+  width: 18px; height: 18px;
+  background: var(--muted);
+  border-radius: 50%;
+  transition: all 0.3s;
+}
+
+.toggle-switch.on .toggle-knob {
+  left: 26px;
+  background: var(--green);
+}
+
+.badge-save {
+  background: rgba(0,230,118,0.12);
+  border: 1px solid rgba(0,230,118,0.25);
+  color: var(--green);
+  padding: 3px 10px;
+  border-radius: 50px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  align-items: start;
+}
+
+.pricing-card {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 36px 30px;
+  position: relative;
+  transition: all 0.3s;
+}
+
+.pricing-card:hover { border-color: rgba(255,255,255,0.15); transform: translateY(-4px); }
+
+.pricing-card.popular {
+  background: linear-gradient(160deg, rgba(0,230,118,0.08) 0%, rgba(0,200,83,0.03) 100%);
+  border-color: rgba(0,230,118,0.35);
+  transform: scale(1.03);
+}
+
+.pricing-card.popular:hover { transform: scale(1.03) translateY(-4px); }
+
+.popular-badge {
+  position: absolute;
+  top: -14px; left: 50%; transform: translateX(-50%);
+  background: linear-gradient(135deg, var(--green), var(--green2));
+  color: #070a0f;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 5px 16px;
+  border-radius: 50px;
+  white-space: nowrap;
+}
+
+.plan-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+
+.plan-price {
+  margin-bottom: 8px;
+  line-height: 1;
+}
+
+.plan-price .amount {
+  font-family: 'Syne', sans-serif;
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.plan-price .currency {
+  font-size: 1.3rem;
+  vertical-align: super;
+  color: var(--muted);
+}
+
+.plan-period {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 28px;
+}
+
+.plan-features {
+  list-style: none;
+  margin-bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.plan-features li {
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+}
+
+.plan-features li.active { color: var(--text); }
+
+.feat-icon { font-size: 0.8rem; width: 18px; }
+.feat-icon.yes { color: var(--green); }
+.feat-icon.no { color: rgba(255,255,255,0.2); }
+
+/* ===== SOCIAL PROOF ===== */
+.social-section { background: var(--bg); }
+
+.media-logos {
+  display: flex;
+  align-items: center;
+  gap: 36px;
+  flex-wrap: wrap;
+  margin-bottom: 70px;
+  opacity: 0.35;
+  filter: grayscale(1);
+}
+
+.media-logo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.testimonial-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+  transition: all 0.3s;
+}
+
+.testimonial-card:hover { border-color: rgba(255,215,0,0.2); transform: translateY(-3px); }
+
+.stars { color: var(--gold); font-size: 0.85rem; margin-bottom: 14px; }
+
+.testimonial-text {
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: var(--muted);
+  margin-bottom: 20px;
+  font-style: italic;
+}
+
+.testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.author-avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--green2), var(--gold));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: #070a0f;
+  flex-shrink: 0;
+}
+
+.author-name {
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.author-meta {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+/* ===== FAQ ===== */
+.faq-section { background: var(--bg2); }
+
+.faq-list { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+
+.faq-item {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.faq-item.open { border-color: rgba(0,230,118,0.25); }
+
+.faq-q {
+  padding: 20px 24px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+}
+
+.faq-q .arrow {
+  font-size: 0.75rem;
+  color: var(--green);
+  transition: transform 0.3s;
+  flex-shrink: 0;
+}
+.faq-item.open .faq-q .arrow { transform: rotate(180deg); }
+
+.faq-a {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, padding 0.3s;
+  font-size: 0.875rem;
+  color: var(--muted);
+  line-height: 1.7;
+  padding: 0 24px;
+}
+.faq-item.open .faq-a {
+  max-height: 200px;
+  padding: 0 24px 20px;
+}
+
+/* ===== FOOTER ===== */
+footer {
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  padding: 60px 24px 32px;
+}
+
+.footer-grid {
+  max-width: 1180px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 48px;
+  margin-bottom: 48px;
+}
+
+.footer-brand p {
+  font-size: 0.875rem;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-top: 14px;
+  max-width: 240px;
+}
+
+.footer-col h4 {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text);
+  margin-bottom: 18px;
+}
+
+.footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+
+.footer-col ul a {
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-col ul a:hover { color: var(--green); }
+
+.footer-bottom {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: gap;
+  gap: 16px;
+}
+
+.footer-bottom p {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.social-icons { display: flex; gap: 12px; }
+
+.social-icon {
+  width: 36px; height: 36px;
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.social-icon:hover { border-color: var(--green); color: var(--green); background: rgba(0,230,118,0.06); }
+
+/* ===== MODAL ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.modal-overlay.open { display: flex; animation: fadeIn 0.2s ease; }
+
+.modal {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 40px;
+  max-width: 420px;
+  width: 100%;
+  position: relative;
+  animation: scaleIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px; right: 16px;
+  width: 32px; height: 32px;
+  background: rgba(255,255,255,0.06);
+  border: none;
+  border-radius: 8px;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.9rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.modal-close:hover { background: rgba(255,82,82,0.1); color: var(--red); }
+
+.modal h3 {
+  font-size: 1.5rem;
+  margin-bottom: 6px;
+}
+
+.modal p { font-size: 0.875rem; color: var(--muted); margin-bottom: 28px; }
+
+.modal-tabs {
+  display: flex;
+  gap: 4px;
+  background: rgba(255,255,255,0.04);
+  padding: 4px;
+  border-radius: 10px;
+  margin-bottom: 24px;
+}
+
+.modal-tab {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.modal-tab.active { background: rgba(0,230,118,0.15); color: var(--green); font-weight: 600; }
+
+.modal-input {
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 16px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.875rem;
+  margin-bottom: 12px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.modal-input:focus { border-color: rgba(0,230,118,0.4); }
+.modal-input::placeholder { color: var(--muted); }
+
+.modal-submit {
+  width: 100%;
+  padding: 14px;
+  margin-top: 8px;
+}
+
+.modal-footer-text {
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-top: 16px;
+  margin-bottom: 0 !important;
+}
+
+.modal-footer-text a { color: var(--green); text-decoration: none; }
+
+/* ===== TICKER ===== */
+.ticker-wrap {
+  background: rgba(0,230,118,0.05);
+  border-top: 1px solid rgba(0,230,118,0.1);
+  border-bottom: 1px solid rgba(0,230,118,0.1);
+  padding: 10px 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.ticker {
+  display: inline-block;
+  animation: ticker 30s linear infinite;
+}
+
+.ticker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: 60px;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.ticker-item .dot { color: var(--green); }
+.ticker-item .pct { color: var(--green); font-weight: 600; }
+.ticker-item .pct.warn { color: var(--yellow); }
+
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  nav { padding: 16px 20px; }
+  .nav-links, .nav-cta { display: none; }
+  .hamburger { display: block; }
+  
+  .hero-stats { gap: 24px; }
+  .stat-sep { display: none; }
+  
+  .combo-card { padding: 22px; }
+  
+  .event-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .analyzer-card { padding: 24px; }
+  
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+  
+  .footer-brand { grid-column: 1 / -1; }
+  
+  .pricing-card.popular { transform: none; }
+}
+
+@media (max-width: 480px) {
+  .hero h1 { font-size: 2rem; }
+  .footer-grid { grid-template-columns: 1fr; }
+  .pricing-card.popular { transform: none; }
+  .hero-buttons { flex-direction: column; align-items: center; }
+}
+
+/* ===== LOADING SPINNER ===== */
+.spinner {
+  width: 18px; height: 18px;
+  border: 2px solid rgba(7,10,15,0.3);
+  border-top-color: #070a0f;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: none;
+}
+.spinner.show { display: block; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ===== SECTION DIVIDER ===== */
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+}
+
+/* === highlight on scroll === */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <a href="#" class="logo">
+    <div class="logo-icon">⚡</div>
+    BetIQ<span>Pro</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#combinazioni">Combinazioni</a></li>
+    <li><a href="#analizza">Analizza</a></li>
+    <li><a href="#piani">Piani</a></li>
+    <li><a href="#faq">FAQ</a></li>
+  </ul>
+  <div class="nav-cta">
+    <button class="btn btn-outline open-modal" data-tab="login">Accedi</button>
+    <button class="btn btn-primary open-modal" data-tab="register"><i class="fas fa-bolt"></i> Inizia Gratis</button>
+  </div>
+  <div class="hamburger"><i class="fas fa-bars"></i></div>
+</nav>
+
+<!-- TICKER -->
+<div class="ticker-wrap" style="margin-top:72px">
+  <div class="ticker" id="ticker">
+    <span class="ticker-item"><span class="dot">●</span> Juventus vs Napoli — Over 2.5 <span class="pct">81%</span></span>
+    <span class="ticker-item"><span class="dot">●</span> PSG vs Barcellona — Goal/Goal <span class="pct">74%</span></span>
+    <span class="ticker-item"><span class="dot">●</span> Bayern vs Dortmund — 1X2 Bayern <span class="pct">88%</span></span>
+    <span class="ticker-item"><span class="dot">●</span> Liverpool vs Chelsea — Over 1.5 <span class="pct warn">67%</span></span>
+    <span class="ticker-item"><span class="dot">●</span> Inter vs Roma — 1X <span class="pct">79%</span></span>
+    <span class="ticker-item"><span class="dot">●</span> Real Madrid vs Atletico — Under 3.5 <span class="pct warn">61%</span></span>
+    <!-- duplicate for loop -->
+    <span class="ticker-item"><span class="dot">●</span> Juventus vs Napoli — Over 2.5 <span class="pct">81%</span></span>
+    <span class="ticker-item"><span class="dot">●</span> PSG vs Barcellona — Goal/Goal <span class="pct">74%</span></span>
+    <span class="ticker-item"><span class="dot">●</span> Bayern vs Dortmund — 1X2 Bayern <span class="pct">88%</span></span>
+    <span class="ticker-item"><span class="dot">●</span> Liverpool vs Chelsea — Over 1.5 <span class="pct warn">67%</span></span>
+    <span class="ticker-item"><span class="dot">●</span> Inter vs Roma — 1X <span class="pct">79%</span></span>
+    <span class="ticker-item"><span class="dot">●</span> Real Madrid vs Atletico — Under 3.5 <span class="pct warn">61%</span></span>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div style="position:relative;z-index:1;">
+    <div class="hero-badge">
+      <span class="hero-badge-dot"></span>
+      Analisi in tempo reale attiva
+    </div>
+    <h1>L'intelligenza artificiale che analizza<br><span class="gradient-text">milioni di dati</span> per le tue scommesse</h1>
+    <p>BetIQ Pro elabora statistiche avanzate su ogni squadra, giocatore e competizione per fornirti combinazioni con la massima probabilità di riuscita. Smetti di scommettere a caso.</p>
+    <div class="hero-buttons">
+      <button class="btn btn-primary" style="font-size:1rem;padding:14px 32px;" onclick="openModal('register')">
+        <i class="fas fa-bolt"></i> Inizia Gratis
+      </button>
+      <a href="#piani" class="btn btn-outline" style="font-size:1rem;padding:14px 32px;">
+        Scopri i Piani <i class="fas fa-arrow-right" style="font-size:0.8rem"></i>
+      </a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <span class="stat-num"><span id="c1">0</span><span class="unit">M+</span></span>
+        <span class="stat-label">Analisi effettuate</span>
+      </div>
+      <div class="stat-sep"></div>
+      <div class="stat-item">
+        <span class="stat-num"><span id="c2">0</span><span class="unit">%</span></span>
+        <span class="stat-label">Accuratezza media</span>
+      </div>
+      <div class="stat-sep"></div>
+      <div class="stat-item">
+        <span class="stat-num"><span id="c3">0</span><span class="unit">K+</span></span>
+        <span class="stat-label">Utenti attivi</span>
+      </div>
+      <div class="stat-sep"></div>
+      <div class="stat-item">
+        <span class="stat-num"><span id="c4">0</span><span class="unit">+</span></span>
+        <span class="stat-label">Campionati monitorati</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMBINAZIONI SUGGERITE -->
+<section class="combos-section" id="combinazioni">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Selezione del giorno</div>
+      <h2 class="section-title">Combinazioni <span style="color:var(--green)">raccomandate</span></h2>
+      <p class="section-sub">Elaborazioni basate su oltre 400 indicatori statistici per partita. Aggiornate ogni 6 ore con dati in tempo reale.</p>
+    </div>
+    <div class="combos-grid">
+
+      <!-- Card 1 -->
+      <div class="combo-card reveal">
+        <div class="combo-header">
+          <span class="badge badge-safe"><i class="fas fa-shield-alt"></i> SICURA</span>
+          <span class="combo-league">Serie A · Oggi 20:45</span>
+        </div>
+        <div class="combo-teams">Inter <span class="vs">VS</span> AC Milan</div>
+        <div class="combo-type">Tipo: <strong>Goal / Goal (Entrambe segnano)</strong> · Quota: <span style="color:var(--gold);font-weight:600">1.85</span></div>
+        <div class="progress-container">
+          <div class="progress-label">
+            <span style="color:var(--muted);font-size:0.78rem">Probabilità riuscita</span>
+            <span class="progress-pct" style="color:var(--green)">82%</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill fill-green" data-pct="82"></div>
+          </div>
+        </div>
+        <div class="combo-analysis">
+          📊 L'Inter ha segnato in 9 delle ultime 10 partite casalinghe. Il Milan ha trovato la rete in 8 delle ultime 10 trasferte. Entrambe le squadre hanno segnato nel 77% degli scontri diretti recenti.
+        </div>
+        <div class="combo-footer">
+          <div class="combo-quota">
+            <span>Quota consigliata</span>
+            <strong>1.85</strong>
+          </div>
+          <button class="btn-unlock open-modal" data-tab="register"><i class="fas fa-lock"></i> Sblocca analisi</button>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="combo-card reveal" style="transition-delay:0.1s">
+        <div class="combo-header">
+          <span class="badge badge-hot">🔥 HOT</span>
+          <span class="combo-league">Champions League · Oggi 21:00</span>
+        </div>
+        <div class="combo-teams">Real Madrid <span class="vs">VS</span> Barcellona</div>
+        <div class="combo-type">Tipo: <strong>Over 2.5 Gol</strong> · Quota: <span style="color:var(--gold);font-weight:600">1.68</span></div>
+        <div class="progress-container">
+          <div class="progress-label">
+            <span style="color:var(--muted);font-size:0.78rem">Probabilità riuscita</span>
+            <span class="progress-pct" style="color:var(--yellow)">74%</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill fill-yellow" data-pct="74"></div>
+          </div>
+        </div>
+        <div class="combo-analysis">
+          📊 El Clásico ha prodotto over 2.5 gol nel 79% dei casi negli ultimi 5 anni. Entrambe le squadre arrivano in grande forma offensiva: Real 3.1 gol/partita, Barcellona 2.8 gol/partita.
+        </div>
+        <div class="combo-footer">
+          <div class="combo-quota">
+            <span>Quota consigliata</span>
+            <strong>1.68</strong>
+          </div>
+          <button class="btn-unlock open-modal" data-tab="register"><i class="fas fa-lock"></i> Sblocca analisi</button>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="combo-card reveal" style="transition-delay:0.2s">
+        <div class="combo-header">
+          <span class="badge badge-value">💎 VALUE BET</span>
+          <span class="combo-league">Premier League · Domani 17:30</span>
+        </div>
+        <div class="combo-teams">Man City <span class="vs">VS</span> Arsenal</div>
+        <div class="combo-type">Tipo: <strong>1X2 — Vittoria Man City</strong> · Quota: <span style="color:var(--gold);font-weight:600">2.10</span></div>
+        <div class="progress-container">
+          <div class="progress-label">
+            <span style="color:var(--muted);font-size:0.78rem">Probabilità riuscita</span>
+            <span class="progress-pct" style="color:var(--green)">78%</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill fill-green" data-pct="78"></div>
+          </div>
+        </div>
+        <div class="combo-analysis">
+          📊 Man City ha vinto 7 delle ultime 8 partite casalinghe contro l'Arsenal. L'Arsenal ha subito gol in 6 trasferte consecutive. Haaland in grandissima forma: 9 gol nelle ultime 6 uscite.
+        </div>
+        <div class="combo-footer">
+          <div class="combo-quota">
+            <span>Quota consigliata</span>
+            <strong>2.10</strong>
+          </div>
+          <button class="btn-unlock open-modal" data-tab="register"><i class="fas fa-lock"></i> Sblocca analisi</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ANALYZER -->
+<section class="analyzer-section" id="analizza">
+  <div class="container">
+    <div class="reveal" style="max-width:720px">
+      <div class="section-label">Tool interattivo</div>
+      <h2 class="section-title">Analizza la tua <span style="color:var(--green)">combinazione</span></h2>
+      <p class="section-sub">Inserisci fino a 5 eventi nella tua schedina e scopri la percentuale statistica di riuscita dell'intera combinazione.</p>
+    </div>
+    <div class="analyzer-card reveal">
+      <div id="events-container">
+        <!-- Events will be added here -->
+      </div>
+      <div class="analyzer-actions">
+        <button class="btn-add" id="btn-add-event" onclick="addEvent()">
+          <i class="fas fa-plus"></i> Aggiungi evento
+        </button>
+        <button class="btn-analyze" id="btn-analyze" onclick="analyzeCombo()">
+          <div class="spinner" id="spin"></div>
+          <i class="fas fa-chart-line" id="analyze-icon"></i>
+          <span id="analyze-text">ANALIZZA ORA</span>
+        </button>
+      </div>
+      <div class="result-box" id="result-box">
+        <div class="result-header">
+          <div>
+            <h3>Probabilità combinata</h3>
+            <p id="result-events-count" style="font-size:0.8rem;color:var(--muted);margin-top:2px;"></p>
+          </div>
+          <div class="result-pct" id="result-pct" style="color:var(--green)">—</div>
+        </div>
+        <div class="result-gauge">
+          <div class="result-fill" id="result-fill" style="width:0"></div>
+        </div>
+        <p class="result-msg" id="result-msg"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PRICING -->
+<section class="pricing-section" id="piani">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Abbonamenti</div>
+      <h2 class="section-title">Scegli il tuo <span style="color:var(--green)">piano</span></h2>
+      <p class="section-sub">Inizia gratis, scala quando vuoi. Nessun vincolo contrattuale.</p>
+    </div>
+    <div class="pricing-toggle reveal">
+      <span class="toggle-label active" id="label-monthly">Mensile</span>
+      <div class="toggle-switch" id="price-toggle" onclick="togglePricing()">
+        <div class="toggle-knob"></div>
+      </div>
+      <span class="toggle-label" id="label-annual">Annuale <span class="badge-save">-30%</span></span>
+    </div>
+    <div class="pricing-grid">
+
+      <div class="pricing-card reveal">
+        <div class="plan-name">Free</div>
+        <div class="plan-price">
+          <span class="currency">€</span><span class="amount">0</span>
+        </div>
+        <div class="plan-period">per sempre gratuito</div>
+        <ul class="plan-features">
+          <li class="active"><i class="fas fa-check feat-icon yes"></i> 3 analisi al giorno</li>
+          <li class="active"><i class="fas fa-check feat-icon yes"></i> Combinazioni base</li>
+          <li class="active"><i class="fas fa-check feat-icon yes"></i> Accesso ai segnali pubblici</li>
+          <li><i class="fas fa-times feat-icon no"></i> Analisi avanzate</li>
+          <li><i class="fas fa-times feat-icon no"></i> Notifiche in tempo reale</li>
+          <li><i class="fas fa-times feat-icon no"></i> Statistiche premium</li>
+        </ul>
+        <button class="btn btn-outline open-modal" data-tab="register" style="width:100%;justify-content:center;">Inizia gratis</button>
+      </div>
+
+      <div class="pricing-card popular reveal" style="transition-delay:0.1s">
+        <div class="popular-badge">⭐ PIÙ POPOLARE</div>
+        <div class="plan-name">Pro</div>
+        <div class="plan-price">
+          <span class="currency">€</span><span class="amount pro-price" data-monthly="9.99" data-annual="6.99">9.99</span>
+        </div>
+        <div class="plan-period pro-period">al mese</div>
+        <ul class="plan-features">
+          <li class="active"><i class="fas fa-check feat-icon yes"></i> Analisi illimitate</li>
+          <li class="active"><i class="fas fa-check feat-icon yes"></i> Combinazioni avanzate AI</li>
+          <li class="active"><i class="fas fa-check feat-icon yes"></i> Notifiche push in tempo reale</li>
+          <li class="active"><i class="fas fa-check feat-icon yes"></i> Statistiche premium per squadra</li>
+          <li class="active"><i class="fas fa-check feat-icon yes"></i> Analisi storica 5 anni</li>
+          <li><i class="fas fa-times feat-icon no"></i> API access & supporto dedicato</li>
+        </ul>
+        <button class="btn btn-primary open-modal" data-tab="register" style="width:100%;justify-content:center;padding:14px;">
+          <i class="fas fa-bolt"></i> Attiva Pro
+        </button>
+      </div>
+
+      <div class="pricing-card reveal" style="transition-delay:0.2s">
+        <div class="plan-name">Elite</div>
+        <div class="plan-price">
+          <span class="currency">€</span><span class="amount elite-price" data-monthly="24.99" data-annual="17.49">24.99</span>
+        </div>
+        <div class="plan-period elite-period">al mese</div>
+        <ul class="plan-features">
+          <li class="active"><i class="fas fa-check feat-icon yes"></i> Tutto di Pro incluso</li>
+          <li class="active"><i class="fas fa-check feat-icon yes"></i> Segnali live in-play</li>
+          <li class="active"><i class="fas fa-check feat-icon yes"></i> Supporto prioritario 24/7</li>
+          <li class="active"><i class="fas fa-check feat-icon yes"></i> Accesso API completo</li>
+          <li class="active"><i class="fas fa-check feat-icon yes"></i> Dashboard personalizzabile</li>
+          <li class="active"><i class="fas fa-check feat-icon yes"></i> Report settimanale esclusivo</li>
+        </ul>
+        <button class="btn btn-gold open-modal" data-tab="register" style="width:100%;justify-content:center;padding:14px;">
+          <i class="fas fa-crown"></i> Attiva Elite
+        </button>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SOCIAL PROOF -->
+<section class="social-section" id="recensioni">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Trustpilot 4.9/5 ★</div>
+      <h2 class="section-title">Cosa dicono i nostri <span style="color:var(--green)">utenti</span></h2>
+      <p class="section-sub">Oltre 50.000 scommettitori usano BetIQ Pro ogni giorno per massimizzare le proprie probabilità.</p>
+    </div>
+
+    <div class="media-logos reveal">
+      <div class="media-logo">GAZZETTA DELLO SPORT</div>
+      <div style="width:1px;height:20px;background:var(--border)"></div>
+      <div class="media-logo">SPORT WEEK</div>
+      <div style="width:1px;height:20px;background:var(--border)"></div>
+      <div class="media-logo">CORRIERE</div>
+      <div style="width:1px;height:20px;background:var(--border)"></div>
+      <div class="media-logo">TUTTOSPORT</div>
+      <div style="width:1px;height:20px;background:var(--border)"></div>
+      <div class="media-logo">SKY SPORT</div>
+    </div>
+
+    <div class="testimonials-grid">
+      <div class="testimonial-card reveal">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">"Ho usato BetIQ Pro per tre mesi e i risultati sono sorprendenti. Le analisi sono precise, le combinazioni suggerite hanno una percentuale di riuscita davvero alta. Finalmente uno strumento serio nel panorama delle scommesse."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">ML</div>
+          <div>
+            <div class="author-name">Marco L.</div>
+            <div class="author-meta">Piano Pro · Milano</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card reveal" style="transition-delay:0.1s">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">"Le statistiche sono incredibilmente dettagliate. Non mi aspettavo un tool così professionale a questo prezzo. Il ticker in tempo reale è utilissimo e le notifiche push mi avvisano delle combinazioni migliori prima che le quote cambino."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">FR</div>
+          <div>
+            <div class="author-name">Federica R.</div>
+            <div class="author-meta">Piano Elite · Roma</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card reveal" style="transition-delay:0.2s">
+        <div class="stars">★★★★☆</div>
+        <p class="testimonial-text">"Uso BetIQ Pro da 6 mesi. Il tool di analisi combinazioni è il mio preferito: inserisco la mia schedina e in pochi secondi so se vale la pena puntarci. Ha cambiato completamente il mio approccio alle scommesse."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">AS</div>
+          <div>
+            <div class="author-name">Andrea S.</div>
+            <div class="author-meta">Piano Pro · Napoli</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FAQ -->
+<section class="faq-section" id="faq">
+  <div class="container" style="text-align:center">
+    <div class="reveal">
+      <div class="section-label" style="justify-content:center">Domande frequenti</div>
+      <h2 class="section-title">Hai dubbi?</h2>
+      <p class="section-sub" style="margin:0 auto 50px">Risposta alle domande più comuni sul funzionamento della piattaforma.</p>
+    </div>
+    <div class="faq-list reveal">
+      <div class="faq-item open">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Come vengono calcolate le percentuali di riuscita?
+          <i class="fas fa-chevron-down arrow"></i>
+        </div>
+        <div class="faq-a">I nostri algoritmi analizzano oltre 400 variabili statistiche per ogni partita: forma recente, scontri diretti, statistiche difensive e offensive, infortuni, variabili meteorologiche, fattore campo e molti altri. Il tutto viene elaborato da modelli di machine learning addestrati su milioni di partite storiche.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Posso disdire l'abbonamento in qualsiasi momento?
+          <i class="fas fa-chevron-down arrow"></i>
+        </div>
+        <div class="faq-a">Sì, assolutamente. Non ci sono vincoli contrattuali né penali. Puoi disdire il tuo abbonamento in qualsiasi momento dalla dashboard del tuo account. Continuerai ad avere accesso al piano attivo fino alla fine del periodo già pagato.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Le analisi garantiscono vincite sicure?
+          <i class="fas fa-chevron-down arrow"></i>
+        </div>
+        <div class="faq-a">No. BetIQ Pro fornisce analisi statistiche e probabilità basate su dati storici, ma le scommesse sportive comportano sempre un rischio. Le percentuali rappresentano probabilità statistiche, non certezze. Scommetti sempre in modo responsabile e nei limiti delle tue possibilità.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Quanti campionati e sport sono coperti?
+          <i class="fas fa-chevron-down arrow"></i>
+        </div>
+        <div class="faq-a">BetIQ Pro monitora oltre 200 campionati di calcio in tutto il mondo, più NBA, NFL, tennis ATP/WTA, Formula 1 e basket europeo. La copertura viene costantemente ampliata in base alle richieste degli utenti.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Come funziona il piano Free?
+          <i class="fas fa-chevron-down arrow"></i>
+        </div>
+        <div class="faq-a">Con il piano Free hai accesso a 3 analisi di combinazioni al giorno, puoi visualizzare i segnali pubblici nella homepage e usare il tool di analisi rapida. Non è richiesta carta di credito per la registrazione gratuita.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="#" class="logo" style="font-size:1.3rem;">
+        <div class="logo-icon" style="width:30px;height:30px;font-size:0.85rem">⚡</div>
+        BetIQ<span>Pro</span>
+      </a>
+      <p>La piattaforma di analisi statistica più avanzata per scommesse sportive. Milioni di dati al servizio delle tue scelte.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Prodotto</h4>
+      <ul>
+        <li><a href="#">Combinazioni oggi</a></li>
+        <li><a href="#">Analisi live</a></li>
+        <li><a href="#">Statistiche squadre</a></li>
+        <li><a href="#">API</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Azienda</h4>
+      <ul>
+        <li><a href="#">Chi siamo</a></li>
+        <li><a href="#">Blog</a></li>
+        <li><a href="#">Lavora con noi</a></li>
+        <li><a href="#">Contatti</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Legale</h4>
+      <ul>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Termini di servizio</a></li>
+        <li><a href="#">Cookie Policy</a></li>
+        <li><a href="#">Gioco responsabile</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 BetIQ Pro. Tutti i diritti riservati. Il gioco è vietato ai minori di 18 anni. Gioca responsabilmente.</p>
+    <div class="social-icons">
+      <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+      <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+      <a href="#" class="social-icon"><i class="fab fa-telegram"></i></a>
+      <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
+    </div>
+  </div>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+    <h3>Benvenuto su <span style="color:var(--green)">BetIQ</span>Pro</h3>
+    <p>Accedi o registrati per sbloccare tutte le analisi premium.</p>
+    <div class="modal-tabs">
+      <button class="modal-tab active" id="tab-login" onclick="switchTab('login')">Accedi</button>
+      <button class="modal-tab" id="tab-register" onclick="switchTab('register')">Registrati</button>
+    </div>
+    <div id="modal-login-form">
+      <input type="email" class="modal-input" placeholder="Email">
+      <input type="password" class="modal-input" placeholder="Password">
+      <button class="btn btn-primary modal-submit">Accedi al tuo account</button>
+      <p class="modal-footer-text">Non hai un account? <a onclick="switchTab('register')">Registrati gratis →</a></p>
+    </div>
+    <div id="modal-register-form" style="display:none">
+      <input type="text" class="modal-input" placeholder="Nome completo">
+      <input type="email" class="modal-input" placeholder="Email">
+      <input type="password" class="modal-input" placeholder="Crea password">
+      <button class="btn btn-primary modal-submit"><i class="fas fa-bolt"></i> Crea account gratuito</button>
+      <p class="modal-footer-text">Hai già un account? <a onclick="switchTab('login')">Accedi →</a></p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== COUNTER ANIMATION =====
+function animateCounter(el, target, duration, decimals = 0) {
+  let start = 0;
+  const step = (timestamp) => {
+    if (!start) start = timestamp;
+    const progress = Math.min((timestamp - start) / duration, 1);
+    const val = progress * target;
+    el.textContent = decimals ? val.toFixed(decimals) : Math.floor(val);
+    if (progress < 1) requestAnimationFrame(step);
+    else el.textContent = decimals ? target.toFixed(decimals) : target;
+  };
+  requestAnimationFrame(step);
+}
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    animateCounter(document.getElementById('c1'), 2.4, 2000, 1);
+    animateCounter(document.getElementById('c2'), 87, 2000);
+    animateCounter(document.getElementById('c3'), 50, 2000);
+    animateCounter(document.getElementById('c4'), 200, 2000);
+  }, 300);
+});
+
+// ===== INTERSECTION OBSERVER =====
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      // Animate progress bars
+      const fills = entry.target.querySelectorAll ? entry.target.querySelectorAll('.progress-fill') : [];
+      fills.forEach(fill => {
+        setTimeout(() => { fill.style.width = fill.dataset.pct + '%'; }, 300);
+      });
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+document.querySelectorAll('.progress-fill').forEach(fill => {
+  const card = fill.closest('.combo-card');
+  if (card) {
+    const cardObserver = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        setTimeout(() => { fill.style.width = fill.dataset.pct + '%'; }, 400);
+        cardObserver.disconnect();
+      }
+    }, { threshold: 0.3 });
+    cardObserver.observe(card);
+  }
+});
+
+// ===== EVENTS ANALYZER =====
+let eventCount = 0;
+
+const betTypes = [
+  { value: '1x2_1', label: '1X2 — Vittoria Casa', base: 0.52 },
+  { value: '1x2_x', label: '1X2 — Pareggio', base: 0.27 },
+  { value: '1x2_2', label: '1X2 — Vittoria Ospite', base: 0.45 },
+  { value: 'over25', label: 'Over 2.5 Gol', base: 0.58 },
+  { value: 'under25', label: 'Under 2.5 Gol', base: 0.56 },
+  { value: 'gg', label: 'Goal / Goal', base: 0.62 },
+  { value: 'ng', label: 'No Goal', base: 0.46 },
+  { value: 'over15', label: 'Over 1.5 Gol', base: 0.72 },
+  { value: 'dc12', label: 'Doppia Chance 1X', base: 0.74 },
+  { value: 'dc2x', label: 'Doppia Chance X2', base: 0.69 },
+  { value: 'hcp', label: 'Handicap Casa -1', base: 0.48 },
+];
+
+function addEvent() {
+  if (eventCount >= 5) {
+    document.getElementById('btn-add-event').textContent = '⚠ Massimo 5 eventi';
+    document.getElementById('btn-add-event').style.color = 'var(--red)';
+    return;
+  }
+  eventCount++;
+  const container = document.getElementById('events-container');
+  const row = document.createElement('div');
+  row.className = 'event-row';
+  row.dataset.id = eventCount;
+
+  const opts = betTypes.map(t => `<option value="${t.value}">${t.label}</option>`).join('');
+
+  row.innerHTML = `
+    <input type="text" placeholder="Squadra Casa" class="home-team">
+    <input type="text" placeholder="Squadra Ospite" class="away-team">
+    <select class="bet-type">${opts}</select>
+    <button class="btn-remove" onclick="removeEvent(this)" title="Rimuovi"><i class="fas fa-times"></i></button>
+  `;
+  container.appendChild(row);
+  
+  if (eventCount < 5) {
+    document.getElementById('btn-add-event').innerHTML = '<i class="fas fa-plus"></i> Aggiungi evento';
+    document.getElementById('btn-add-event').style.color = '';
+  }
+}
+
+function removeEvent(btn) {
+  btn.closest('.event-row').remove();
+  eventCount--;
+  document.getElementById('btn-add-event').innerHTML = '<i class="fas fa-plus"></i> Aggiungi evento';
+  document.getElementById('btn-add-event').style.color = '';
+}
+
+function analyzeCombo() {
+  const rows = document.querySelectorAll('.event-row');
+  if (rows.length === 0) {
+    addEvent();
+    setTimeout(() => { document.querySelector('.event-row .home-team').focus(); }, 100);
+    return;
+  }
+
+  const btn = document.getElementById('btn-analyze');
+  const spin = document.getElementById('spin');
+  const icon = document.getElementById('analyze-icon');
+  const text = document.getElementById('analyze-text');
+
+  btn.disabled = true;
+  spin.classList.add('show');
+  icon.style.display = 'none';
+  text.textContent = 'Elaborazione...';
+
+  setTimeout(() => {
+    let combinedProb = 1;
+    let validEvents = 0;
+
+    rows.forEach(row => {
+      const home = row.querySelector('.home-team').value.trim();
+      const away = row.querySelector('.away-team').value.trim();
+      const betVal = row.querySelector('.bet-type').value;
+      
+      const betType = betTypes.find(t => t.value === betVal);
+      let base = betType ? betType.base : 0.55;
+      
+      // Simulate team name analysis
+      if (home && away) {
+        const nameFactor = ((home.length + away.length) % 7) / 70 - 0.05;
+        base = Math.min(0.92, Math.max(0.25, base + nameFactor));
+        validEvents++;
+      }
+      
+      combinedProb *= base;
+    });
+
+    // Apply combo penalty (more events = lower combined probability)
+    if (validEvents > 1) {
+      combinedProb = combinedProb * Math.pow(0.98, validEvents - 1);
+    }
+
+    const pct = Math.round(combinedProb * 100);
+    showResult(pct, validEvents || rows.length);
+
+    btn.disabled = false;
+    spin.classList.remove('show');
+    icon.style.display = '';
+    text.textContent = 'ANALIZZA ORA';
+  }, 1800);
+}
+
+function showResult(pct, numEvents) {
+  const box = document.getElementById('result-box');
+  const pctEl = document.getElementById('result-pct');
+  const fill = document.getElementById('result-fill');
+  const msg = document.getElementById('result-msg');
+  const count = document.getElementById('result-events-count');
+
+  box.classList.add('visible');
+
+  let color, fillClass, message;
+  if (pct >= 70) {
+    color = 'var(--green)';
+    fillClass = 'fill-green';
+    message = `<strong>Combinazione ad alto potenziale!</strong> Con ${numEvents} evento${numEvents > 1 ? 'i' : ''}, la tua schedina ha una probabilità statistica del ${pct}%. Le condizioni sono favorevoli secondo i nostri modelli. Considera comunque sempre il rischio insito nelle scommesse.`;
+  } else if (pct >= 50) {
+    color = 'var(--yellow)';
+    fillClass = 'fill-yellow';
+    message = `<strong>Combinazione nella media.</strong> Con ${numEvents} evento${numEvents > 1 ? 'i' : ''}, la probabilità è del ${pct}%. La combinazione è nella media — potrebbe valere la pena con quote alte. Ti consigliamo di verificare le analisi complete con il piano Pro.`;
+  } else {
+    color = '#ff7043';
+    fillClass = '';
+    message = `<strong>Attenzione: combinazione rischiosa.</strong> Con ${numEvents} evento${numEvents > 1 ? 'i' : ''}, la probabilità combinata scende al ${pct}%. Ti suggeriamo di ridurre il numero di eventi o scegliere tipi di scommessa più probabili. Sblocca l'analisi completa per suggerimenti personalizzati.`;
+  }
+
+  pctEl.textContent = pct + '%';
+  pctEl.style.color = color;
+  count.textContent = `${numEvents} evento${numEvents > 1 ? 'i' : ''} analizzato${numEvents > 1 ? 'i' : ''}`;
+  msg.innerHTML = message;
+
+  fill.className = 'result-fill ' + fillClass;
+  fill.style.background = pct < 50 ? 'linear-gradient(90deg, #bf360c, #ff7043)' : '';
+  fill.style.width = '0';
+  setTimeout(() => { fill.style.width = pct + '%'; }, 100);
+}
+
+// Initialize with 2 events
+addEvent(); addEvent();
+
+// ===== PRICING TOGGLE =====
+let isAnnual = false;
+function togglePricing() {
+  isAnnual = !isAnnual;
+  const toggle = document.getElementById('price-toggle');
+  const lm = document.getElementById('label-monthly');
+  const la = document.getElementById('label-annual');
+  
+  toggle.classList.toggle('on', isAnnual);
+  lm.classList.toggle('active', !isAnnual);
+  la.classList.toggle('active', isAnnual);
+
+  document.querySelectorAll('.pro-price, .elite-price').forEach(el => {
+    const val = isAnnual ? el.dataset.annual : el.dataset.monthly;
+    el.textContent = val;
+  });
+  document.querySelectorAll('.pro-period, .elite-period').forEach(el => {
+    el.textContent = isAnnual ? 'al mese, fatturato annualmente' : 'al mese';
+  });
+}
+
+// ===== MODAL =====
+function openModal(tab = 'login') {
+  document.getElementById('modal-overlay').classList.add('open');
+  switchTab(tab);
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function closeModalOutside(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+}
+
+function switchTab(tab) {
+  document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+  document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+  document.getElementById('modal-login-form').style.display = tab === 'login' ? '' : 'none';
+  document.getElementById('modal-register-form').style.display = tab === 'register' ? '' : 'none';
+}
+
+document.querySelectorAll('.open-modal').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tab = btn.dataset.tab || 'login';
+    openModal(tab);
+  });
+});
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// ===== FAQ =====
+function toggleFaq(el) {
+  const item = el.closest('.faq-item');
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+  if (!isOpen) item.classList.add('open');
+}
+
+// ===== STICKY NAV =====
+window.addEventListener('scroll', () => {
+  const nav = document.getElementById('navbar');
+  nav.style.background = window.scrollY > 60 
+    ? 'rgba(7,10,15,0.95)'
+    : 'rgba(7,10,15,0.7)';
+});
+</script>
+</body>
+</html>
