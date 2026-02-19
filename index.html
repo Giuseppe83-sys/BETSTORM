@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- ===== SEO ===== -->
+<title>BetStorm — Analisi Statistica AI per Scommesse Sportive | Serie A, Premier League, La Liga</title>
+<meta name="description" content="BetStorm analizza milioni di statistiche su Serie A, Premier League, La Liga e Champions League per fornirti combinazioni con la massima probabilità di riuscita. Prova gratis.">
+<meta name="keywords" content="scommesse sportive, analisi statistica, pronostici calcio, serie a pronostici, premier league analisi, betiq, betstorm, combinazioni vincenti">
+<meta name="author" content="BetStorm">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://betstorm.com/">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://betstorm.com/">
+<meta property="og:title" content="BetStorm — La tempesta di dati che trasforma le tue scommesse">
+<meta property="og:description" content="Analisi AI su Serie A, Premier League, La Liga e Champions League. Combinazioni con percentuale di riuscita calcolata su 400+ indicatori statistici.">
+<meta property="og:image" content="https://betstorm.com/og-image.jpg">
+<meta property="og:locale" content="it_IT">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="BetStorm — Analisi AI per Scommesse Sportive">
+<meta name="twitter:description" content="Combinazioni vincenti basate su milioni di dati statistici. Prova gratis oggi.">
+
+<!-- Schema.org JSON-LD -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "BetStorm",
+  "applicationCategory": "SportsApplication",
+  "description": "Piattaforma di analisi statistica AI per scommesse sportive su Serie A, Premier League, La Liga e Champions League.",
+  "url": "https://betstorm.com",
+  "offers": [
+    { "@type": "Offer", "name": "Piano Free", "price": "0", "priceCurrency": "EUR" },
+    { "@type": "Offer", "name": "Piano Pro", "price": "9.99", "priceCurrency": "EUR" },
+    { "@type": "Offer", "name": "Piano Elite", "price": "24.99", "priceCurrency": "EUR" }
+  ],
+  "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.9", "reviewCount": "3280" }
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<!-- Supabase CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+:root {
+  --bg: #070a0f;
+  --bg2: #0d1117;
+  --bg3: #111820;
+  --green: #00e676;
+  --green2: #00c853;
+  --gold: #ffd700;
+  --gold2: #ffab00;
+  --red: #ff5252;
+  --yellow: #ffea00;
+  --electric: #7c4dff;
+  --text: #e8edf5;
+  --muted: #6b7a8d;
+  --border: rgba(255,255,255,0.07);
+  --glass: rgba(255,255,255,0.04);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:400;line-height:1.6;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:.4}
+h1,h2,h3,h4{font-family:'Syne',sans-serif}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:18px 40px;display:flex;align-items:center;justify-content:space-between;background:rgba(7,10,15,.7);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);transition:all .3s}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text)}
+.logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--green),var(--gold));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem}
+.logo span{color:var(--green)}
+.nav-links{display:flex;align-items:center;gap:32px;list-style:none}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:.9rem;transition:color .2s}
+.nav-links a:hover{color:var(--text)}
+.nav-cta{display:flex;gap:12px}
+.btn{padding:10px 22px;border-radius:8px;font-family:'DM Sans',sans-serif;font-weight:500;font-size:.875rem;cursor:pointer;border:none;transition:all .25s;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}
+.btn-outline:hover{border-color:var(--green);color:var(--green)}
+.btn-primary{background:linear-gradient(135deg,var(--green),var(--green2));color:#070a0f;font-weight:700;box-shadow:0 0 20px rgba(0,230,118,.3)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 35px rgba(0,230,118,.5)}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#070a0f;font-weight:700;box-shadow:0 0 20px rgba(255,215,0,.25)}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 0 35px rgba(255,215,0,.4)}
+.hamburger{display:none;cursor:pointer;color:var(--text);font-size:1.4rem;background:none;border:none}
+
+/* TICKER */
+.ticker-wrap{background:rgba(0,230,118,.05);border-bottom:1px solid rgba(0,230,118,.1);padding:10px 0;overflow:hidden;white-space:nowrap;margin-top:72px}
+.ticker{display:inline-block;animation:ticker 30s linear infinite}
+.ticker-item{display:inline-flex;align-items:center;gap:8px;margin-right:60px;font-size:.8rem;color:var(--muted)}
+.ticker-item .dot{color:var(--green)}
+.ticker-item .pct{color:var(--green);font-weight:600}
+.ticker-item .pct.warn{color:var(--yellow)}
+@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:140px 24px 80px;position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(0,230,118,.12) 0%,transparent 70%),radial-gradient(ellipse 50% 40% at 85% 80%,rgba(124,77,255,.08) 0%,transparent 60%),radial-gradient(ellipse 40% 30% at 15% 90%,rgba(0,200,83,.05) 0%,transparent 60%);pointer-events:none}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,230,118,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,230,118,.04) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 30%,transparent 100%);pointer-events:none}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,230,118,.1);border:1px solid rgba(0,230,118,.25);border-radius:50px;padding:6px 16px;font-size:.8rem;color:var(--green);font-weight:500;margin-bottom:28px;letter-spacing:.05em;text-transform:uppercase}
+.hero-badge-dot{width:7px;height:7px;background:var(--green);border-radius:50%;box-shadow:0 0 8px var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+.hero h1{font-size:clamp(2.4rem,6vw,5rem);font-weight:800;line-height:1.1;margin-bottom:24px;letter-spacing:-.02em}
+.gradient-text{background:linear-gradient(135deg,var(--green),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:clamp(1rem,2vw,1.2rem);color:var(--muted);max-width:560px;margin:0 auto 40px;line-height:1.7}
+.hero-buttons{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:70px}
+.hero-stats{display:flex;gap:48px;justify-content:center;flex-wrap:wrap;position:relative}
+.hero-stats::before{content:'';position:absolute;top:-24px;left:50%;transform:translateX(-50%);width:1px;height:24px;background:linear-gradient(to bottom,transparent,var(--border))}
+.stat-num{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;display:block;line-height:1}
+.stat-num .unit{color:var(--green)}
+.stat-label{font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:4px;display:block}
+.stat-sep{width:1px;background:var(--border);align-self:stretch}
+
+/* SECTIONS */
+section{padding:100px 24px}
+.container{max-width:1180px;margin:0 auto}
+.section-label{display:inline-flex;align-items:center;gap:8px;font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--green);margin-bottom:16px}
+.section-label::before{content:'';width:24px;height:2px;background:var(--green)}
+h2.section-title{font-size:clamp(1.8rem,4vw,3rem);font-weight:800;letter-spacing:-.02em;margin-bottom:16px;line-height:1.15}
+.section-sub{color:var(--muted);font-size:1.05rem;max-width:520px;line-height:1.7;margin-bottom:60px}
+.combos-section{background:var(--bg2)}
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent)}
+
+/* COMBO CARDS */
+.combos-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:24px}
+.combo-card{background:var(--glass);border:1px solid var(--border);border-radius:16px;padding:28px;position:relative;overflow:hidden;transition:all .3s}
+.combo-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,230,118,.03) 0%,transparent 60%);pointer-events:none}
+.combo-card:hover{border-color:rgba(0,230,118,.3);transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,.4),0 0 40px rgba(0,230,118,.05)}
+.combo-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px}
+.badge{padding:4px 12px;border-radius:50px;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+.badge-hot{background:rgba(255,82,82,.15);color:var(--red);border:1px solid rgba(255,82,82,.3)}
+.badge-safe{background:rgba(0,230,118,.12);color:var(--green);border:1px solid rgba(0,230,118,.3)}
+.badge-value{background:rgba(255,215,0,.12);color:var(--gold);border:1px solid rgba(255,215,0,.3)}
+.combo-league{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.combo-teams{font-family:'Syne',sans-serif;font-size:1.25rem;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+.combo-teams .vs{font-size:.75rem;color:var(--muted);font-weight:400}
+.combo-type{font-size:.85rem;color:var(--muted);margin-bottom:20px}
+.combo-type strong{color:var(--green)}
+.progress-container{margin-bottom:16px}
+.progress-label{display:flex;justify-content:space-between;margin-bottom:8px;font-size:.8rem}
+.progress-pct{font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem}
+.progress-track{height:6px;background:rgba(255,255,255,.06);border-radius:50px;overflow:hidden}
+.progress-fill{height:100%;border-radius:50px;width:0;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+.fill-green{background:linear-gradient(90deg,var(--green2),var(--green));box-shadow:0 0 10px rgba(0,230,118,.5)}
+.fill-yellow{background:linear-gradient(90deg,#f57f17,var(--yellow))}
+.fill-orange{background:linear-gradient(90deg,#bf360c,#ff7043)}
+.combo-analysis{font-size:.82rem;color:var(--muted);line-height:1.6;padding:12px 14px;background:rgba(255,255,255,.03);border-radius:8px;border-left:2px solid rgba(0,230,118,.3);margin-bottom:20px}
+.combo-footer{display:flex;justify-content:space-between;align-items:center}
+.combo-quota span:first-child{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;display:block}
+.combo-quota strong{font-family:'Syne',sans-serif;font-size:1.2rem;color:var(--gold)}
+.btn-unlock{padding:9px 18px;font-size:.8rem;border-radius:8px;background:linear-gradient(135deg,rgba(0,230,118,.15),rgba(0,230,118,.08));border:1px solid rgba(0,230,118,.3);color:var(--green);cursor:pointer;font-weight:600;font-family:'DM Sans',sans-serif;transition:all .2s;display:flex;align-items:center;gap:6px}
+.btn-unlock:hover{background:rgba(0,230,118,.2);transform:translateY(-1px)}
+
+/* ===== ANALYZER ===== */
+.analyzer-section{background:var(--bg)}
+.analyzer-card{background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:40px;max-width:860px;margin:0 auto;position:relative;overflow:hidden}
+.analyzer-card::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(0,230,118,.08),transparent 70%);pointer-events:none}
+
+/* EVENT ROW */
+#events-container{display:flex;flex-direction:column;gap:14px;margin-bottom:20px}
+.event-row{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;padding:16px;display:grid;grid-template-columns:140px 1fr 1fr 1.2fr auto;gap:10px;align-items:start;animation:slideIn .3s ease}
+@keyframes slideIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+
+.event-row-label{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;display:block}
+
+/* LEAGUE SELECT */
+.league-select,.team-select,.bet-select{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.875rem;width:100%;outline:none;transition:border-color .2s;cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7a8d' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+.league-select:focus,.team-select:focus,.bet-select:focus{border-color:rgba(0,230,118,.4)}
+.league-select option,.team-select option,.bet-select option{background:var(--bg2);color:var(--text)}
+
+/* TEAM AUTOCOMPLETE WRAPPER */
+.team-autocomplete{position:relative}
+.team-input{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.875rem;width:100%;outline:none;transition:border-color .2s}
+.team-input:focus{border-color:rgba(0,230,118,.4)}
+.team-input::placeholder{color:var(--muted)}
+.autocomplete-dropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--bg2);border:1px solid rgba(0,230,118,.25);border-radius:10px;z-index:200;max-height:200px;overflow-y:auto;display:none;box-shadow:0 16px 40px rgba(0,0,0,.6)}
+.autocomplete-dropdown.open{display:block}
+.autocomplete-item{padding:10px 14px;font-size:.875rem;cursor:pointer;display:flex;align-items:center;gap:10px;transition:background .15s;border-bottom:1px solid var(--border)}
+.autocomplete-item:last-child{border-bottom:none}
+.autocomplete-item:hover,.autocomplete-item.active{background:rgba(0,230,118,.08);color:var(--green)}
+.autocomplete-item .team-short{font-family:'Syne',sans-serif;font-size:.7rem;font-weight:700;color:var(--muted);background:rgba(255,255,255,.05);padding:2px 6px;border-radius:4px;min-width:32px;text-align:center}
+.autocomplete-item .form-dots{display:flex;gap:2px;margin-left:auto}
+.form-dot{width:6px;height:6px;border-radius:50%}
+.form-dot.w{background:var(--green)}
+.form-dot.l{background:var(--red)}
+
+.btn-remove{width:32px;height:32px;background:rgba(255,82,82,.1);border:1px solid rgba(255,82,82,.2);color:var(--red);border-radius:8px;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;align-self:center;margin-top:20px}
+.btn-remove:hover{background:rgba(255,82,82,.2)}
+
+.analyzer-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
+.btn-add{flex:1;padding:12px;background:rgba(255,255,255,.04);border:1px dashed rgba(255,255,255,.15);color:var(--muted);border-radius:10px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.875rem;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-add:hover{border-color:var(--green);color:var(--green);background:rgba(0,230,118,.04)}
+.btn-analyze{flex:2;padding:14px 28px;background:linear-gradient(135deg,var(--green),var(--green2));color:#070a0f;border:none;border-radius:10px;font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 0 25px rgba(0,230,118,.3)}
+.btn-analyze:hover{transform:translateY(-2px);box-shadow:0 0 40px rgba(0,230,118,.5)}
+.btn-analyze:disabled{opacity:.6;cursor:not-allowed;transform:none}
+
+.result-box{margin-top:28px;padding:28px;background:rgba(0,230,118,.04);border:1px solid rgba(0,230,118,.15);border-radius:14px;display:none;animation:fadeIn .5s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.result-box.visible{display:block}
+.result-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.result-pct{font-family:'Syne',sans-serif;font-size:3.5rem;font-weight:800;line-height:1}
+.result-gauge{position:relative;height:10px;background:rgba(255,255,255,.06);border-radius:50px;overflow:hidden;margin-bottom:16px}
+.result-fill{height:100%;border-radius:50px;transition:width 1.5s cubic-bezier(.4,0,.2,1)}
+.result-msg{font-size:.9rem;color:var(--muted);line-height:1.6}
+.result-msg strong{color:var(--text)}
+
+/* EVENT SUMMARY in result */
+.result-events-list{margin-top:14px;display:flex;flex-direction:column;gap:6px}
+.result-event-item{font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:8px;padding:6px 10px;background:rgba(255,255,255,.03);border-radius:6px}
+.result-event-item .ev-pct{font-family:'Syne',sans-serif;font-weight:700;font-size:.85rem;margin-left:auto}
+
+/* PRICING */
+.pricing-section{background:var(--bg2)}
+.pricing-toggle{display:flex;align-items:center;gap:14px;margin-bottom:50px}
+.toggle-label{font-size:.9rem;color:var(--muted)}
+.toggle-label.active{color:var(--text)}
+.toggle-switch{width:52px;height:28px;background:rgba(255,255,255,.08);border-radius:50px;position:relative;cursor:pointer;border:1px solid var(--border);transition:background .3s}
+.toggle-switch.on{background:rgba(0,230,118,.25)}
+.toggle-knob{position:absolute;top:4px;left:4px;width:18px;height:18px;background:var(--muted);border-radius:50%;transition:all .3s}
+.toggle-switch.on .toggle-knob{left:26px;background:var(--green)}
+.badge-save{background:rgba(0,230,118,.12);border:1px solid rgba(0,230,118,.25);color:var(--green);padding:3px 10px;border-radius:50px;font-size:.72rem;font-weight:700}
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;align-items:start}
+.pricing-card{background:var(--glass);border:1px solid var(--border);border-radius:20px;padding:36px 30px;position:relative;transition:all .3s}
+.pricing-card:hover{border-color:rgba(255,255,255,.15);transform:translateY(-4px)}
+.pricing-card.popular{background:linear-gradient(160deg,rgba(0,230,118,.08) 0%,rgba(0,200,83,.03) 100%);border-color:rgba(0,230,118,.35);transform:scale(1.03)}
+.pricing-card.popular:hover{transform:scale(1.03) translateY(-4px)}
+.popular-badge{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--green),var(--green2));color:#070a0f;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;padding:5px 16px;border-radius:50px;white-space:nowrap}
+.plan-name{font-family:'Syne',sans-serif;font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:16px}
+.plan-price{margin-bottom:8px;line-height:1}
+.plan-price .amount{font-family:'Syne',sans-serif;font-size:3rem;font-weight:800}
+.plan-price .currency{font-size:1.3rem;vertical-align:super;color:var(--muted)}
+.plan-period{font-size:.8rem;color:var(--muted);margin-bottom:28px}
+.plan-features{list-style:none;margin-bottom:32px;display:flex;flex-direction:column;gap:12px}
+.plan-features li{font-size:.875rem;display:flex;align-items:center;gap:10px;color:var(--muted)}
+.plan-features li.active{color:var(--text)}
+.feat-icon{font-size:.8rem;width:18px}
+.feat-icon.yes{color:var(--green)}
+.feat-icon.no{color:rgba(255,255,255,.2)}
+
+/* SOCIAL */
+.social-section{background:var(--bg)}
+.media-logos{display:flex;align-items:center;gap:36px;flex-wrap:wrap;margin-bottom:70px;opacity:.35;filter:grayscale(1)}
+.media-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;letter-spacing:-.02em;white-space:nowrap}
+.testimonials-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}
+.testimonial-card{background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:28px;transition:all .3s}
+.testimonial-card:hover{border-color:rgba(255,215,0,.2);transform:translateY(-3px)}
+.stars{color:var(--gold);font-size:.85rem;margin-bottom:14px}
+.testimonial-text{font-size:.9rem;line-height:1.7;color:var(--muted);margin-bottom:20px;font-style:italic}
+.testimonial-author{display:flex;align-items:center;gap:12px}
+.author-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--green2),var(--gold));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:.85rem;color:#070a0f;flex-shrink:0}
+.author-name{font-weight:600;font-size:.875rem}
+.author-meta{font-size:.78rem;color:var(--muted)}
+
+/* FAQ */
+.faq-section{background:var(--bg2)}
+.faq-list{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+.faq-item{background:var(--bg3);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:border-color .2s}
+.faq-item.open{border-color:rgba(0,230,118,.25)}
+.faq-q{padding:20px 24px;font-family:'Syne',sans-serif;font-weight:600;font-size:.95rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none}
+.faq-q .arrow{font-size:.75rem;color:var(--green);transition:transform .3s;flex-shrink:0}
+.faq-item.open .faq-q .arrow{transform:rotate(180deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s;font-size:.875rem;color:var(--muted);line-height:1.7;padding:0 24px}
+.faq-item.open .faq-a{max-height:200px;padding:0 24px 20px}
+
+/* FOOTER */
+footer{background:var(--bg);border-top:1px solid var(--border);padding:60px 24px 32px}
+.footer-grid{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;margin-bottom:48px}
+.footer-brand p{font-size:.875rem;color:var(--muted);line-height:1.7;margin-top:14px;max-width:240px}
+.footer-col h4{font-family:'Syne',sans-serif;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:18px}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+.footer-col ul a{font-size:.85rem;color:var(--muted);text-decoration:none;transition:color .2s}
+.footer-col ul a:hover{color:var(--green)}
+.footer-bottom{max-width:1180px;margin:0 auto;padding-top:24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.footer-bottom p{font-size:.8rem;color:var(--muted)}
+.social-icons{display:flex;gap:12px}
+.social-icon{width:36px;height:36px;background:var(--glass);border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.85rem;text-decoration:none;transition:all .2s}
+.social-icon:hover{border-color:var(--green);color:var(--green);background:rgba(0,230,118,.06)}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(10px);z-index:1000;display:none;align-items:center;justify-content:center;padding:24px}
+.modal-overlay.open{display:flex;animation:fadeIn .2s ease}
+.modal{background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:40px;max-width:420px;width:100%;position:relative;animation:scaleIn .3s cubic-bezier(.34,1.56,.64,1)}
+@keyframes scaleIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+.modal-close{position:absolute;top:16px;right:16px;width:32px;height:32px;background:rgba(255,255,255,.06);border:none;border-radius:8px;color:var(--muted);cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.modal-close:hover{background:rgba(255,82,82,.1);color:var(--red)}
+.modal h3{font-size:1.5rem;margin-bottom:6px}
+.modal-desc{font-size:.875rem;color:var(--muted);margin-bottom:24px}
+.modal-tabs{display:flex;gap:4px;background:rgba(255,255,255,.04);padding:4px;border-radius:10px;margin-bottom:24px}
+.modal-tab{flex:1;padding:8px;border:none;border-radius:7px;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:.875rem;cursor:pointer;transition:all .2s}
+.modal-tab.active{background:rgba(0,230,118,.15);color:var(--green);font-weight:600}
+.modal-input{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;padding:12px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.875rem;margin-bottom:12px;outline:none;transition:border-color .2s}
+.modal-input:focus{border-color:rgba(0,230,118,.4)}
+.modal-input::placeholder{color:var(--muted)}
+.modal-submit{width:100%;padding:14px;margin-top:8px}
+.modal-footer-text{text-align:center;font-size:.78rem;color:var(--muted);margin-top:16px}
+.modal-footer-text a{color:var(--green);cursor:pointer;text-decoration:none}
+.modal-error{color:var(--red);font-size:.8rem;margin-bottom:8px;display:none}
+.modal-error.show{display:block}
+.modal-success{color:var(--green);font-size:.85rem;text-align:center;margin-top:12px;display:none}
+.modal-success.show{display:block}
+
+/* USER MENU */
+.user-menu-btn{display:flex;align-items:center;gap:8px;background:rgba(0,230,118,.08);border:1px solid rgba(0,230,118,.2);border-radius:8px;padding:8px 14px;color:var(--green);font-size:.85rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.user-menu-btn:hover{background:rgba(0,230,118,.15)}
+.plan-chip{background:var(--green);color:#070a0f;font-size:.65rem;font-weight:800;padding:2px 7px;border-radius:50px;text-transform:uppercase;letter-spacing:.05em}
+
+/* SPINNER */
+.spinner{width:18px;height:18px;border:2px solid rgba(7,10,15,.3);border-top-color:#070a0f;border-radius:50%;animation:spin .8s linear infinite;display:none}
+.spinner.show{display:block}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* STRIPE LOADING */
+.stripe-loading{display:none;align-items:center;gap:10px;justify-content:center;padding:14px;color:var(--muted);font-size:.875rem}
+.stripe-loading.show{display:flex}
+.stripe-spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.1);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;z-index:9000;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:14px 20px;font-size:.875rem;max-width:320px;transform:translateX(400px);transition:transform .4s cubic-bezier(.34,1.56,.64,1);display:flex;align-items:center;gap:10px}
+.toast.show{transform:translateX(0)}
+.toast.success{border-color:rgba(0,230,118,.3);color:var(--green)}
+.toast.error{border-color:rgba(255,82,82,.3);color:var(--red)}
+
+@media(max-width:768px){
+  nav{padding:16px 20px}
+  .nav-links,.nav-cta{display:none}
+  .hamburger{display:block}
+  .hero-stats{gap:24px}
+  .stat-sep{display:none}
+  .event-row{grid-template-columns:1fr 1fr;grid-template-rows:auto auto auto}
+  .event-row>*:nth-child(1){grid-column:1/-1}
+  .btn-remove{grid-column:2;justify-self:end;margin-top:0}
+  .analyzer-card{padding:20px}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:32px}
+  .footer-brand{grid-column:1/-1}
+  .pricing-card.popular{transform:none}
+}
+@media(max-width:480px){
+  .hero h1{font-size:2rem}
+  .footer-grid{grid-template-columns:1fr}
+  .hero-buttons{flex-direction:column;align-items:center}
+  .event-row{grid-template-columns:1fr}
+  .btn-remove{margin-top:0;align-self:flex-end}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#" class="logo">
+    <div class="logo-icon">🌪️</div>
+    Bet<span>Storm</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#combinazioni">Combinazioni</a></li>
+    <li><a href="#analizza">Analizza</a></li>
+    <li><a href="#piani">Piani</a></li>
+    <li><a href="#faq">FAQ</a></li>
+  </ul>
+  <div class="nav-cta" id="nav-cta">
+    <button class="btn btn-outline" onclick="openModal('login')">Accedi</button>
+    <button class="btn btn-primary" onclick="openModal('register')"><i class="fas fa-bolt"></i> Inizia Gratis</button>
+  </div>
+  <button class="hamburger" onclick="toggleMobileMenu()"><i class="fas fa-bars"></i></button>
+</nav>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker">
+    <span class="ticker-item"><span class="dot">●</span> Juventus vs Napoli — Over 2.5 <span class="pct">81%</span></span>
+    <span class="ticker-item"><span class="dot">●</span> PSG vs Barcellona — Goal/Goal <span class="pct">74%</span></span>
+    <span class="ticker-item"><span class="dot">●</span> Bayern vs Dortmund — 1X2 Bayern <span class="pct">88%</span></span>
+    <span class="ticker-item"><span class="dot">●</span> Liverpool vs Chelsea — Over 1.5 <span class="pct warn">67%</span></span>
+    <span class="ticker-item"><span class="dot">●</span> Inter vs Roma — 1X <span class="pct">79%</span></span>
+    <span class="ticker-item"><span class="dot">●</span> Real Madrid vs Atletico — Under 3.5 <span class="pct warn">61%</span></span>
+    <span class="ticker-item"><span class="dot">●</span> Juventus vs Napoli — Over 2.5 <span class="pct">81%</span></span>
+    <span class="ticker-item"><span class="dot">●</span> PSG vs Barcellona — Goal/Goal <span class="pct">74%</span></span>
+    <span class="ticker-item"><span class="dot">●</span> Bayern vs Dortmund — 1X2 Bayern <span class="pct">88%</span></span>
+    <span class="ticker-item"><span class="dot">●</span> Liverpool vs Chelsea — Over 1.5 <span class="pct warn">67%</span></span>
+    <span class="ticker-item"><span class="dot">●</span> Inter vs Roma — 1X <span class="pct">79%</span></span>
+    <span class="ticker-item"><span class="dot">●</span> Real Madrid vs Atletico — Under 3.5 <span class="pct warn">61%</span></span>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div style="position:relative;z-index:1">
+    <div class="hero-badge"><span class="hero-badge-dot"></span>🌪️ Storm Mode attivo</div>
+    <h1>La <span class="gradient-text">tempesta di dati</span><br>che trasforma le tue scommesse</h1>
+    <p>BetStorm scatena la potenza di milioni di statistiche su Serie A, Premier League, La Liga e Champions League. Combinazioni ad alta probabilità. Nessuna fortuna — solo strategia.</p>
+    <div class="hero-buttons">
+      <button class="btn btn-primary" style="font-size:1rem;padding:14px 32px" onclick="openModal('register')"><i class="fas fa-bolt"></i> Inizia Gratis</button>
+      <a href="#piani" class="btn btn-outline" style="font-size:1rem;padding:14px 32px">Scopri i Piani <i class="fas fa-arrow-right" style="font-size:.8rem"></i></a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item"><span class="stat-num"><span id="c1">0</span><span class="unit">M+</span></span><span class="stat-label">Analisi effettuate</span></div>
+      <div class="stat-sep"></div>
+      <div class="stat-item"><span class="stat-num"><span id="c2">0</span><span class="unit">%</span></span><span class="stat-label">Accuratezza media</span></div>
+      <div class="stat-sep"></div>
+      <div class="stat-item"><span class="stat-num"><span id="c3">0</span><span class="unit">K+</span></span><span class="stat-label">Utenti attivi</span></div>
+      <div class="stat-sep"></div>
+      <div class="stat-item"><span class="stat-num"><span id="c4">0</span><span class="unit">+</span></span><span class="stat-label">Campionati monitorati</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- COMBINAZIONI -->
+<section class="combos-section" id="combinazioni">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Selezione del giorno</div>
+      <h2 class="section-title">Combinazioni <span style="color:var(--green)">raccomandate</span></h2>
+      <p class="section-sub">Elaborazioni basate su oltre 400 indicatori statistici per partita. Aggiornate ogni 6 ore con dati in tempo reale.</p>
+    </div>
+    <div class="combos-grid">
+      <div class="combo-card reveal">
+        <div class="combo-header"><span class="badge badge-safe"><i class="fas fa-shield-alt"></i> SICURA</span><span class="combo-league">Serie A · Oggi 20:45</span></div>
+        <div class="combo-teams">Inter <span class="vs">VS</span> AC Milan</div>
+        <div class="combo-type">Tipo: <strong>Goal / Goal</strong> · Quota: <span style="color:var(--gold);font-weight:600">1.85</span></div>
+        <div class="progress-container">
+          <div class="progress-label"><span style="color:var(--muted);font-size:.78rem">Probabilità riuscita</span><span class="progress-pct" style="color:var(--green)">82%</span></div>
+          <div class="progress-track"><div class="progress-fill fill-green" data-pct="82"></div></div>
+        </div>
+        <div class="combo-analysis">📊 L'Inter ha segnato in 9 delle ultime 10 partite casalinghe. Il Milan ha trovato la rete in 8 delle ultime 10 trasferte. Entrambe hanno segnato nel 77% degli scontri diretti recenti.</div>
+        <div class="combo-footer"><div class="combo-quota"><span>Quota consigliata</span><strong>1.85</strong></div><button class="btn-unlock" onclick="openModal('register')"><i class="fas fa-lock"></i> Sblocca analisi</button></div>
+      </div>
+      <div class="combo-card reveal" style="transition-delay:.1s">
+        <div class="combo-header"><span class="badge badge-hot">🔥 HOT</span><span class="combo-league">Champions League · Oggi 21:00</span></div>
+        <div class="combo-teams">Real Madrid <span class="vs">VS</span> FC Barcellona</div>
+        <div class="combo-type">Tipo: <strong>Over 2.5 Gol</strong> · Quota: <span style="color:var(--gold);font-weight:600">1.68</span></div>
+        <div class="progress-container">
+          <div class="progress-label"><span style="color:var(--muted);font-size:.78rem">Probabilità riuscita</span><span class="progress-pct" style="color:var(--yellow)">74%</span></div>
+          <div class="progress-track"><div class="progress-fill fill-yellow" data-pct="74"></div></div>
+        </div>
+        <div class="combo-analysis">📊 El Clásico ha prodotto over 2.5 gol nel 79% dei casi negli ultimi 5 anni. Real Madrid 2.9 gol/partita, Barcellona 2.7 gol/partita in questa stagione.</div>
+        <div class="combo-footer"><div class="combo-quota"><span>Quota consigliata</span><strong>1.68</strong></div><button class="btn-unlock" onclick="openModal('register')"><i class="fas fa-lock"></i> Sblocca analisi</button></div>
+      </div>
+      <div class="combo-card reveal" style="transition-delay:.2s">
+        <div class="combo-header"><span class="badge badge-value">💎 VALUE BET</span><span class="combo-league">Premier League · Domani 17:30</span></div>
+        <div class="combo-teams">Man City <span class="vs">VS</span> Arsenal</div>
+        <div class="combo-type">Tipo: <strong>Vittoria Man City</strong> · Quota: <span style="color:var(--gold);font-weight:600">2.10</span></div>
+        <div class="progress-container">
+          <div class="progress-label"><span style="color:var(--muted);font-size:.78rem">Probabilità riuscita</span><span class="progress-pct" style="color:var(--green)">78%</span></div>
+          <div class="progress-track"><div class="progress-fill fill-green" data-pct="78"></div></div>
+        </div>
+        <div class="combo-analysis">📊 Man City ha vinto 7 delle ultime 8 partite casalinghe contro l'Arsenal. Haaland in forma: 9 gol nelle ultime 6 uscite. Arsenal senza 3 titolari.</div>
+        <div class="combo-footer"><div class="combo-quota"><span>Quota consigliata</span><strong>2.10</strong></div><button class="btn-unlock" onclick="openModal('register')"><i class="fas fa-lock"></i> Sblocca analisi</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ANALYZER -->
+<section class="analyzer-section" id="analizza">
+  <div class="container">
+    <div class="reveal" style="max-width:720px">
+      <div class="section-label">Tool interattivo</div>
+      <h2 class="section-title">Analizza la tua <span style="color:var(--green)">combinazione</span></h2>
+      <p class="section-sub">Seleziona campionato, squadre e tipo di scommessa. Fino a 5 eventi. L'analisi usa statistiche reali di questa stagione.</p>
+    </div>
+    <div class="analyzer-card reveal">
+      <div id="events-container"></div>
+      <div class="analyzer-actions">
+        <button class="btn-add" id="btn-add-event" onclick="addEvent()"><i class="fas fa-plus"></i> Aggiungi evento</button>
+        <button class="btn-analyze" id="btn-analyze" onclick="analyzeCombo()">
+          <div class="spinner" id="spin"></div>
+          <i class="fas fa-chart-line" id="analyze-icon"></i>
+          <span id="analyze-text">ANALIZZA ORA</span>
+        </button>
+      </div>
+      <div class="result-box" id="result-box">
+        <div class="result-header">
+          <div><h3 style="font-size:1rem;color:var(--muted);font-weight:400">Probabilità combinata</h3><p id="result-events-count" style="font-size:.8rem;color:var(--muted);margin-top:2px"></p></div>
+          <div class="result-pct" id="result-pct">—</div>
+        </div>
+        <div class="result-gauge"><div class="result-fill" id="result-fill"></div></div>
+        <p class="result-msg" id="result-msg"></p>
+        <div class="result-events-list" id="result-events-list"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PRICING -->
+<section class="pricing-section" id="piani">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Abbonamenti</div>
+      <h2 class="section-title">Scegli il tuo <span style="color:var(--green)">piano</span></h2>
+      <p class="section-sub">Inizia gratis, scala quando vuoi. Nessun vincolo. Disdici in qualsiasi momento.</p>
+    </div>
+    <div class="pricing-toggle reveal">
+      <span class="toggle-label active" id="label-monthly">Mensile</span>
+      <div class="toggle-switch" id="price-toggle" onclick="togglePricing()"><div class="toggle-knob"></div></div>
+      <span class="toggle-label" id="label-annual">Annuale <span class="badge-save">-30%</span></span>
+    </div>
+    <div class="pricing-grid">
+      <div class="pricing-card reveal">
+        <div class="plan-name">Free</div>
+        <div class="plan-price"><span class="currency">€</span><span class="amount">0</span></div>
+        <div class="plan-period">per sempre gratuito</div>
+        <ul class="plan-features">
+          <li class="active"><i class="fas fa-check feat-icon yes"></i> 3 analisi al giorno</li>
+          <li class="active"><i class="fas fa-check feat-icon yes"></i> Combinazioni base</li>
+          <li class="active"><i class="fas fa-check feat-icon yes"></i> Segnali pubblici</li>
+          <li><i class="fas fa-times feat-icon no"></i> Analisi avanzate</li>
+          <li><i class="fas fa-times feat-icon no"></i> Notifiche real-time</li>
+          <li><i class="fas fa-times feat-icon no"></i> Statistiche premium</li>
+        </ul>
+        <button class="btn btn-outline" onclick="openModal('register')" style="width:100%;justify-content:center">Inizia gratis</button>
+      </div>
+      <div class="pricing-card popular reveal" style="transition-delay:.1s">
+        <div class="popular-badge">⭐ PIÙ POPOLARE</div>
+        <div class="plan-name">Pro</div>
+        <div class="plan-price"><span class="currency">€</span><span class="amount pro-price" data-monthly="9.99" data-annual="6.99">9.99</span></div>
+        <div class="plan-period pro-period">al mese</div>
+        <ul class="plan-features">
+          <li class="active"><i class="fas fa-check feat-icon yes"></i> Analisi illimitate</li>
+          <li class="active"><i class="fas fa-check feat-icon yes"></i> Combinazioni AI avanzate</li>
+          <li class="active"><i class="fas fa-check feat-icon yes"></i> Notifiche push real-time</li>
+          <li class="active"><i class="fas fa-check feat-icon yes"></i> Statistiche premium</li>
+          <li class="active"><i class="fas fa-check feat-icon yes"></i> Storico 5 anni</li>
+          <li><i class="fas fa-times feat-icon no"></i> API & supporto dedicato</li>
+        </ul>
+        <button class="btn btn-primary" onclick="startCheckout('pro')" style="width:100%;justify-content:center;padding:14px">
+          <i class="fas fa-bolt"></i> Attiva Pro
+        </button>
+        <div class="stripe-loading" id="stripe-loading-pro"><div class="stripe-spinner"></div> Reindirizzamento a Stripe...</div>
+      </div>
+      <div class="pricing-card reveal" style="transition-delay:.2s">
+        <div class="plan-name">Elite</div>
+        <div class="plan-price"><span class="currency">€</span><span class="amount elite-price" data-monthly="24.99" data-annual="17.49">24.99</span></div>
+        <div class="plan-period elite-period">al mese</div>
+        <ul class="plan-features">
+          <li class="active"><i class="fas fa-check feat-icon yes"></i> Tutto di Pro incluso</li>
+          <li class="active"><i class="fas fa-check feat-icon yes"></i> Segnali live in-play</li>
+          <li class="active"><i class="fas fa-check feat-icon yes"></i> Supporto prioritario 24/7</li>
+          <li class="active"><i class="fas fa-check feat-icon yes"></i> API access completo</li>
+          <li class="active"><i class="fas fa-check feat-icon yes"></i> Dashboard personalizzabile</li>
+          <li class="active"><i class="fas fa-check feat-icon yes"></i> Report settimanale esclusivo</li>
+        </ul>
+        <button class="btn btn-gold" onclick="startCheckout('elite')" style="width:100%;justify-content:center;padding:14px">
+          <i class="fas fa-crown"></i> Attiva Elite
+        </button>
+        <div class="stripe-loading" id="stripe-loading-elite"><div class="stripe-spinner"></div> Reindirizzamento a Stripe...</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SOCIAL PROOF -->
+<section class="social-section" id="recensioni">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Trustpilot 4.9/5 ★</div>
+      <h2 class="section-title">Cosa dicono i nostri <span style="color:var(--green)">utenti</span></h2>
+      <p class="section-sub">Oltre 50.000 scommettitori usano BetStorm ogni giorno per massimizzare le proprie probabilità.</p>
+    </div>
+    <div class="media-logos reveal">
+      <div class="media-logo">GAZZETTA DELLO SPORT</div>
+      <div style="width:1px;height:20px;background:var(--border)"></div>
+      <div class="media-logo">SPORT WEEK</div>
+      <div style="width:1px;height:20px;background:var(--border)"></div>
+      <div class="media-logo">CORRIERE</div>
+      <div style="width:1px;height:20px;background:var(--border)"></div>
+      <div class="media-logo">TUTTOSPORT</div>
+      <div style="width:1px;height:20px;background:var(--border)"></div>
+      <div class="media-logo">SKY SPORT</div>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testimonial-card reveal"><div class="stars">★★★★★</div><p class="testimonial-text">"Ho usato BetStorm per tre mesi e i risultati sono sorprendenti. Le analisi sono precise, le combinazioni suggerite hanno una percentuale di riuscita davvero alta."</p><div class="testimonial-author"><div class="author-avatar">ML</div><div><div class="author-name">Marco L.</div><div class="author-meta">Piano Pro · Milano</div></div></div></div>
+      <div class="testimonial-card reveal" style="transition-delay:.1s"><div class="stars">★★★★★</div><p class="testimonial-text">"Le statistiche sono incredibilmente dettagliate. Il ticker in tempo reale è utilissimo e le notifiche push mi avvisano prima che le quote cambino."</p><div class="testimonial-author"><div class="author-avatar">FR</div><div><div class="author-name">Federica R.</div><div class="author-meta">Piano Elite · Roma</div></div></div></div>
+      <div class="testimonial-card reveal" style="transition-delay:.2s"><div class="stars">★★★★☆</div><p class="testimonial-text">"Il tool di analisi combinazioni è il mio preferito: inserisco la schedina e in pochi secondi so se vale la pena. Ha cambiato il mio approccio alle scommesse."</p><div class="testimonial-author"><div class="author-avatar">AS</div><div><div class="author-name">Andrea S.</div><div class="author-meta">Piano Pro · Napoli</div></div></div></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FAQ -->
+<section class="faq-section" id="faq">
+  <div class="container" style="text-align:center">
+    <div class="reveal">
+      <div class="section-label" style="justify-content:center">FAQ</div>
+      <h2 class="section-title">Domande frequenti</h2>
+      <p class="section-sub" style="margin:0 auto 50px">Tutto quello che devi sapere su BetStorm.</p>
+    </div>
+    <div class="faq-list reveal">
+      <div class="faq-item open"><div class="faq-q" onclick="toggleFaq(this)">Come vengono calcolate le percentuali di riuscita?<i class="fas fa-chevron-down arrow"></i></div><div class="faq-a">I nostri algoritmi analizzano oltre 400 variabili statistiche per ogni partita: forma recente, scontri diretti, statistiche difensive e offensive, infortuni, fattore campo e molto altro. Il tutto viene elaborato su milioni di partite storiche di Serie A, Premier League, La Liga e Champions League.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Posso disdire l'abbonamento in qualsiasi momento?<i class="fas fa-chevron-down arrow"></i></div><div class="faq-a">Sì, assolutamente. Puoi disdire dal tuo account in qualsiasi momento senza penali. Continuerai ad avere accesso fino alla fine del periodo già pagato. I pagamenti sono gestiti in modo sicuro da Stripe.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Le analisi garantiscono vincite sicure?<i class="fas fa-chevron-down arrow"></i></div><div class="faq-a">No. BetStorm fornisce analisi statistiche basate su dati storici. Le percentuali rappresentano probabilità calcolate, non certezze. Le scommesse sportive comportano sempre un rischio. Scommetti sempre in modo responsabile.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Quali campionati sono coperti?<i class="fas fa-chevron-down arrow"></i></div><div class="faq-a">BetStorm copre Serie A, Premier League, La Liga e Champions League con statistiche complete. Stiamo lavorando per aggiungere Bundesliga, Ligue 1 e altri campionati nei prossimi mesi.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Come funziona il pagamento con Stripe?<i class="fas fa-chevron-down arrow"></i></div><div class="faq-a">I pagamenti sono gestiti interamente da Stripe, il sistema di pagamento più sicuro al mondo usato da Amazon e Google. BetStorm non vede mai i dati della tua carta. Accettiamo tutte le carte di credito/debito e PayPal.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="#" class="logo" style="font-size:1.3rem"><div class="logo-icon" style="width:30px;height:30px;font-size:.85rem">🌪️</div>Bet<span>Storm</span></a>
+      <p>La piattaforma di analisi statistica AI più avanzata per scommesse sportive su Serie A, Premier League, La Liga e Champions League.</p>
+    </div>
+    <div class="footer-col"><h4>Prodotto</h4><ul><li><a href="#">Combinazioni oggi</a></li><li><a href="#">Analisi live</a></li><li><a href="#">Statistiche squadre</a></li><li><a href="#">API</a></li></ul></div>
+    <div class="footer-col"><h4>Azienda</h4><ul><li><a href="#">Chi siamo</a></li><li><a href="#">Blog</a></li><li><a href="#">Lavora con noi</a></li><li><a href="#">Contatti</a></li></ul></div>
+    <div class="footer-col"><h4>Legale</h4><ul><li><a href="#">Privacy Policy</a></li><li><a href="#">Termini di servizio</a></li><li><a href="#">Cookie Policy</a></li><li><a href="#">Gioco responsabile</a></li></ul></div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 BetStorm. Tutti i diritti riservati. Il gioco è vietato ai minori di 18 anni. Gioca responsabilmente.</p>
+    <div class="social-icons">
+      <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+      <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+      <a href="#" class="social-icon"><i class="fab fa-telegram"></i></a>
+      <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
+    </div>
+  </div>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+    <h3>Benvenuto su <span style="color:var(--green)">Bet</span>Storm</h3>
+    <p class="modal-desc">Accedi o registrati per sbloccare tutte le analisi premium.</p>
+    <div class="modal-tabs">
+      <button class="modal-tab active" id="tab-login" onclick="switchTab('login')">Accedi</button>
+      <button class="modal-tab" id="tab-register" onclick="switchTab('register')">Registrati</button>
+    </div>
+    <div id="modal-login-form">
+      <div class="modal-error" id="login-error"></div>
+      <input type="email" class="modal-input" id="login-email" placeholder="Email">
+      <input type="password" class="modal-input" id="login-password" placeholder="Password">
+      <button class="btn btn-primary modal-submit" onclick="handleLogin()">Accedi al tuo account</button>
+      <p class="modal-footer-text">Non hai un account? <a onclick="switchTab('register')">Registrati gratis →</a></p>
+    </div>
+    <div id="modal-register-form" style="display:none">
+      <div class="modal-error" id="register-error"></div>
+      <input type="text" class="modal-input" id="register-name" placeholder="Nome completo">
+      <input type="email" class="modal-input" id="register-email" placeholder="Email">
+      <input type="password" class="modal-input" id="register-password" placeholder="Crea password (min. 6 caratteri)">
+      <button class="btn btn-primary modal-submit" onclick="handleRegister()"><i class="fas fa-bolt"></i> Crea account gratuito</button>
+      <div class="modal-success" id="register-success">✅ Account creato! Controlla la tua email per confermare.</div>
+      <p class="modal-footer-text">Hai già un account? <a onclick="switchTab('login')">Accedi →</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- Teams DB -->
+<script src="teams.js"></script>
+
+<script>
+// ============================================================
+// CONFIG — sostituisci con le tue credenziali reali
+// ============================================================
+const SUPABASE_URL = 'https://zvftggieqlxujjtotvwg.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp2ZnRnZ2llcWx4dWpqdG90dndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE0OTQ3NjIsImV4cCI6MjA4NzA3MDc2Mn0.ZatmSARBUZpibKPTBNhpXj0c07Thzu8RvT4NjMR6lxg';
+const SITE_URL = 'https://betstorm.com';                   // ← sostituisci
+
+// Init Supabase
+const { createClient } = window.supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ============================================================
+// AUTH STATE
+// ============================================================
+let currentUser = null;
+let currentProfile = null;
+let isAnnual = false;
+
+sb.auth.onAuthStateChange(async (event, session) => {
+  currentUser = session?.user || null;
+  if (currentUser) {
+    await loadProfile();
+    updateNavForUser();
+    closeModal();
+  } else {
+    currentProfile = null;
+    updateNavForGuest();
+  }
+});
+
+async function loadProfile() {
+  const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
+  currentProfile = data;
+}
+
+function updateNavForUser() {
+  const cta = document.getElementById('nav-cta');
+  const plan = currentProfile?.plan || 'free';
+  cta.innerHTML = `
+    <button class="user-menu-btn" onclick="handleLogout()">
+      <i class="fas fa-user"></i>
+      ${currentUser.email.split('@')[0]}
+      <span class="plan-chip">${plan.toUpperCase()}</span>
+    </button>`;
+}
+
+function updateNavForGuest() {
+  const cta = document.getElementById('nav-cta');
+  cta.innerHTML = `
+    <button class="btn btn-outline" onclick="openModal('login')">Accedi</button>
+    <button class="btn btn-primary" onclick="openModal('register')"><i class="fas fa-bolt"></i> Inizia Gratis</button>`;
+}
+
+// ============================================================
+// MODAL AUTH
+// ============================================================
+function openModal(tab = 'login') {
+  document.getElementById('modal-overlay').classList.add('open');
+  switchTab(tab);
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function closeModalOutside(e) { if (e.target.id === 'modal-overlay') closeModal(); }
+function switchTab(tab) {
+  document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+  document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+  document.getElementById('modal-login-form').style.display = tab === 'login' ? '' : 'none';
+  document.getElementById('modal-register-form').style.display = tab === 'register' ? '' : 'none';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+function showError(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg; el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 4000);
+}
+
+async function handleLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass  = document.getElementById('login-password').value;
+  if (!email || !pass) return showError('login-error', 'Inserisci email e password.');
+  const { error } = await sb.auth.signInWithPassword({ email, password: pass });
+  if (error) showError('login-error', error.message === 'Invalid login credentials' ? 'Email o password errati.' : error.message);
+  else showToast('✅ Accesso effettuato!', 'success');
+}
+
+async function handleRegister() {
+  const name  = document.getElementById('register-name').value.trim();
+  const email = document.getElementById('register-email').value.trim();
+  const pass  = document.getElementById('register-password').value;
+  if (!name || !email || !pass) return showError('register-error', 'Compila tutti i campi.');
+  if (pass.length < 6) return showError('register-error', 'Password troppo corta (min. 6 caratteri).');
+  const { error } = await sb.auth.signUp({ email, password: pass, options: { data: { full_name: name } } });
+  if (error) showError('register-error', error.message);
+  else document.getElementById('register-success').classList.add('show');
+}
+
+async function handleLogout() {
+  await sb.auth.signOut();
+  showToast('👋 Disconnesso correttamente.', 'success');
+}
+
+// ============================================================
+// STRIPE CHECKOUT
+// ============================================================
+async function startCheckout(plan) {
+  if (!currentUser) { openModal('register'); return; }
+  const billing = isAnnual ? 'annual' : 'monthly';
+  const loaderId = `stripe-loading-${plan}`;
+  document.getElementById(loaderId).classList.add('show');
+
+  try {
+    const res = await fetch('/api/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ plan, billing, email: currentUser.email, userId: currentUser.id })
+    });
+    const data = await res.json();
+    if (data.url) window.location.href = data.url;
+    else throw new Error(data.error || 'Errore sconosciuto');
+  } catch (err) {
+    showToast('❌ Errore pagamento: ' + err.message, 'error');
+    document.getElementById(loaderId).classList.remove('show');
+  }
+}
+
+// ============================================================
+// PRICING TOGGLE
+// ============================================================
+function togglePricing() {
+  isAnnual = !isAnnual;
+  document.getElementById('price-toggle').classList.toggle('on', isAnnual);
+  document.getElementById('label-monthly').classList.toggle('active', !isAnnual);
+  document.getElementById('label-annual').classList.toggle('active', isAnnual);
+  document.querySelectorAll('.pro-price,.elite-price').forEach(el => {
+    el.textContent = isAnnual ? el.dataset.annual : el.dataset.monthly;
+  });
+  document.querySelectorAll('.pro-period,.elite-period').forEach(el => {
+    el.textContent = isAnnual ? 'al mese, fatturato annualmente' : 'al mese';
+  });
+}
+
+// ============================================================
+// ANALYZER — AUTOCOMPLETE SQUADRE
+// ============================================================
+let eventCount = 0;
+
+function getTeamsByLeague(league) {
+  return BETSTORM_TEAMS[league] || [];
+}
+
+function addEvent() {
+  if (eventCount >= 5) {
+    const btn = document.getElementById('btn-add-event');
+    btn.innerHTML = '⚠ Massimo 5 eventi'; btn.style.color = 'var(--red)'; return;
+  }
+  eventCount++;
+  const id = eventCount;
+  const container = document.getElementById('events-container');
+  const row = document.createElement('div');
+  row.className = 'event-row'; row.dataset.id = id;
+
+  const leagueOpts = Object.keys(BETSTORM_TEAMS).map(l => `<option value="${l}">${l}</option>`).join('');
+  const betOpts = BET_TYPES.map(b => `<option value="${b.value}">${b.label}</option>`).join('');
+
+  row.innerHTML = `
+    <div>
+      <span class="event-row-label">Campionato</span>
+      <select class="league-select" onchange="updateTeamDropdowns(${id})">
+        <option value="">— Seleziona —</option>${leagueOpts}
+      </select>
+    </div>
+    <div>
+      <span class="event-row-label">Squadra Casa</span>
+      <div class="team-autocomplete">
+        <input type="text" class="team-input home-input" placeholder="Cerca squadra..." autocomplete="off"
+          oninput="filterTeams(${id},'home')" onfocus="showDropdown(${id},'home')" onblur="hideDropdown(${id},'home',300)">
+        <input type="hidden" class="home-team-id">
+        <div class="autocomplete-dropdown home-dropdown" id="home-drop-${id}"></div>
+      </div>
+    </div>
+    <div>
+      <span class="event-row-label">Squadra Ospite</span>
+      <div class="team-autocomplete">
+        <input type="text" class="team-input away-input" placeholder="Cerca squadra..." autocomplete="off"
+          oninput="filterTeams(${id},'away')" onfocus="showDropdown(${id},'away')" onblur="hideDropdown(${id},'away',300)">
+        <input type="hidden" class="away-team-id">
+        <div class="autocomplete-dropdown away-dropdown" id="away-drop-${id}"></div>
+      </div>
+    </div>
+    <div>
+      <span class="event-row-label">Tipo scommessa</span>
+      <select class="bet-select">${betOpts}</select>
+    </div>
+    <button class="btn-remove" onclick="removeEvent(this)" title="Rimuovi"><i class="fas fa-times"></i></button>`;
+
+  container.appendChild(row);
+  updateAddBtn();
+}
+
+function updateAddBtn() {
+  const btn = document.getElementById('btn-add-event');
+  if (eventCount >= 5) { btn.innerHTML = '⚠ Massimo 5 eventi'; btn.style.color = 'var(--red)'; }
+  else { btn.innerHTML = '<i class="fas fa-plus"></i> Aggiungi evento'; btn.style.color = ''; }
+}
+
+function removeEvent(btn) {
+  btn.closest('.event-row').remove(); eventCount--; updateAddBtn();
+}
+
+function updateTeamDropdowns(id) {
+  const row = document.querySelector(`.event-row[data-id="${id}"]`);
+  const league = row.querySelector('.league-select').value;
+  row.querySelector('.home-input').value = '';
+  row.querySelector('.away-input').value = '';
+  row.querySelector('.home-team-id').value = '';
+  row.querySelector('.away-team-id').value = '';
+  // Pre-fill dropdown with all teams for this league
+  renderDropdown(id, 'home', getTeamsByLeague(league));
+  renderDropdown(id, 'away', getTeamsByLeague(league));
+}
+
+function renderDropdown(eventId, side, teams) {
+  const dropId = `${side}-drop-${eventId}`;
+  const drop = document.getElementById(dropId);
+  drop.innerHTML = teams.slice(0, 20).map(t => `
+    <div class="autocomplete-item" onmousedown="selectTeam(${eventId},'${side}','${t.id}','${t.name}')">
+      <span class="team-short">${t.short}</span>
+      <span>${t.name}</span>
+      <span class="form-dots">${t.form.map(f => `<span class="form-dot ${f?'w':'l'}"></span>`).join('')}</span>
+    </div>`).join('') || '<div style="padding:12px;color:var(--muted);font-size:.8rem">Nessuna squadra trovata</div>';
+}
+
+function filterTeams(eventId, side) {
+  const row = document.querySelector(`.event-row[data-id="${eventId}"]`);
+  const league = row.querySelector('.league-select').value;
+  const query = row.querySelector(`.${side}-input`).value.toLowerCase();
+  const teams = getTeamsByLeague(league).filter(t => t.name.toLowerCase().includes(query));
+  renderDropdown(eventId, side, teams);
+  showDropdown(eventId, side);
+}
+
+function showDropdown(eventId, side, delay = 0) {
+  setTimeout(() => {
+    const row = document.querySelector(`.event-row[data-id="${eventId}"]`);
+    if (!row) return;
+    const league = row.querySelector('.league-select').value;
+    if (!league) return;
+    const query = row.querySelector(`.${side}-input`).value.toLowerCase();
+    const teams = getTeamsByLeague(league).filter(t => !query || t.name.toLowerCase().includes(query));
+    renderDropdown(eventId, side, teams);
+    document.getElementById(`${side}-drop-${eventId}`).classList.add('open');
+  }, delay);
+}
+
+function hideDropdown(eventId, side, delay = 0) {
+  setTimeout(() => {
+    const drop = document.getElementById(`${side}-drop-${eventId}`);
+    if (drop) drop.classList.remove('open');
+  }, delay);
+}
+
+function selectTeam(eventId, side, teamId, teamName) {
+  const row = document.querySelector(`.event-row[data-id="${eventId}"]`);
+  row.querySelector(`.${side}-input`).value = teamName;
+  row.querySelector(`.${side}-team-id`).value = teamId;
+  hideDropdown(eventId, side);
+}
+
+// ============================================================
+// ANALYZE
+// ============================================================
+function getTeamById(teamId) {
+  for (const league of Object.values(BETSTORM_TEAMS)) {
+    const t = league.find(t => t.id === teamId);
+    if (t) return t;
+  }
+  return null;
+}
+
+function analyzeCombo() {
+  const rows = document.querySelectorAll('.event-row');
+  if (rows.length === 0) { addEvent(); return; }
+
+  const btn = document.getElementById('btn-analyze');
+  const spin = document.getElementById('spin');
+  const icon = document.getElementById('analyze-icon');
+  const txt  = document.getElementById('analyze-text');
+
+  btn.disabled = true; spin.classList.add('show'); icon.style.display = 'none'; txt.textContent = 'Elaborazione...';
+
+  setTimeout(() => {
+    let combinedProb = 1;
+    const eventResults = [];
+
+    rows.forEach(row => {
+      const homeId  = row.querySelector('.home-team-id').value;
+      const awayId  = row.querySelector('.away-team-id').value;
+      const betVal  = row.querySelector('.bet-select').value;
+      const homeName = row.querySelector('.home-input').value || '?';
+      const awayName = row.querySelector('.away-input').value || '?';
+
+      const homeTeam = getTeamById(homeId);
+      const awayTeam = getTeamById(awayId);
+      const betType  = BET_TYPES.find(b => b.value === betVal);
+
+      let prob;
+      if (homeTeam && awayTeam) {
+        prob = calculateProbability(homeTeam, awayTeam, betVal);
+      } else {
+        prob = betType ? betType.factor({ home_win_pct:.5, away_win_pct:.45, goals_scored_avg:1.5, goals_conceded_avg:1.5, form:[1,0,1,0,1] }, { home_win_pct:.5, away_win_pct:.45, goals_scored_avg:1.5, goals_conceded_avg:1.5, form:[1,0,1,0,1] }) : 0.50;
+      }
+
+      combinedProb *= prob;
+      eventResults.push({ home: homeName, away: awayName, bet: betType?.label || betVal, prob: Math.round(prob * 100) });
+    });
+
+    if (rows.length > 1) combinedProb *= Math.pow(0.97, rows.length - 1);
+    const pct = Math.round(combinedProb * 100);
+    showResult(pct, eventResults);
+
+    // Save to Supabase if logged in
+    if (currentUser) {
+      sb.from('analyses').insert({ user_id: currentUser.id, events: eventResults, result_pct: pct });
+    }
+
+    btn.disabled = false; spin.classList.remove('show'); icon.style.display = ''; txt.textContent = 'ANALIZZA ORA';
+  }, 1800);
+}
+
+function showResult(pct, events) {
+  const box  = document.getElementById('result-box');
+  const pctEl = document.getElementById('result-pct');
+  const fill = document.getElementById('result-fill');
+  const msg  = document.getElementById('result-msg');
+  const count = document.getElementById('result-events-count');
+  const list  = document.getElementById('result-events-list');
+
+  box.classList.add('visible');
+  count.textContent = `${events.length} evento${events.length > 1 ? 'i' : ''} analizzato${events.length > 1 ? 'i' : ''}`;
+
+  let color, gradient, message;
+  if (pct >= 70) {
+    color = 'var(--green)'; gradient = 'linear-gradient(90deg,var(--green2),var(--green))';
+    message = `<strong>Combinazione ad alto potenziale!</strong> Con ${events.length} event${events.length>1?'i':'o'}, la tua schedina raggiunge il <strong>${pct}%</strong> di probabilità statistica. Le condizioni sono favorevoli.`;
+  } else if (pct >= 50) {
+    color = 'var(--yellow)'; gradient = 'linear-gradient(90deg,#f57f17,var(--yellow))';
+    message = `<strong>Combinazione nella media.</strong> La probabilità combinata è del <strong>${pct}%</strong>. Potrebbe valere la pena con quote alte. Considera di ridurre gli eventi per aumentare la probabilità.`;
+  } else {
+    color = '#ff7043'; gradient = 'linear-gradient(90deg,#bf360c,#ff7043)';
+    message = `<strong>Attenzione: combinazione rischiosa.</strong> La probabilità combinata scende al <strong>${pct}%</strong>. Ti suggeriamo di ridurre gli eventi o scegliere tipi di scommessa più probabili.`;
+  }
+
+  pctEl.textContent = pct + '%'; pctEl.style.color = color;
+  fill.style.background = gradient; fill.style.width = '0';
+  setTimeout(() => { fill.style.width = pct + '%'; }, 100);
+  msg.innerHTML = message;
+
+  // Event breakdown
+  list.innerHTML = events.map(e => `
+    <div class="result-event-item">
+      <span style="color:var(--text);font-weight:500">${e.home} vs ${e.away}</span>
+      <span style="color:var(--muted)">${e.bet}</span>
+      <span class="ev-pct" style="color:${e.prob>=70?'var(--green)':e.prob>=50?'var(--yellow)':'#ff7043'}">${e.prob}%</span>
+    </div>`).join('');
+}
+
+// ============================================================
+// COUNTERS
+// ============================================================
+function animateCounter(el, target, duration, decimals = 0) {
+  let start = 0;
+  const step = ts => {
+    if (!start) start = ts;
+    const progress = Math.min((ts - start) / duration, 1);
+    el.textContent = decimals ? (progress * target).toFixed(decimals) : Math.floor(progress * target);
+    if (progress < 1) requestAnimationFrame(step);
+    else el.textContent = decimals ? target.toFixed(decimals) : target;
+  };
+  requestAnimationFrame(step);
+}
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    animateCounter(document.getElementById('c1'), 2.4, 2000, 1);
+    animateCounter(document.getElementById('c2'), 87, 2000);
+    animateCounter(document.getElementById('c3'), 50, 2000);
+    animateCounter(document.getElementById('c4'), 200, 2000);
+  }, 300);
+});
+
+// ============================================================
+// INTERSECTION OBSERVER
+// ============================================================
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      e.target.querySelectorAll('.progress-fill').forEach(f => {
+        setTimeout(() => { f.style.width = f.dataset.pct + '%'; }, 400);
+      });
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ============================================================
+// FAQ
+// ============================================================
+function toggleFaq(el) {
+  const item = el.closest('.faq-item');
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+  if (!isOpen) item.classList.add('open');
+}
+
+// ============================================================
+// NAVBAR SCROLL
+// ============================================================
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').style.background =
+    window.scrollY > 60 ? 'rgba(7,10,15,.95)' : 'rgba(7,10,15,.7)';
+});
+
+// ============================================================
+// TOAST
+// ============================================================
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// ============================================================
+// MOBILE MENU
+// ============================================================
+function toggleMobileMenu() {
+  const links = document.querySelector('.nav-links');
+  const cta = document.querySelector('.nav-cta');
+  [links, cta].forEach(el => { if(el) el.style.display = el.style.display === 'flex' ? '' : 'flex'; });
+}
+
+// Init 2 eventi
+addEvent(); addEvent();
+</script>
+</body>
+</html>
