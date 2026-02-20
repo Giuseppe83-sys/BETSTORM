@@ -7,7 +7,7 @@
 //   STRIPE_PRICE_PRO_ANNUAL=price_...(ID del prezzo Pro annuale)
 //   STRIPE_PRICE_ELITE=price_...
 //   STRIPE_PRICE_ELITE_ANNUAL=price_...
-//   NEXT_PUBLIC_SITE_URL=https://betstorm.com
+//   NEXT_PUBLIC_SITE_URL=https://betstorm.it
 // ============================================================
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
