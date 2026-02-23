@@ -40,7 +40,7 @@ module.exports = async (req, res) => {
       payment_method_types: ['card'],
       customer_email: email,
       line_items: [{ price: priceId, quantity: 1 }],
-      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/success.html?plan=${plan}&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url:  `${process.env.NEXT_PUBLIC_SITE_URL}/#piani`,
       metadata: { userId, plan, billing },
       subscription_data: {
