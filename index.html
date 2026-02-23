@@ -721,6 +721,9 @@ function updateNavForUser() {
   const cta = document.getElementById('nav-cta');
   const plan = currentProfile?.plan || 'free';
   cta.innerHTML = `
+    <a href="/dashboard.html" class="btn btn-outline">
+      <i class="fas fa-chart-pie"></i> Dashboard
+    </a>
     <button class="user-menu-btn" onclick="handleLogout()">
       <i class="fas fa-user"></i>
       ${currentUser.email.split('@')[0]}
@@ -777,9 +780,33 @@ async function handleRegister() {
   const pass  = document.getElementById('register-password').value;
   if (!name || !email || !pass) return showError('register-error', 'Compila tutti i campi.');
   if (pass.length < 6) return showError('register-error', 'Password troppo corta (min. 6 caratteri).');
-  const { error } = await sb.auth.signUp({ email, password: pass, options: { data: { full_name: name } } });
-  if (error) showError('register-error', error.message);
-  else document.getElementById('register-success').classList.add('show');
+  
+  const btn = document.querySelector('#modal-register-form .modal-submit');
+  btn.disabled = true;
+  btn.textContent = 'Registrazione in corso...';
+
+  const { data, error } = await sb.auth.signUp({ 
+    email, 
+    password: pass, 
+    options: { data: { full_name: name } } 
+  });
+  
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fas fa-bolt"></i> Crea account gratuito';
+
+  if (error) {
+    showError('register-error', error.message);
+  } else if (data?.user?.identities?.length === 0) {
+    showError('register-error', 'Email già registrata. Prova ad accedere.');
+  } else {
+    // Mostra messaggio successo
+    document.getElementById('register-success').classList.add('show');
+    showToast('📧 Controlla la tua email per confermare!', 'success');
+    // Svuota campi
+    document.getElementById('register-name').value = '';
+    document.getElementById('register-email').value = '';
+    document.getElementById('register-password').value = '';
+  }
 }
 
 async function handleLogout() {
