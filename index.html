@@ -811,7 +811,12 @@ async function handleRegister() {
       }
     } else if (data?.user?.identities?.length === 0) {
       showError('register-error', 'Email già registrata. Prova ad accedere.');
+    } else if (data?.session) {
+      // Conferma email disabilitata — login automatico
+      showToast('✅ Account creato! Benvenuto su BetStorm!', 'success');
+      closeModal();
     } else {
+      // Conferma email attiva — mostra messaggio
       document.getElementById('register-success').classList.add('show');
       showToast('📧 Controlla la tua email per confermare!', 'success');
       document.getElementById('register-name').value = '';
