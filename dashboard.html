@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — BetStorm</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌪️</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--bg:#070a0f;--bg2:#0d1117;--bg3:#111820;--green:#00e676;--green2:#00c853;--gold:#ffd700;--gold2:#ffab00;--red:#ff5252;--text:#e8edf5;--muted:#6b7a8d;--border:rgba(255,255,255,.07);--glass:rgba(255,255,255,.04)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 40% at 50% 0%,rgba(0,230,118,.07) 0%,transparent 70%);pointer-events:none}
+h1,h2,h3,h4{font-family:'Syne',sans-serif}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;padding:16px 32px;display:flex;align-items:center;justify-content:space-between;background:rgba(7,10,15,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text)}
+.logo-icon{width:30px;height:30px;background:linear-gradient(135deg,var(--green),var(--gold));border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.85rem}
+.logo span{color:var(--green)}
+.nav-right{display:flex;align-items:center;gap:12px}
+.btn{padding:9px 18px;border-radius:8px;font-family:'DM Sans',sans-serif;font-weight:500;font-size:.85rem;cursor:pointer;border:none;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:7px}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--muted)}
+.btn-outline:hover{border-color:var(--green);color:var(--green)}
+.btn-primary{background:linear-gradient(135deg,var(--green),var(--green2));color:#070a0f;font-weight:700;box-shadow:0 0 16px rgba(0,230,118,.25)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 0 28px rgba(0,230,118,.4)}
+.btn-red{background:rgba(255,82,82,.1);border:1px solid rgba(255,82,82,.2);color:var(--red)}
+.btn-red:hover{background:rgba(255,82,82,.2)}
+
+/* LAYOUT */
+.dashboard{max-width:1100px;margin:0 auto;padding:40px 24px}
+.dashboard-header{margin-bottom:40px}
+.greeting{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;letter-spacing:-.02em;margin-bottom:6px}
+.greeting span{color:var(--green)}
+.greeting-sub{color:var(--muted);font-size:.95rem}
+
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:32px}
+.stat-card{background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:22px;display:flex;align-items:center;gap:16px;transition:all .2s}
+.stat-card:hover{border-color:rgba(0,230,118,.2);transform:translateY(-2px)}
+.stat-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.stat-icon.green{background:rgba(0,230,118,.12)}
+.stat-icon.gold{background:rgba(255,215,0,.12)}
+.stat-icon.purple{background:rgba(124,77,255,.12)}
+.stat-value{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;line-height:1}
+.stat-label{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
+
+/* PLAN CARD */
+.plan-card{background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px}
+.plan-card.pro{border-color:rgba(0,230,118,.25);background:linear-gradient(135deg,rgba(0,230,118,.06) 0%,var(--bg3) 60%)}
+.plan-card.elite{border-color:rgba(255,215,0,.25);background:linear-gradient(135deg,rgba(255,215,0,.06) 0%,var(--bg3) 60%)}
+.plan-info{display:flex;align-items:center;gap:16px}
+.plan-avatar{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem}
+.plan-avatar.free{background:rgba(255,255,255,.06)}
+.plan-avatar.pro{background:linear-gradient(135deg,var(--green),var(--green2))}
+.plan-avatar.elite{background:linear-gradient(135deg,var(--gold),var(--gold2))}
+.plan-name{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700}
+.plan-status{font-size:.8rem;color:var(--muted);margin-top:3px}
+.plan-status.active{color:var(--green)}
+.plan-actions{display:flex;gap:10px;flex-wrap:wrap}
+
+/* GRID */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:32px}
+@media(max-width:768px){.grid-2{grid-template-columns:1fr}}
+
+.section-card{background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:28px}
+.section-title{font-size:1rem;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:8px}
+.section-title i{color:var(--green);font-size:.9rem}
+
+/* ANALYSES LIST */
+.analyses-list{display:flex;flex-direction:column;gap:10px;max-height:320px;overflow-y:auto}
+.analyses-list::-webkit-scrollbar{width:4px}
+.analyses-list::-webkit-scrollbar-track{background:transparent}
+.analyses-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.analysis-item{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;transition:all .2s}
+.analysis-item:hover{border-color:rgba(0,230,118,.2)}
+.analysis-events{font-size:.8rem;color:var(--muted);margin-top:3px}
+.analysis-pct{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;flex-shrink:0}
+.analysis-date{font-size:.72rem;color:var(--muted)}
+.empty-state{text-align:center;padding:40px 20px;color:var(--muted);font-size:.875rem}
+.empty-state i{font-size:2rem;margin-bottom:12px;display:block;opacity:.3}
+
+/* QUICK ANALYZE */
+.quick-form{display:flex;flex-direction:column;gap:12px}
+.quick-input{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.875rem;width:100%;outline:none;transition:border-color .2s}
+.quick-input:focus{border-color:rgba(0,230,118,.4)}
+.quick-input::placeholder{color:var(--muted)}
+.quick-select{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.875rem;width:100%;outline:none;cursor:pointer;-webkit-appearance:none}
+.quick-select option{background:var(--bg2)}
+.quick-result{background:rgba(0,230,118,.05);border:1px solid rgba(0,230,118,.15);border-radius:10px;padding:16px;text-align:center;display:none}
+.quick-result.show{display:block;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.quick-pct{font-family:'Syne',sans-serif;font-size:2.5rem;font-weight:800}
+
+/* PROGRESS */
+.progress-track{height:6px;background:rgba(255,255,255,.06);border-radius:50px;overflow:hidden;margin:8px 0}
+.progress-fill{height:100%;border-radius:50px;transition:width 1s ease}
+
+/* ACCOUNT */
+.account-info{display:flex;flex-direction:column;gap:14px}
+.account-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)}
+.account-row:last-child{border-bottom:none}
+.account-label{font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.account-value{font-size:.875rem;font-weight:500}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;z-index:9000;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:14px 20px;font-size:.875rem;transform:translateX(400px);transition:transform .4s cubic-bezier(.34,1.56,.64,1);display:flex;align-items:center;gap:10px}
+.toast.show{transform:translateX(0)}
+.toast.success{border-color:rgba(0,230,118,.3);color:var(--green)}
+.toast.error{border-color:rgba(255,82,82,.3);color:var(--red)}
+
+/* LOADING */
+.loading{display:flex;align-items:center;justify-content:center;min-height:60vh;flex-direction:column;gap:16px;color:var(--muted)}
+.loading-spinner{width:40px;height:40px;border:3px solid rgba(255,255,255,.06);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo">
+    <div class="logo-icon">🌪️</div>
+    Bet<span>Storm</span>
+  </a>
+  <div class="nav-right">
+    <a href="/" class="btn btn-outline"><i class="fas fa-home"></i> Home</a>
+    <button class="btn btn-red" id="btn-logout" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Esci</button>
+  </div>
+</nav>
+
+<!-- LOADING STATE -->
+<div class="loading" id="loading-state">
+  <div class="loading-spinner"></div>
+  <p>Caricamento dashboard...</p>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dashboard" id="dashboard" style="display:none">
+
+  <!-- HEADER -->
+  <div class="dashboard-header">
+    <h1 class="greeting">Ciao, <span id="user-name">utente</span>! 👋</h1>
+    <p class="greeting-sub">Ecco il riepilogo del tuo account BetStorm.</p>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon green"><i class="fas fa-chart-line" style="color:var(--green)"></i></div>
+      <div>
+        <div class="stat-value" id="stat-analyses">0</div>
+        <div class="stat-label">Analisi totali</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon gold"><i class="fas fa-bolt" style="color:var(--gold)"></i></div>
+      <div>
+        <div class="stat-value" id="stat-today">0</div>
+        <div class="stat-label">Analisi oggi</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon purple"><i class="fas fa-calendar" style="color:#7c4dff"></i></div>
+      <div>
+        <div class="stat-value" id="stat-member">—</div>
+        <div class="stat-label">Membro dal</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PLAN -->
+  <div class="plan-card" id="plan-card">
+    <div class="plan-info">
+      <div class="plan-avatar" id="plan-avatar">⚡</div>
+      <div>
+        <div class="plan-name" id="plan-name">Piano Free</div>
+        <div class="plan-status" id="plan-status">Attivo</div>
+      </div>
+    </div>
+    <div class="plan-actions" id="plan-actions">
+      <a href="/#piani" class="btn btn-primary"><i class="fas fa-bolt"></i> Upgrade a Pro</a>
+    </div>
+  </div>
+
+  <!-- GRID -->
+  <div class="grid-2">
+
+    <!-- ANALISI RECENTI -->
+    <div class="section-card">
+      <div class="section-title"><i class="fas fa-history"></i> Analisi recenti</div>
+      <div class="analyses-list" id="analyses-list">
+        <div class="empty-state"><i class="fas fa-chart-bar"></i>Nessuna analisi ancora.<br>Torna alla home e prova il tool!</div>
+      </div>
+    </div>
+
+    <!-- ANALISI RAPIDA -->
+    <div class="section-card">
+      <div class="section-title"><i class="fas fa-bolt"></i> Analisi rapida</div>
+      <div class="quick-form">
+        <input type="text" class="quick-input" id="q-home" placeholder="Squadra Casa (es. Inter)">
+        <input type="text" class="quick-input" id="q-away" placeholder="Squadra Ospite (es. Milan)">
+        <select class="quick-select" id="q-bet">
+          <option value="0.62">Goal / Goal</option>
+          <option value="0.58">Over 2.5 Gol</option>
+          <option value="0.56">Under 2.5 Gol</option>
+          <option value="0.52">Vittoria Casa</option>
+          <option value="0.45">Vittoria Ospite</option>
+          <option value="0.72">Over 1.5 Gol</option>
+          <option value="0.74">Doppia Chance 1X</option>
+        </select>
+        <button class="btn btn-primary" onclick="quickAnalyze()" style="justify-content:center;padding:12px">
+          <i class="fas fa-chart-line"></i> Analizza
+        </button>
+        <div class="quick-result" id="quick-result">
+          <div class="quick-pct" id="quick-pct" style="color:var(--green)">—</div>
+          <div style="font-size:.8rem;color:var(--muted);margin-top:4px">Probabilità stimata</div>
+          <div class="progress-track"><div class="progress-fill" id="quick-fill" style="background:var(--green)"></div></div>
+          <div style="font-size:.78rem;color:var(--muted);margin-top:8px" id="quick-msg"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ACCOUNT INFO -->
+  <div class="section-card">
+    <div class="section-title"><i class="fas fa-user"></i> Il tuo account</div>
+    <div class="account-info">
+      <div class="account-row">
+        <span class="account-label">Email</span>
+        <span class="account-value" id="acc-email">—</span>
+      </div>
+      <div class="account-row">
+        <span class="account-label">Piano attivo</span>
+        <span class="account-value" id="acc-plan">—</span>
+      </div>
+      <div class="account-row">
+        <span class="account-label">Stato abbonamento</span>
+        <span class="account-value" id="acc-status">—</span>
+      </div>
+      <div class="account-row">
+        <span class="account-label">Membro dal</span>
+        <span class="account-value" id="acc-since">—</span>
+      </div>
+      <div class="account-row" style="border-bottom:none;padding-top:20px">
+        <span></span>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-outline" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Disconnetti</button>
+          <button class="btn btn-red" onclick="confirmDelete()"><i class="fas fa-trash"></i> Elimina account</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- NOT LOGGED -->
+<div style="display:none;text-align:center;padding:80px 24px" id="not-logged">
+  <div style="font-size:3rem;margin-bottom:20px">🔒</div>
+  <h2 style="font-family:'Syne',sans-serif;margin-bottom:12px">Accesso richiesto</h2>
+  <p style="color:var(--muted);margin-bottom:28px">Devi essere loggato per vedere la dashboard.</p>
+  <a href="/" class="btn btn-primary"><i class="fas fa-home"></i> Torna alla home</a>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPABASE_URL = 'https://zvftggieqlxujjtotvwg.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp2ZnRnZ2llcWx4dWpqdG90dndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE0OTQ3NjIsImV4cCI6MjA4NzA3MDc2Mn0.ZatmSARBUZpibKPTBNhpXj0c07Thzu8RvT4NjMR6lxg';
+const { createClient } = window.supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let currentUser = null;
+let currentProfile = null;
+
+async function init() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) {
+    document.getElementById('loading-state').style.display = 'none';
+    document.getElementById('not-logged').style.display = 'block';
+    return;
+  }
+  currentUser = session.user;
+  await loadDashboard();
+}
+
+async function loadDashboard() {
+  // Carica profilo
+  const { data: profile } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
+  currentProfile = profile;
+
+  // Carica analisi
+  const { data: analyses } = await sb.from('analyses').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false }).limit(20);
+
+  document.getElementById('loading-state').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+
+  // Nome utente
+  const name = profile?.full_name || currentUser.email.split('@')[0];
+  document.getElementById('user-name').textContent = name;
+
+  // Stats
+  document.getElementById('stat-analyses').textContent = analyses?.length || 0;
+  document.getElementById('stat-today').textContent = profile?.analyses_today || 0;
+  const since = new Date(currentUser.created_at);
+  const sinceStr = since.toLocaleDateString('it-IT', { month: 'short', year: 'numeric' });
+  document.getElementById('stat-member').textContent = sinceStr;
+
+  // Piano
+  const plan = profile?.plan || 'free';
+  renderPlan(plan, profile);
+
+  // Account info
+  document.getElementById('acc-email').textContent = currentUser.email;
+  document.getElementById('acc-plan').textContent = plan.charAt(0).toUpperCase() + plan.slice(1);
+  document.getElementById('acc-status').textContent = profile?.subscription_status === 'active' ? '✅ Attivo' : plan === 'free' ? '— Piano gratuito' : '⏳ In verifica';
+  document.getElementById('acc-since').textContent = since.toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' });
+
+  // Analisi recenti
+  renderAnalyses(analyses);
+}
+
+function renderPlan(plan, profile) {
+  const card = document.getElementById('plan-card');
+  const avatar = document.getElementById('plan-avatar');
+  const nameEl = document.getElementById('plan-name');
+  const statusEl = document.getElementById('plan-status');
+  const actions = document.getElementById('plan-actions');
+
+  if (plan === 'pro') {
+    card.classList.add('pro');
+    avatar.textContent = '⚡'; avatar.className = 'plan-avatar pro';
+    nameEl.textContent = 'Piano Pro';
+    statusEl.textContent = '✅ Abbonamento attivo'; statusEl.className = 'plan-status active';
+    actions.innerHTML = `<a href="/#piani" class="btn btn-outline"><i class="fas fa-arrow-up"></i> Upgrade a Elite</a>`;
+  } else if (plan === 'elite') {
+    card.classList.add('elite');
+    avatar.textContent = '👑'; avatar.className = 'plan-avatar elite';
+    nameEl.textContent = 'Piano Elite';
+    statusEl.textContent = '✅ Abbonamento attivo'; statusEl.className = 'plan-status active';
+    actions.innerHTML = `<span style="font-size:.8rem;color:var(--muted)">Hai il piano più completo 🎉</span>`;
+  } else {
+    avatar.textContent = '⚡'; avatar.className = 'plan-avatar free';
+    nameEl.textContent = 'Piano Free';
+    statusEl.textContent = '3 analisi/giorno';
+    actions.innerHTML = `<a href="/#piani" class="btn btn-primary"><i class="fas fa-bolt"></i> Upgrade a Pro — €9.99/mese</a>`;
+  }
+}
+
+function renderAnalyses(analyses) {
+  const list = document.getElementById('analyses-list');
+  if (!analyses || analyses.length === 0) return;
+
+  list.innerHTML = analyses.map(a => {
+    const pct = a.result_pct || 0;
+    const color = pct >= 70 ? 'var(--green)' : pct >= 50 ? 'var(--yellow)' : '#ff7043';
+    const date = new Date(a.created_at).toLocaleDateString('it-IT', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+    const events = Array.isArray(a.events) ? a.events.map(e => `${e.home} vs ${e.away}`).join(', ') : '—';
+    return `
+      <div class="analysis-item">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:.875rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${events}</div>
+          <div class="analysis-date">${date}</div>
+        </div>
+        <div class="analysis-pct" style="color:${color}">${pct}%</div>
+      </div>`;
+  }).join('');
+}
+
+function quickAnalyze() {
+  const home = document.getElementById('q-home').value.trim();
+  const away = document.getElementById('q-away').value.trim();
+  const base = parseFloat(document.getElementById('q-bet').value);
+
+  if (!home || !away) { showToast('Inserisci entrambe le squadre', 'error'); return; }
+
+  const nameFactor = ((home.length + away.length) % 7) / 70 - 0.05;
+  let prob = Math.min(0.92, Math.max(0.20, base + nameFactor));
+  const pct = Math.round(prob * 100);
+  const color = pct >= 70 ? 'var(--green)' : pct >= 50 ? 'var(--yellow)' : '#ff7043';
+  const gradient = pct >= 70 ? 'linear-gradient(90deg,var(--green2),var(--green))' : pct >= 50 ? 'linear-gradient(90deg,#f57f17,var(--yellow))' : 'linear-gradient(90deg,#bf360c,#ff7043)';
+  const msg = pct >= 70 ? '🔥 Alta probabilità — buona scelta!' : pct >= 50 ? '⚠️ Nella media — valuta attentamente' : '❌ Rischio elevato — considera alternative';
+
+  const result = document.getElementById('quick-result');
+  const pctEl = document.getElementById('quick-pct');
+  const fill = document.getElementById('quick-fill');
+  const msgEl = document.getElementById('quick-msg');
+
+  result.classList.add('show');
+  pctEl.textContent = pct + '%'; pctEl.style.color = color;
+  fill.style.background = gradient; fill.style.width = '0';
+  setTimeout(() => { fill.style.width = pct + '%'; }, 50);
+  msgEl.textContent = msg;
+
+  // Salva su Supabase
+  if (currentUser) {
+    sb.from('analyses').insert({ user_id: currentUser.id, events: [{ home, away, bet: document.getElementById('q-bet').options[document.getElementById('q-bet').selectedIndex].text }], result_pct: pct });
+  }
+}
+
+async function handleLogout() {
+  await sb.auth.signOut();
+  window.location.href = '/';
+}
+
+function confirmDelete() {
+  if (confirm('Sei sicuro di voler eliminare il tuo account? Questa azione è irreversibile.')) {
+    showToast('Contatta info@betstorm.it per eliminare l\'account', 'error');
+  }
+}
+
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+init();
+</script>
+</body>
+</html>
