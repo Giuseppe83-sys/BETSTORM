@@ -785,27 +785,44 @@ async function handleRegister() {
   btn.disabled = true;
   btn.textContent = 'Registrazione in corso...';
 
-  const { data, error } = await sb.auth.signUp({ 
-    email, 
-    password: pass, 
-    options: { data: { full_name: name } } 
-  });
-  
-  btn.disabled = false;
-  btn.innerHTML = '<i class="fas fa-bolt"></i> Crea account gratuito';
+  // Timeout di sicurezza 10 secondi
+  const timeout = setTimeout(() => {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-bolt"></i> Crea account gratuito';
+    showError('register-error', 'Timeout — riprova tra qualche secondo.');
+  }, 10000);
 
-  if (error) {
-    showError('register-error', error.message);
-  } else if (data?.user?.identities?.length === 0) {
-    showError('register-error', 'Email già registrata. Prova ad accedere.');
-  } else {
-    // Mostra messaggio successo
-    document.getElementById('register-success').classList.add('show');
-    showToast('📧 Controlla la tua email per confermare!', 'success');
-    // Svuota campi
-    document.getElementById('register-name').value = '';
-    document.getElementById('register-email').value = '';
-    document.getElementById('register-password').value = '';
+  try {
+    const { data, error } = await sb.auth.signUp({ 
+      email, 
+      password: pass, 
+      options: { data: { full_name: name } } 
+    });
+
+    clearTimeout(timeout);
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-bolt"></i> Crea account gratuito';
+
+    if (error) {
+      if (error.message.includes('already registered')) {
+        showError('register-error', 'Email già registrata. Prova ad accedere.');
+      } else {
+        showError('register-error', error.message);
+      }
+    } else if (data?.user?.identities?.length === 0) {
+      showError('register-error', 'Email già registrata. Prova ad accedere.');
+    } else {
+      document.getElementById('register-success').classList.add('show');
+      showToast('📧 Controlla la tua email per confermare!', 'success');
+      document.getElementById('register-name').value = '';
+      document.getElementById('register-email').value = '';
+      document.getElementById('register-password').value = '';
+    }
+  } catch(e) {
+    clearTimeout(timeout);
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-bolt"></i> Crea account gratuito';
+    showError('register-error', 'Errore di connessione — riprova.');
   }
 }
 
