@@ -279,19 +279,51 @@ let currentUser = null;
 let currentProfile = null;
 
 async function init() {
+  // Aspetta che Supabase carichi la sessione
   const { data: { session } } = await sb.auth.getSession();
+  
   if (!session) {
-    document.getElementById('loading-state').style.display = 'none';
-    document.getElementById('not-logged').style.display = 'block';
+    // Prova ad aspettare l'evento onAuthStateChange
+    const { data: { subscription } } = sb.auth.onAuthStateChange(async (event, session) => {
+      subscription.unsubscribe();
+      if (session) {
+        currentUser = session.user;
+        await loadDashboard();
+      } else {
+        document.getElementById('loading-state').style.display = 'none';
+        document.getElementById('not-logged').style.display = 'block';
+      }
+    });
+    // Timeout di sicurezza 3 secondi
+    setTimeout(() => {
+      if (document.getElementById('loading-state').style.display !== 'none') {
+        document.getElementById('loading-state').style.display = 'none';
+        document.getElementById('not-logged').style.display = 'block';
+      }
+    }, 3000);
     return;
   }
+  
   currentUser = session.user;
   await loadDashboard();
 }
 
 async function loadDashboard() {
   // Carica profilo
-  const { data: profile } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
+  let { data: profile } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
+  
+  // Se il profilo non esiste crealo al volo
+  if (!profile) {
+    await sb.from('profiles').insert({
+      id: currentUser.id,
+      email: currentUser.email,
+      full_name: currentUser.user_metadata?.full_name || currentUser.email.split('@')[0],
+      plan: 'free'
+    });
+    const { data: newProfile } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
+    profile = newProfile;
+  }
+  
   currentProfile = profile;
 
   // Carica analisi
