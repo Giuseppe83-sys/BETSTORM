@@ -278,6 +278,7 @@ const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true,
+    storageKey: 'sb-zvftggieqlxujjtotvwg-auth-token',
     lock: (name, acquireTimeout, fn) => fn()
   }
 });
@@ -286,33 +287,25 @@ let currentUser = null;
 let currentProfile = null;
 
 async function init() {
-  // Aspetta che Supabase carichi la sessione
-  const { data: { session } } = await sb.auth.getSession();
-  
-  if (!session) {
-    // Prova ad aspettare l'evento onAuthStateChange
-    const { data: { subscription } } = sb.auth.onAuthStateChange(async (event, session) => {
-      subscription.unsubscribe();
-      if (session) {
-        currentUser = session.user;
-        await loadDashboard();
-      } else {
-        document.getElementById('loading-state').style.display = 'none';
-        document.getElementById('not-logged').style.display = 'block';
-      }
-    });
-    // Timeout di sicurezza 3 secondi
-    setTimeout(() => {
-      if (document.getElementById('loading-state').style.display !== 'none') {
-        document.getElementById('loading-state').style.display = 'none';
-        document.getElementById('not-logged').style.display = 'block';
-      }
-    }, 3000);
-    return;
+  try {
+    // Recupera sessione dal localStorage
+    const { data: { session }, error } = await sb.auth.getSession();
+    
+    if (error) throw error;
+    
+    if (session?.user) {
+      currentUser = session.user;
+      await loadDashboard();
+    } else {
+      // Nessuna sessione trovata
+      document.getElementById('loading-state').style.display = 'none';
+      document.getElementById('not-logged').style.display = 'block';
+    }
+  } catch(e) {
+    console.error('Init error:', e);
+    document.getElementById('loading-state').style.display = 'none';
+    document.getElementById('not-logged').style.display = 'block';
   }
-  
-  currentUser = session.user;
-  await loadDashboard();
 }
 
 async function loadDashboard() {

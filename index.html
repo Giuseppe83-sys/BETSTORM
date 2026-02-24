@@ -692,7 +692,15 @@ const SITE_URL = 'https://betstorm.it';
 
 // Init Supabase
 const { createClient } = window.supabase;
-const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: true,
+    storageKey: 'sb-zvftggieqlxujjtotvwg-auth-token',
+    lock: (name, acquireTimeout, fn) => fn()
+  }
+});
 
 // ============================================================
 // AUTH STATE
@@ -701,16 +709,15 @@ let currentUser = null;
 let currentProfile = null;
 let isAnnual = false;
 
-// Gestisci callback conferma email (hash nell'URL)
-async function handleAuthCallback() {
-  const hash = window.location.hash;
-  if (hash && hash.includes('access_token')) {
-    const { data, error } = await sb.auth.getSession();
-    if (data?.session) {
-      currentUser = data.session.user;
-      await loadProfile();
-      updateNavForUser();
-      // Pulisci l'URL senza ricaricare la pagina
+// Inizializza sessione al caricamento
+async function initSession() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session?.user) {
+    currentUser = session.user;
+    await loadProfile();
+    updateNavForUser();
+    // Pulisci token dall'URL se presente
+    if (window.location.hash.includes('access_token')) {
       history.replaceState(null, '', window.location.pathname);
       showToast('✅ Email confermata! Sei loggato.', 'success');
     }
@@ -718,43 +725,22 @@ async function handleAuthCallback() {
 }
 
 sb.auth.onAuthStateChange(async (event, session) => {
-  // TOKEN_REFRESHED = refresh silenzioso, ignora
   if (event === 'TOKEN_REFRESHED') return;
-
-  currentUser = session?.user || null;
-  if (currentUser) {
-    await loadProfile();
-    updateNavForUser();
-    if (event === 'SIGNED_IN' || event === 'USER_UPDATED') closeModal();
-  } else {
-    currentProfile = null;
-    updateNavForGuest();
+  if (event === 'SIGNED_OUT') {
+    currentUser = null; currentProfile = null;
+    updateNavForGuest(); return;
   }
-});
-
-// Esegui subito al caricamento
-handleAuthCallback();
-
-// Recupera sessione esistente al caricamento pagina
-(async () => {
-  const { data: { session } } = await sb.auth.getSession();
-  if (session && !currentUser) {
+  if (event === 'SIGNED_IN' && session?.user) {
     currentUser = session.user;
     await loadProfile();
     updateNavForUser();
+    closeModal();
   }
-})();
+});
+
+initSession();
 
 
-async function handleForgotPassword() {
-  const email = document.getElementById('login-email').value.trim();
-  if (!email) { showError('login-error', 'Inserisci prima la tua email.'); return; }
-  const { error } = await sb.auth.resetPasswordForEmail(email, {
-    redirectTo: 'https://betstorm.it/'
-  });
-  if (error) showError('login-error', error.message);
-  else showToast('📧 Email per il reset inviata!', 'success');
-}
 async function loadProfile() {
   const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
   currentProfile = data;
@@ -812,9 +798,31 @@ async function handleLogin() {
   const email = document.getElementById('login-email').value.trim();
   const pass  = document.getElementById('login-password').value;
   if (!email || !pass) return showError('login-error', 'Inserisci email e password.');
-  const { error } = await sb.auth.signInWithPassword({ email, password: pass });
-  if (error) showError('login-error', error.message === 'Invalid login credentials' ? 'Email o password errati.' : error.message);
-  else showToast('✅ Accesso effettuato!', 'success');
+
+  const btn = document.querySelector('#modal-login-form .modal-submit');
+  btn.disabled = true;
+  btn.textContent = 'Accesso in corso...';
+
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+
+  btn.disabled = false;
+  btn.textContent = 'Accedi al tuo account';
+
+  if (error) {
+    if (error.message === 'Invalid login credentials') {
+      showError('login-error', 'Email o password errati.');
+    } else if (error.message.includes('Email not confirmed')) {
+      showError('login-error', '📧 Email non confermata. Controlla la tua casella e clicca il link di conferma.');
+    } else {
+      showError('login-error', error.message);
+    }
+  } else if (data?.session) {
+    currentUser = data.session.user;
+    await loadProfile();
+    updateNavForUser();
+    closeModal();
+    showToast('✅ Accesso effettuato!', 'success');
+  }
 }
 
 async function handleRegister() {
