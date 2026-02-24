@@ -692,13 +692,7 @@ const SITE_URL = 'https://betstorm.it';
 
 // Init Supabase
 const { createClient } = window.supabase;
-const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true
-  }
-});
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ============================================================
 // AUTH STATE
@@ -708,24 +702,11 @@ let currentProfile = null;
 let isAnnual = false;
 
 sb.auth.onAuthStateChange(async (event, session) => {
-  // Ignora token refresh silenzioso
-  if (event === 'TOKEN_REFRESHED') {
-    currentUser = session?.user || null;
-    return;
-  }
-  // Logout esplicito
-  if (event === 'SIGNED_OUT') {
-    currentUser = null;
-    currentProfile = null;
-    updateNavForGuest();
-    return;
-  }
   currentUser = session?.user || null;
   if (currentUser) {
     await loadProfile();
     updateNavForUser();
-    // Chiudi modal solo su login/signup esplicito
-    if (event === 'SIGNED_IN') closeModal();
+    closeModal();
   } else {
     currentProfile = null;
     updateNavForGuest();
