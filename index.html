@@ -701,21 +701,49 @@ let currentUser = null;
 let currentProfile = null;
 let isAnnual = false;
 
+// Gestisci callback conferma email (hash nell'URL)
+async function handleAuthCallback() {
+  const hash = window.location.hash;
+  if (hash && hash.includes('access_token')) {
+    const { data, error } = await sb.auth.getSession();
+    if (data?.session) {
+      currentUser = data.session.user;
+      await loadProfile();
+      updateNavForUser();
+      // Pulisci l'URL senza ricaricare la pagina
+      history.replaceState(null, '', window.location.pathname);
+      showToast('✅ Email confermata! Sei loggato.', 'success');
+    }
+  }
+}
+
 sb.auth.onAuthStateChange(async (event, session) => {
-  // TOKEN_REFRESHED = refresh silenzioso, non fare nulla di visibile
+  // TOKEN_REFRESHED = refresh silenzioso, ignora
   if (event === 'TOKEN_REFRESHED') return;
 
   currentUser = session?.user || null;
   if (currentUser) {
     await loadProfile();
     updateNavForUser();
-    // Chiudi modal SOLO su login/signup esplicito, non su refresh
     if (event === 'SIGNED_IN' || event === 'USER_UPDATED') closeModal();
   } else {
     currentProfile = null;
     updateNavForGuest();
   }
 });
+
+// Esegui subito al caricamento
+handleAuthCallback();
+
+// Recupera sessione esistente al caricamento pagina
+(async () => {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session && !currentUser) {
+    currentUser = session.user;
+    await loadProfile();
+    updateNavForUser();
+  }
+})();
 
 
 async function handleForgotPassword() {
