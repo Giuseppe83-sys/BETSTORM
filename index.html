@@ -661,6 +661,7 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:60px 24px
       <input type="email" class="modal-input" id="login-email" placeholder="Email">
       <input type="password" class="modal-input" id="login-password" placeholder="Password">
       <button class="btn btn-primary modal-submit" onclick="handleLogin()">Accedi al tuo account</button>
+      <p class="modal-footer-text"><a onclick="handleForgotPassword()">Password dimenticata?</a></p>
       <p class="modal-footer-text">Non hai un account? <a onclick="switchTab('register')">Registrati gratis →</a></p>
     </div>
     <div id="modal-register-form" style="display:none">
@@ -696,7 +697,7 @@ const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true,
-    storageKey: 'betstorm-auth',
+    
   }
 });
 
@@ -708,17 +709,40 @@ let currentProfile = null;
 let isAnnual = false;
 
 sb.auth.onAuthStateChange(async (event, session) => {
+  // Ignora token refresh silenzioso
+  if (event === 'TOKEN_REFRESHED') {
+    currentUser = session?.user || null;
+    return;
+  }
+  // Logout esplicito
+  if (event === 'SIGNED_OUT') {
+    currentUser = null;
+    currentProfile = null;
+    updateNavForGuest();
+    return;
+  }
   currentUser = session?.user || null;
   if (currentUser) {
     await loadProfile();
     updateNavForUser();
-    closeModal();
+    // Chiudi modal solo su login/signup esplicito
+    if (event === 'SIGNED_IN') closeModal();
   } else {
     currentProfile = null;
     updateNavForGuest();
   }
 });
 
+
+async function handleForgotPassword() {
+  const email = document.getElementById('login-email').value.trim();
+  if (!email) { showError('login-error', 'Inserisci prima la tua email.'); return; }
+  const { error } = await sb.auth.resetPasswordForEmail(email, {
+    redirectTo: 'https://betstorm.it/'
+  });
+  if (error) showError('login-error', error.message);
+  else showToast('📧 Email per il reset inviata!', 'success');
+}
 async function loadProfile() {
   const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
   currentProfile = data;
@@ -1064,7 +1088,14 @@ function analyzeCombo() {
 
     // Save to Supabase if logged in
     if (currentUser) {
-      sb.from('analyses').insert({ user_id: currentUser.id, events: eventResults, result_pct: pct });
+      try {
+        const { data: { session } } = await sb.auth.getSession();
+        if (session) {
+          await sb.from('analyses').insert({ user_id: currentUser.id, events: eventResults, result_pct: pct });
+        }
+      } catch(e) {
+        console.log('Sessione scaduta, analisi non salvata');
+      }
     }
 
     btn.disabled = false; spin.classList.remove('show'); icon.style.display = ''; txt.textContent = 'ANALIZZA ORA';
