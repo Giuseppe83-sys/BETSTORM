@@ -702,11 +702,15 @@ let currentProfile = null;
 let isAnnual = false;
 
 sb.auth.onAuthStateChange(async (event, session) => {
+  // TOKEN_REFRESHED = refresh silenzioso, non fare nulla di visibile
+  if (event === 'TOKEN_REFRESHED') return;
+
   currentUser = session?.user || null;
   if (currentUser) {
     await loadProfile();
     updateNavForUser();
-    closeModal();
+    // Chiudi modal SOLO su login/signup esplicito, non su refresh
+    if (event === 'SIGNED_IN' || event === 'USER_UPDATED') closeModal();
   } else {
     currentProfile = null;
     updateNavForGuest();
