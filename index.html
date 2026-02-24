@@ -1068,14 +1068,7 @@ function analyzeCombo() {
 
     // Save to Supabase if logged in
     if (currentUser) {
-      try {
-        const { data: { session } } = await sb.auth.getSession();
-        if (session) {
-          await sb.from('analyses').insert({ user_id: currentUser.id, events: eventResults, result_pct: pct });
-        }
-      } catch(e) {
-        console.log('Sessione scaduta, analisi non salvata');
-      }
+      sb.from('analyses').insert({ user_id: currentUser.id, events: eventResults, result_pct: pct });
     }
 
     btn.disabled = false; spin.classList.remove('show'); icon.style.display = ''; txt.textContent = 'ANALIZZA ORA';
