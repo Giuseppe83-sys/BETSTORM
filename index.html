@@ -697,8 +697,11 @@ const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true,
-    storageKey: 'sb-zvftggieqlxujjtotvwg-auth-token',
-    lock: (name, acquireTimeout, fn) => fn()
+    storage: {
+      getItem: (key) => { try { return localStorage.getItem(key); } catch(e) { return null; } },
+      setItem: (key, value) => { try { localStorage.setItem(key, value); } catch(e) {} },
+      removeItem: (key) => { try { localStorage.removeItem(key); } catch(e) {} }
+    }
   }
 });
 
@@ -725,17 +728,18 @@ async function initSession() {
 }
 
 sb.auth.onAuthStateChange(async (event, session) => {
-  if (event === 'TOKEN_REFRESHED') return;
-  if (event === 'SIGNED_OUT') {
-    currentUser = null; currentProfile = null;
-    updateNavForGuest(); return;
-  }
-  if (event === 'SIGNED_IN' && session?.user) {
+  if (event === 'SIGNED_IN' && session?.user && !currentUser) {
+    // Login esplicito appena avvenuto
     currentUser = session.user;
     await loadProfile();
     updateNavForUser();
     closeModal();
+  } else if (event === 'SIGNED_OUT') {
+    currentUser = null;
+    currentProfile = null;
+    updateNavForGuest();
   }
+  // Ignora tutto il resto (TOKEN_REFRESHED, INITIAL_SESSION, ecc.)
 });
 
 initSession();
