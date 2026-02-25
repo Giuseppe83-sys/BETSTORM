@@ -85,6 +85,18 @@ nav{position:sticky;top:0;z-index:100;padding:16px 32px;display:flex;align-items
 .empty-state{text-align:center;padding:40px 20px;color:var(--muted);font-size:.875rem}
 .empty-state i{font-size:2rem;margin-bottom:12px;display:block;opacity:.3}
 
+/* COMBO ANALYZER */
+.combo-event-row{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;padding:16px;display:grid;grid-template-columns:1fr 1fr 1.2fr auto;gap:10px;align-items:center}
+@media(max-width:600px){.combo-event-row{grid-template-columns:1fr 1fr;grid-template-rows:auto auto auto}}
+.combo-input{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.82rem;width:100%;outline:none;transition:border-color .2s}
+.combo-input:focus{border-color:rgba(0,230,118,.4)}
+.combo-input::placeholder{color:var(--muted)}
+.combo-select{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.82rem;width:100%;outline:none;cursor:pointer}
+.combo-select option{background:var(--bg2)}
+.btn-remove{background:rgba(255,82,82,.1);border:1px solid rgba(255,82,82,.15);color:var(--red);border-radius:8px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;flex-shrink:0}
+.btn-remove:hover{background:rgba(255,82,82,.25)}
+.event-num{font-family:'Syne',sans-serif;font-size:.75rem;color:var(--green);font-weight:700;background:rgba(0,230,118,.1);border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
 /* QUICK ANALYZE */
 .quick-form{display:flex;flex-direction:column;gap:12px}
 .quick-input{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.875rem;width:100%;outline:none;transition:border-color .2s}
@@ -187,6 +199,33 @@ nav{position:sticky;top:0;z-index:100;padding:16px 32px;display:flex;align-items
     </div>
   </div>
 
+  <!-- ANALISI COMBINATA -->
+  <div class="section-card" style="margin-bottom:32px">
+    <div class="section-title"><i class="fas fa-layer-group"></i> Analisi Combinata AI
+      <span style="margin-left:auto;font-size:.75rem;color:var(--muted);font-weight:400">Fino a 5 eventi</span>
+    </div>
+
+    <div id="combo-events" style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px"></div>
+
+    <button onclick="addComboEvent()" class="btn btn-outline" style="width:100%;justify-content:center;margin-bottom:20px">
+      <i class="fas fa-plus"></i> Aggiungi evento
+    </button>
+
+    <button onclick="runComboAnalysis()" class="btn btn-primary" id="combo-btn" style="width:100%;justify-content:center;padding:14px;font-size:1rem">
+      <i class="fas fa-bolt"></i> Analizza Combinata
+    </button>
+
+    <div id="combo-result" style="display:none;margin-top:20px;background:rgba(0,230,118,.05);border:1px solid rgba(0,230,118,.15);border-radius:14px;padding:24px;text-align:center">
+      <div style="font-family:'Syne',sans-serif;font-size:3rem;font-weight:800" id="combo-pct-display">—</div>
+      <div style="font-size:.85rem;color:var(--muted);margin-bottom:16px">Probabilità combinata stimata</div>
+      <div class="progress-track" style="height:8px;margin-bottom:16px">
+        <div class="progress-fill" id="combo-fill" style="background:linear-gradient(90deg,var(--green2),var(--green));width:0;transition:width 1.2s ease"></div>
+      </div>
+      <div style="font-size:.9rem;font-weight:500" id="combo-verdict"></div>
+      <div style="font-size:.78rem;color:var(--muted);margin-top:8px" id="combo-events-summary"></div>
+    </div>
+  </div>
+
   <!-- GRID -->
   <div class="grid-2">
 
@@ -194,33 +233,34 @@ nav{position:sticky;top:0;z-index:100;padding:16px 32px;display:flex;align-items
     <div class="section-card">
       <div class="section-title"><i class="fas fa-history"></i> Analisi recenti</div>
       <div class="analyses-list" id="analyses-list">
-        <div class="empty-state"><i class="fas fa-chart-bar"></i>Nessuna analisi ancora.<br>Torna alla home e prova il tool!</div>
+        <div class="empty-state"><i class="fas fa-chart-bar"></i>Nessuna analisi ancora.<br>Usa l'analisi combinata!</div>
       </div>
     </div>
 
-    <!-- ANALISI RAPIDA -->
+    <!-- STATS ACCOUNT -->
     <div class="section-card">
-      <div class="section-title"><i class="fas fa-bolt"></i> Analisi rapida</div>
-      <div class="quick-form">
-        <input type="text" class="quick-input" id="q-home" placeholder="Squadra Casa (es. Inter)">
-        <input type="text" class="quick-input" id="q-away" placeholder="Squadra Ospite (es. Milan)">
-        <select class="quick-select" id="q-bet">
-          <option value="0.62">Goal / Goal</option>
-          <option value="0.58">Over 2.5 Gol</option>
-          <option value="0.56">Under 2.5 Gol</option>
-          <option value="0.52">Vittoria Casa</option>
-          <option value="0.45">Vittoria Ospite</option>
-          <option value="0.72">Over 1.5 Gol</option>
-          <option value="0.74">Doppia Chance 1X</option>
-        </select>
-        <button class="btn btn-primary" onclick="quickAnalyze()" style="justify-content:center;padding:12px">
-          <i class="fas fa-chart-line"></i> Analizza
-        </button>
-        <div class="quick-result" id="quick-result">
-          <div class="quick-pct" id="quick-pct" style="color:var(--green)">—</div>
-          <div style="font-size:.8rem;color:var(--muted);margin-top:4px">Probabilità stimata</div>
-          <div class="progress-track"><div class="progress-fill" id="quick-fill" style="background:var(--green)"></div></div>
-          <div style="font-size:.78rem;color:var(--muted);margin-top:8px" id="quick-msg"></div>
+      <div class="section-title"><i class="fas fa-chart-pie"></i> Le tue statistiche</div>
+      <div style="display:flex;flex-direction:column;gap:16px" id="user-stats">
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:6px">
+            <span style="color:var(--muted)">Tasso successo stimato</span>
+            <span style="color:var(--green);font-weight:600" id="success-rate">—</span>
+          </div>
+          <div class="progress-track"><div class="progress-fill" id="success-fill" style="background:var(--green)"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:6px">
+            <span style="color:var(--muted)">Analisi questo mese</span>
+            <span style="font-weight:600" id="monthly-count">0</span>
+          </div>
+          <div class="progress-track"><div class="progress-fill" id="monthly-fill" style="background:var(--gold)"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:6px">
+            <span style="color:var(--muted)">Probabilità media</span>
+            <span style="font-weight:600" id="avg-pct">—</span>
+          </div>
+          <div class="progress-track"><div class="progress-fill" id="avg-fill" style="background:#7c4dff"></div></div>
         </div>
       </div>
     </div>
@@ -358,6 +398,9 @@ async function loadDashboard() {
 
   // Analisi recenti
   renderAnalyses(analyses);
+  updateUserStats(analyses);
+  // Aggiungi primo evento combo automaticamente
+  if (document.getElementById('combo-events').children.length === 0) addComboEvent();
 }
 
 function renderPlan(plan, profile) {
@@ -407,35 +450,167 @@ function renderAnalyses(analyses) {
   }).join('');
 }
 
-function quickAnalyze() {
-  const home = document.getElementById('q-home').value.trim();
-  const away = document.getElementById('q-away').value.trim();
-  const base = parseFloat(document.getElementById('q-bet').value);
+// ============================================================
+// ANALISI COMBINATA
+// ============================================================
+const BET_TYPES = [
+  { label: 'Goal / Goal', base: 0.62 },
+  { label: 'Over 2.5 Gol', base: 0.58 },
+  { label: 'Under 2.5 Gol', base: 0.52 },
+  { label: 'Over 1.5 Gol', base: 0.72 },
+  { label: 'Vittoria Casa', base: 0.54 },
+  { label: 'Vittoria Ospite', base: 0.44 },
+  { label: 'Doppia Chance 1X', base: 0.74 },
+  { label: 'Doppia Chance X2', base: 0.68 },
+  { label: 'Pareggio', base: 0.28 },
+  { label: 'Under 3.5 Gol', base: 0.76 },
+  { label: 'No Goal', base: 0.42 },
+  { label: 'Handicap Casa -1', base: 0.46 },
+];
 
-  if (!home || !away) { showToast('Inserisci entrambe le squadre', 'error'); return; }
+let comboCount = 0;
 
-  const nameFactor = ((home.length + away.length) % 7) / 70 - 0.05;
-  let prob = Math.min(0.92, Math.max(0.20, base + nameFactor));
-  const pct = Math.round(prob * 100);
-  const color = pct >= 70 ? 'var(--green)' : pct >= 50 ? 'var(--yellow)' : '#ff7043';
-  const gradient = pct >= 70 ? 'linear-gradient(90deg,var(--green2),var(--green))' : pct >= 50 ? 'linear-gradient(90deg,#f57f17,var(--yellow))' : 'linear-gradient(90deg,#bf360c,#ff7043)';
-  const msg = pct >= 70 ? '🔥 Alta probabilità — buona scelta!' : pct >= 50 ? '⚠️ Nella media — valuta attentamente' : '❌ Rischio elevato — considera alternative';
+function addComboEvent() {
+  const container = document.getElementById('combo-events');
+  if (container.children.length >= 5) {
+    showToast('Massimo 5 eventi per combinata', 'error');
+    return;
+  }
+  comboCount++;
+  const num = container.children.length + 1;
+  const betOptions = BET_TYPES.map((b,i) => `<option value="${i}">${b.label}</option>`).join('');
+  
+  const row = document.createElement('div');
+  row.className = 'combo-event-row';
+  row.dataset.id = comboCount;
+  row.innerHTML = `
+    <input type="text" class="combo-input" placeholder="Squadra Casa" data-field="home">
+    <input type="text" class="combo-input" placeholder="Squadra Ospite" data-field="away">
+    <select class="combo-select" data-field="bet">${betOptions}</select>
+    <button class="btn-remove" onclick="removeComboEvent(this)" title="Rimuovi"><i class="fas fa-times"></i></button>
+  `;
+  container.appendChild(row);
+  
+  // Focus sul primo input
+  row.querySelector('input').focus();
+}
 
-  const result = document.getElementById('quick-result');
-  const pctEl = document.getElementById('quick-pct');
-  const fill = document.getElementById('quick-fill');
-  const msgEl = document.getElementById('quick-msg');
+function removeComboEvent(btn) {
+  const row = btn.closest('.combo-event-row');
+  row.remove();
+  document.getElementById('combo-result').style.display = 'none';
+}
 
-  result.classList.add('show');
-  pctEl.textContent = pct + '%'; pctEl.style.color = color;
-  fill.style.background = gradient; fill.style.width = '0';
-  setTimeout(() => { fill.style.width = pct + '%'; }, 50);
-  msgEl.textContent = msg;
+function calcEventProb(home, away, betIdx) {
+  const base = BET_TYPES[betIdx]?.base || 0.55;
+  // Variazione pseudorandom basata sui nomi
+  const seed = (home + away).split('').reduce((a,c) => a + c.charCodeAt(0), 0);
+  const variation = ((seed % 20) - 10) / 100; // ±10%
+  return Math.min(0.92, Math.max(0.25, base + variation));
+}
+
+async function runComboAnalysis() {
+  const rows = document.querySelectorAll('.combo-event-row');
+  if (rows.length === 0) {
+    showToast('Aggiungi almeno un evento', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('combo-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analisi in corso...';
+
+  const events = [];
+  let combinedProb = 1;
+
+  rows.forEach(row => {
+    const home = row.querySelector('[data-field="home"]').value.trim() || 'Squadra A';
+    const away = row.querySelector('[data-field="away"]').value.trim() || 'Squadra B';
+    const betIdx = parseInt(row.querySelector('[data-field="bet"]').value);
+    const betLabel = BET_TYPES[betIdx].label;
+    const prob = calcEventProb(home, away, betIdx);
+    combinedProb *= prob;
+    events.push({ home, away, bet: betLabel, prob: Math.round(prob * 100) });
+  });
+
+  // Penalità combo per multipli
+  if (rows.length > 1) combinedProb *= Math.pow(0.97, rows.length - 1);
+  const finalPct = Math.round(combinedProb * 100);
+
+  // Simula elaborazione AI
+  await new Promise(r => setTimeout(r, 1200));
+
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fas fa-bolt"></i> Analizza Combinata';
+
+  showComboResult(finalPct, events);
 
   // Salva su Supabase
   if (currentUser) {
-    sb.from('analyses').insert({ user_id: currentUser.id, events: [{ home, away, bet: document.getElementById('q-bet').options[document.getElementById('q-bet').selectedIndex].text }], result_pct: pct });
+    sb.from('analyses').insert({
+      user_id: currentUser.id,
+      events: events,
+      result_pct: finalPct
+    }).then(() => {
+      // Aggiorna lista analisi
+      loadRecentAnalyses();
+    });
   }
+}
+
+function showComboResult(pct, events) {
+  const resultDiv = document.getElementById('combo-result');
+  const pctDisplay = document.getElementById('combo-pct-display');
+  const fill = document.getElementById('combo-fill');
+  const verdict = document.getElementById('combo-verdict');
+  const summary = document.getElementById('combo-events-summary');
+
+  resultDiv.style.display = 'block';
+
+  const color = pct >= 70 ? 'var(--green)' : pct >= 50 ? '#ffd700' : '#ff7043';
+  const icon = pct >= 70 ? '🔥' : pct >= 50 ? '⚠️' : '❌';
+  const msg = pct >= 70 ? 'Alta probabilità — ottima scelta!' : pct >= 50 ? 'Probabilità nella media — valuta con cautela' : 'Rischio elevato — considera selezioni più sicure';
+
+  pctDisplay.textContent = pct + '%';
+  pctDisplay.style.color = color;
+  fill.style.background = `linear-gradient(90deg, ${color}, ${color})`;
+  fill.style.width = '0';
+  setTimeout(() => { fill.style.width = pct + '%'; }, 100);
+  verdict.innerHTML = `${icon} ${msg}`;
+  verdict.style.color = color;
+  summary.innerHTML = events.map(e => 
+    `<span style="display:inline-block;margin:3px 6px;background:rgba(255,255,255,.05);padding:3px 10px;border-radius:20px;font-size:.75rem">${e.home} vs ${e.away}: ${e.bet} (${e.prob}%)</span>`
+  ).join('');
+
+  resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+async function loadRecentAnalyses() {
+  if (!currentUser) return;
+  const { data: analyses } = await sb.from('analyses').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false }).limit(10);
+  renderAnalyses(analyses);
+  updateUserStats(analyses);
+}
+
+function updateUserStats(analyses) {
+  if (!analyses || analyses.length === 0) return;
+  
+  // Analisi questo mese
+  const now = new Date();
+  const monthly = analyses.filter(a => new Date(a.created_at).getMonth() === now.getMonth()).length;
+  document.getElementById('monthly-count').textContent = monthly;
+  document.getElementById('monthly-fill').style.width = Math.min(100, (monthly / 30) * 100) + '%';
+
+  // Probabilità media
+  const avg = Math.round(analyses.reduce((s,a) => s + (a.result_pct || 0), 0) / analyses.length);
+  document.getElementById('avg-pct').textContent = avg + '%';
+  document.getElementById('avg-fill').style.width = avg + '%';
+
+  // Tasso successo stimato (analisi con prob > 65%)
+  const good = analyses.filter(a => (a.result_pct || 0) >= 65).length;
+  const rate = Math.round((good / analyses.length) * 100);
+  document.getElementById('success-rate').textContent = rate + '%';
+  document.getElementById('success-fill').style.width = rate + '%';
 }
 
 async function handleLogout() {
