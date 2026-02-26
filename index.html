@@ -673,18 +673,7 @@ const SITE_URL = 'https://betstorm.it';
 
 // Init Supabase
 const { createClient } = window.supabase;
-const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true,
-    storage: {
-      getItem: (key) => { try { return localStorage.getItem(key); } catch(e) { return null; } },
-      setItem: (key, value) => { try { localStorage.setItem(key, value); } catch(e) {} },
-      removeItem: (key) => { try { localStorage.removeItem(key); } catch(e) {} }
-    }
-  }
-});
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ============================================================
 // AUTH STATE
