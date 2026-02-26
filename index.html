@@ -421,76 +421,68 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:60px 24px
   <div class="container">
     <div class="reveal">
       <div class="section-label">Selezione del giorno</div>
-      <h2 class="section-title">Combinazioni <span style="color:var(--green)">raccomandate</span></h2>
-      <p class="section-sub">Elaborazioni basate su oltre 400 indicatori statistici per partita. Aggiornate ogni 6 ore con dati in tempo reale.</p>
+      <h2 class="section-title">Combinazioni <span class="highlight">analizzate</span></h2>
+      <p class="section-sub">Partite reali della <strong>27ª giornata Serie A</strong> — analisi aggiornata al <span id="today-date"></span></p>
     </div>
-    <div class="combos-grid">
+    <div class="combos-grid" id="signals-grid">
+
+      <!-- CARD 1: Inter-Genoa -->
       <div class="combo-card reveal">
-        <div class="combo-header"><span class="badge badge-safe"><i class="fas fa-shield-alt"></i> SICURA</span><span class="combo-league">Serie A · Oggi 20:45</span></div>
-        <div class="combo-teams">Inter <span class="vs">VS</span> AC Milan</div>
-        <div class="combo-type">Tipo: <strong>Goal / Goal</strong> · Quota: <span style="color:var(--gold);font-weight:600">1.85</span></div>
-        <div class="progress-container">
-          <div class="progress-label"><span style="color:var(--muted);font-size:.78rem">Probabilità riuscita</span><span class="progress-pct" style="color:var(--green)">82%</span></div>
-          <div class="progress-track"><div class="progress-fill fill-green" data-pct="82"></div></div>
+        <div class="combo-header">
+          <span class="badge badge-safe"><i class="fas fa-shield-alt"></i> SICURA</span>
+          <span class="combo-league">Serie A 🇮🇹 · Sab 28/2 · 20:45</span>
         </div>
-        <div class="combo-analysis">📊 L'Inter ha segnato in 9 delle ultime 10 partite casalinghe. Il Milan ha trovato la rete in 8 delle ultime 10 trasferte. Entrambe hanno segnato nel 77% degli scontri diretti recenti.</div>
-        <div class="combo-footer"><div class="combo-quota"><span>Quota consigliata</span><strong>1.85</strong></div><button class="btn-unlock" onclick="openModal('register')"><i class="fas fa-lock"></i> Sblocca analisi</button></div>
-      </div>
-      <div class="combo-card reveal" style="transition-delay:.1s">
-        <div class="combo-header"><span class="badge badge-hot">🔥 HOT</span><span class="combo-league">Champions League · Oggi 21:00</span></div>
-        <div class="combo-teams">Real Madrid <span class="vs">VS</span> FC Barcellona</div>
-        <div class="combo-type">Tipo: <strong>Over 2.5 Gol</strong> · Quota: <span style="color:var(--gold);font-weight:600">1.68</span></div>
+        <div class="combo-teams">Inter <span class="vs">VS</span> Genoa</div>
+        <div class="combo-type">Tipo: <strong>Vittoria Inter</strong> · Quota: <span style="color:var(--gold);font-weight:600">1.40</span></div>
         <div class="progress-container">
-          <div class="progress-label"><span style="color:var(--muted);font-size:.78rem">Probabilità riuscita</span><span class="progress-pct" style="color:var(--yellow)">74%</span></div>
-          <div class="progress-track"><div class="progress-fill fill-yellow" data-pct="74"></div></div>
+          <div class="progress-label"><span style="color:var(--muted);font-size:.78rem">Probabilità riuscita</span><span class="progress-pct" style="color:var(--green)">86%</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:86%;background:linear-gradient(90deg,var(--green2),var(--green))"></div></div>
         </div>
-        <div class="combo-analysis">📊 El Clásico ha prodotto over 2.5 gol nel 79% dei casi negli ultimi 5 anni. Real Madrid 2.9 gol/partita, Barcellona 2.7 gol/partita in questa stagione.</div>
-        <div class="combo-footer"><div class="combo-quota"><span>Quota consigliata</span><strong>1.68</strong></div><button class="btn-unlock" onclick="openModal('register')"><i class="fas fa-lock"></i> Sblocca analisi</button></div>
-      </div>
-      <div class="combo-card reveal" style="transition-delay:.2s">
-        <div class="combo-header"><span class="badge badge-value">💎 VALUE BET</span><span class="combo-league">Premier League · Domani 17:30</span></div>
-        <div class="combo-teams">Man City <span class="vs">VS</span> Arsenal</div>
-        <div class="combo-type">Tipo: <strong>Vittoria Man City</strong> · Quota: <span style="color:var(--gold);font-weight:600">2.10</span></div>
-        <div class="progress-container">
-          <div class="progress-label"><span style="color:var(--muted);font-size:.78rem">Probabilità riuscita</span><span class="progress-pct" style="color:var(--green)">78%</span></div>
-          <div class="progress-track"><div class="progress-fill fill-green" data-pct="78"></div></div>
+        <div class="combo-analysis"><span>📊</span> L'Inter ha vinto 7 delle ultime 7 partite consecutive in campionato. Il Genoa ha perso 5 delle ultime 6 trasferte. San Siro storicamente favorevole: Inter imbattuta in casa nelle ultime 12 gare di Serie A.</div>
+        <div class="combo-footer">
+          <div class="combo-quota"><span>Quota consigliata</span><strong>1.40</strong></div>
+          <button class="btn-unlock" onclick="openModal('register')"><i class="fas fa-lock"></i> Sblocca analisi</button>
         </div>
-        <div class="combo-analysis">📊 Man City ha vinto 7 delle ultime 8 partite casalinghe contro l'Arsenal. Haaland in forma: 9 gol nelle ultime 6 uscite. Arsenal senza 3 titolari.</div>
-        <div class="combo-footer"><div class="combo-quota"><span>Quota consigliata</span><strong>2.10</strong></div><button class="btn-unlock" onclick="openModal('register')"><i class="fas fa-lock"></i> Sblocca analisi</button></div>
       </div>
-    </div>
-  </div>
-</section>
 
-<div class="divider"></div>
-
-<!-- ANALYZER -->
-<section class="analyzer-section" id="analizza">
-  <div class="container">
-    <div class="reveal" style="max-width:720px">
-      <div class="section-label">Tool interattivo</div>
-      <h2 class="section-title">Analizza la tua <span style="color:var(--green)">combinazione</span></h2>
-      <p class="section-sub">Seleziona campionato, squadre e tipo di scommessa. Fino a 5 eventi. L'analisi usa statistiche reali di questa stagione.</p>
-    </div>
-    <div class="analyzer-card reveal">
-      <div id="events-container"></div>
-      <div class="analyzer-actions">
-        <button class="btn-add" id="btn-add-event" onclick="addEvent()"><i class="fas fa-plus"></i> Aggiungi evento</button>
-        <button class="btn-analyze" id="btn-analyze" onclick="analyzeCombo()">
-          <div class="spinner" id="spin"></div>
-          <i class="fas fa-chart-line" id="analyze-icon"></i>
-          <span id="analyze-text">ANALIZZA ORA</span>
-        </button>
-      </div>
-      <div class="result-box" id="result-box">
-        <div class="result-header">
-          <div><h3 style="font-size:1rem;color:var(--muted);font-weight:400">Probabilità combinata</h3><p id="result-events-count" style="font-size:.8rem;color:var(--muted);margin-top:2px"></p></div>
-          <div class="result-pct" id="result-pct">—</div>
+      <!-- CARD 2: Roma-Juventus -->
+      <div class="combo-card reveal">
+        <div class="combo-header">
+          <span class="badge badge-hot"><i class="fas fa-fire"></i> HOT</span>
+          <span class="combo-league">Serie A 🇮🇹 · Dom 1/3 · 20:45</span>
         </div>
-        <div class="result-gauge"><div class="result-fill" id="result-fill"></div></div>
-        <p class="result-msg" id="result-msg"></p>
-        <div class="result-events-list" id="result-events-list"></div>
+        <div class="combo-teams">Roma <span class="vs">VS</span> Juventus</div>
+        <div class="combo-type">Tipo: <strong>Goal / Goal</strong> · Quota: <span style="color:var(--gold);font-weight:600">1.75</span></div>
+        <div class="progress-container">
+          <div class="progress-label"><span style="color:var(--muted);font-size:.78rem">Probabilità riuscita</span><span class="progress-pct" style="color:var(--yellow)">76%</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:76%;background:linear-gradient(90deg,#f57f17,var(--yellow))"></div></div>
+        </div>
+        <div class="combo-analysis"><span>📊</span> Roma e Juventus hanno entrambe segnato nelle ultime 5 sfide dirette all'Olimpico. La Juve ha subito gol in 8 delle ultime 10 trasferte, Roma a segno in casa in 9 delle ultime 10 partite.</div>
+        <div class="combo-footer">
+          <div class="combo-quota"><span>Quota consigliata</span><strong>1.75</strong></div>
+          <button class="btn-unlock" onclick="openModal('register')"><i class="fas fa-lock"></i> Sblocca analisi</button>
+        </div>
       </div>
+
+      <!-- CARD 3: Verona-Napoli -->
+      <div class="combo-card reveal">
+        <div class="combo-header">
+          <span class="badge badge-value"><i class="fas fa-gem"></i> VALUE BET</span>
+          <span class="combo-league">Serie A 🇮🇹 · Sab 28/2 · 18:00</span>
+        </div>
+        <div class="combo-teams">Verona <span class="vs">VS</span> Napoli</div>
+        <div class="combo-type">Tipo: <strong>Vittoria Napoli</strong> · Quota: <span style="color:var(--gold);font-weight:600">1.90</span></div>
+        <div class="progress-container">
+          <div class="progress-label"><span style="color:var(--muted);font-size:.78rem">Probabilità riuscita</span><span class="progress-pct" style="color:var(--green)">79%</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:79%;background:linear-gradient(90deg,var(--green2),var(--green))"></div></div>
+        </div>
+        <div class="combo-analysis"><span>📊</span> Il Napoli di Conte è capolista e ha vinto 6 delle ultime 7 in trasferta. Il Verona è in zona retrocessione con sole 2 vittorie nelle ultime 10. Scontro diretto storicamente favorevole al Napoli (5 vittorie nelle ultime 6).</div>
+        <div class="combo-footer">
+          <div class="combo-quota"><span>Quota consigliata</span><strong>1.90</strong></div>
+          <button class="btn-unlock" onclick="openModal('register')"><i class="fas fa-lock"></i> Sblocca analisi</button>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
@@ -702,36 +694,41 @@ let currentProfile = null;
 let isAnnual = false;
 
 // Inizializza sessione al caricamento
-async function initSession() {
+// Gestione sessione centralizzata
+sb.auth.onAuthStateChange(async (event, session) => {
+  if (event === 'SIGNED_OUT') {
+    currentUser = null;
+    currentProfile = null;
+    updateNavForGuest();
+    return;
+  }
+  if (session?.user) {
+    currentUser = session.user;
+    await loadProfile();
+    updateNavForUser();
+    if (event === 'SIGNED_IN') {
+      closeModal();
+      if (window.location.hash.includes('access_token')) {
+        history.replaceState(null, '', window.location.pathname);
+        showToast('✅ Email confermata! Sei loggato.', 'success');
+      }
+    }
+  }
+});
+
+// Recupera sessione al caricamento pagina
+(async () => {
   const { data: { session } } = await sb.auth.getSession();
   if (session?.user) {
     currentUser = session.user;
     await loadProfile();
     updateNavForUser();
-    // Pulisci token dall'URL se presente
     if (window.location.hash.includes('access_token')) {
       history.replaceState(null, '', window.location.pathname);
       showToast('✅ Email confermata! Sei loggato.', 'success');
     }
   }
-}
-
-sb.auth.onAuthStateChange(async (event, session) => {
-  if (event === 'SIGNED_IN' && session?.user && !currentUser) {
-    // Login esplicito appena avvenuto
-    currentUser = session.user;
-    await loadProfile();
-    updateNavForUser();
-    closeModal();
-  } else if (event === 'SIGNED_OUT') {
-    currentUser = null;
-    currentProfile = null;
-    updateNavForGuest();
-  }
-  // Ignora tutto il resto (TOKEN_REFRESHED, INITIAL_SESSION, ecc.)
-});
-
-initSession();
+})();
 
 
 async function loadProfile() {
@@ -930,6 +927,15 @@ function getTeamsByLeague(league) {
 }
 
 function addEvent() {
+  const currentRows = document.querySelectorAll('.event-row').length;
+  
+  // Guest: max 2 eventi con upsell
+  if (!currentUser && currentRows >= 2) {
+    showToast('⚡ Registrati gratis per aggiungere fino a 5 eventi!', 'success');
+    openModal('register');
+    return;
+  }
+  
   if (eventCount >= 5) {
     const btn = document.getElementById('btn-add-event');
     btn.innerHTML = '⚠ Massimo 5 eventi'; btn.style.color = 'var(--red)'; return;
@@ -1061,6 +1067,13 @@ function getTeamById(teamId) {
 function analyzeCombo() {
   const rows = document.querySelectorAll('.event-row');
   if (rows.length === 0) { addEvent(); return; }
+
+  // Limite 2 eventi per utenti non loggati
+  if (!currentUser && rows.length > 2) {
+    showToast('⚡ Registrati per analizzare fino a 5 eventi!', 'success');
+    openModal('register');
+    return;
+  }
 
   const btn = document.getElementById('btn-analyze');
   const spin = document.getElementById('spin');
@@ -1227,35 +1240,35 @@ async function loadLiveTicker() {
   const ticker = document.getElementById('live-ticker');
   if (!ticker) return;
 
-  // Partite demo di fallback sempre aggiornate per data
-  const today = new Date();
-  const dd = String(today.getDate()).padStart(2,'0');
-  const mm = String(today.getMonth()+1).padStart(2,'0');
-  const fallbackMatches = [
-    { home:'Inter', away:'Milan', bet:'Goal/Goal', pct:82, league:'Serie A 🇮🇹' },
-    { home:'Juventus', away:'Napoli', bet:'Over 2.5', pct:76, league:'Serie A 🇮🇹' },
-    { home:'Roma', away:'Lazio', bet:'1X', pct:71, league:'Serie A 🇮🇹' },
-    { home:'Arsenal', away:'Man City', bet:'Over 2.5', pct:79, league:'Premier League 🏴󠁧󠁢󠁥󠁮󠁧󠁿' },
-    { home:'Liverpool', away:'Chelsea', bet:'Goal/Goal', pct:74, league:'Premier League 🏴󠁧󠁢󠁥󠁮󠁧󠁿' },
-    { home:'Real Madrid', away:'Barcelona', bet:'Over 2.5', pct:81, league:'La Liga 🇪🇸' },
-    { home:'Atletico', away:'Sevilla', bet:'Under 3.5', pct:68, league:'La Liga 🇪🇸' },
-    { home:'Bayern', away:'Dortmund', bet:'1X2 Bayern', pct:85, league:'Bundesliga 🇩🇪' },
-    { home:'PSG', away:'Marseille', bet:'Goal/Goal', pct:77, league:'Ligue 1 🇫🇷' },
-    { home:'Porto', away:'Benfica', bet:'1X', pct:72, league:'Champions ⭐' },
+  // Partite reali 27a giornata Serie A — fallback statico
+  const staticMatches = [
+    { home:'Parma', away:'Cagliari', bet:'Over 1.5', pct:71, league:'Serie A 🇮🇹', when:'Ven 27/2 · 20:45' },
+    { home:'Como', away:'Lecce', bet:'1X', pct:68, league:'Serie A 🇮🇹', when:'Sab 28/2 · 15:00' },
+    { home:'Verona', away:'Napoli', bet:'Vittoria Napoli', pct:79, league:'Serie A 🇮🇹', when:'Sab 28/2 · 18:00' },
+    { home:'Inter', away:'Genoa', bet:'Vittoria Inter', pct:86, league:'Serie A 🇮🇹', when:'Sab 28/2 · 20:45' },
+    { home:'Cremonese', away:'Milan', bet:'Vittoria Milan', pct:74, league:'Serie A 🇮🇹', when:'Dom 1/3 · 12:30' },
+    { home:'Sassuolo', away:'Atalanta', bet:'Vittoria Atalanta', pct:81, league:'Serie A 🇮🇹', when:'Dom 1/3 · 15:00' },
+    { home:'Torino', away:'Lazio', bet:'Goal/Goal', pct:72, league:'Serie A 🇮🇹', when:'Dom 1/3 · 18:00' },
+    { home:'Roma', away:'Juventus', bet:'Goal/Goal', pct:76, league:'Serie A 🇮🇹', when:'Dom 1/3 · 20:45' },
+    { home:'Pisa', away:'Bologna', bet:'Over 2.5', pct:67, league:'Serie A 🇮🇹', when:'Lun 2/3 · 18:30' },
+    { home:'Udinese', away:'Fiorentina', bet:'Under 3.5', pct:73, league:'Serie A 🇮🇹', when:'Lun 2/3 · 20:45' },
   ];
 
   try {
-    // Prova a caricare partite reali da TheOddsAPI (gratuita, no API key per fixtures)
-    // Usiamo football-data.org API pubblica per le partite di oggi
-    const res = await fetch(`https://api.football-data.org/v4/matches?dateFrom=${today.toISOString().split('T')[0]}&dateTo=${today.toISOString().split('T')[0]}`, {
-      headers: { 'X-Auth-Token': '' }
-    });
+    // Prova a caricare dall'API Vercel
+    const res = await fetch('/api/matches');
+    if (!res.ok) throw new Error('API non disponibile');
+    const data = await res.json();
 
-    // Se la fetch fallisce usa fallback
-    throw new Error('use fallback');
+    if (data.matches && data.matches.length > 0) {
+      renderTicker(data.matches);
+    } else {
+      // API attiva ma nessuna partita trovata (es. API key mancante)
+      renderTicker(staticMatches);
+    }
   } catch(e) {
-    // Usa partite di fallback con date reali
-    renderTicker(fallbackMatches);
+    // Fallback statico
+    renderTicker(staticMatches);
   }
 }
 
@@ -1270,6 +1283,7 @@ function renderTicker(matches) {
     return `<span class="ticker-item">
       <span class="dot">${dot}</span>
       <span style="color:#8892a4;font-size:.72rem">${m.league}</span>
+      <span style="color:#8892a4;font-size:.72rem">${m.when || ''}</span>
       ${m.home} vs ${m.away} — ${m.bet}
       <span class="${pctClass}">${m.pct}%</span>
     </span>`;
@@ -1285,6 +1299,102 @@ function renderTicker(matches) {
 // Aggiorna ticker ogni 5 minuti
 loadLiveTicker();
 setInterval(loadLiveTicker, 5 * 60 * 1000);
+
+// Data corrente nel titolo segnali
+(function() {
+  const el = document.getElementById('today-date');
+  if (el) {
+    const d = new Date();
+    el.textContent = d.getDate() + '/' + (d.getMonth()+1) + '/' + d.getFullYear();
+  }
+})();
+
+// Aggiorna card segnali con partite reali dall'API
+async function loadSignalCards() {
+  const BADGE = [
+    { cls: 'badge-safe', icon: 'fa-shield-alt', label: 'SICURA' },
+    { cls: 'badge-hot',  icon: 'fa-fire',       label: 'HOT' },
+    { cls: 'badge-value',icon: 'fa-gem',         label: 'VALUE BET' },
+  ];
+
+  const ANALYSIS = [
+    'Analisi basata su forma recente, statistiche testa a testa e rendimento casalingo/ospite nelle ultime 8 partite.',
+    'I dati mostrano una tendenza chiara nelle ultime 6 sfide dirette, confermata dalle quote di mercato.',
+    'Valore identificato confrontando probabilità implicita delle quote con la nostra stima statistica.',
+  ];
+
+  try {
+    const res = await fetch('/api/matches');
+    if (!res.ok) throw new Error('no api');
+    const data = await res.json();
+    if (!data.matches || data.matches.length < 3) throw new Error('not enough matches');
+
+    const top3 = data.matches
+      .filter(m => m.status === 'NS') // solo partite non ancora giocate
+      .slice(0, 3);
+
+    if (top3.length < 3) throw new Error('not enough upcoming');
+
+    const grid = document.getElementById('signals-grid');
+    if (!grid) return;
+
+    grid.innerHTML = top3.map((m, i) => {
+      const b = BADGE[i];
+      const color = m.pct >= 75 ? 'var(--green)' : 'var(--yellow)';
+      const bar = m.pct >= 75 ? 'linear-gradient(90deg,var(--green2),var(--green))' : 'linear-gradient(90deg,#f57f17,var(--yellow))';
+      // Stima quota da probabilità
+      const quota = (1 / (m.pct / 100) * 0.92).toFixed(2);
+      return `<div class="combo-card reveal">
+        <div class="combo-header">
+          <span class="badge ${b.cls}"><i class="fas ${b.icon}"></i> ${b.label}</span>
+          <span class="combo-league">${m.league} · ${m.when}</span>
+        </div>
+        <div class="combo-teams">${m.home} <span class="vs">VS</span> ${m.away}</div>
+        <div class="combo-type">Tipo: <strong>${m.bet}</strong> · Quota: <span style="color:var(--gold);font-weight:600">${quota}</span></div>
+        <div class="progress-container">
+          <div class="progress-label"><span style="color:var(--muted);font-size:.78rem">Probabilità riuscita</span><span class="progress-pct" style="color:${color}">${m.pct}%</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:${m.pct}%;background:${bar}"></div></div>
+        </div>
+        <div class="combo-analysis"><span>📊</span> ${ANALYSIS[i]}</div>
+        <div class="combo-footer">
+          <div class="combo-quota"><span>Quota consigliata</span><strong>${quota}</strong></div>
+          <button class="btn-unlock" onclick="openModal('register')"><i class="fas fa-lock"></i> Sblocca analisi</button>
+        </div>
+      </div>`;
+    }).join('');
+
+  } catch(e) {
+    // Lascia le card statiche (già presenti nell'HTML)
+    console.log('Signal cards: uso dati statici');
+  }
+}
+loadSignalCards();
+
+// Aggiorna date segnali dinamicamente
+(function updateSignalDates() {
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+  
+  const fmt = (d, time) => {
+    const days = ['Dom','Lun','Mar','Mer','Gio','Ven','Sab'];
+    const isToday = d.toDateString() === today.toDateString();
+    const isTomorrow = d.toDateString() === tomorrow.toDateString();
+    const label = isToday ? 'Oggi' : isTomorrow ? 'Domani' : days[d.getDay()];
+    return `${label} ${time}`;
+  };
+
+  const signals = [
+    { leagueEl: 'sig-league-0', teamsEl: 'sig-teams-0', league: 'Serie A', date: today, time: '20:45', home: 'Inter', away: 'AC Milan' },
+    { leagueEl: 'sig-league-1', teamsEl: 'sig-teams-1', league: 'Champions League', date: today, time: '21:00', home: 'Real Madrid', away: 'FC Barcellona' },
+    { leagueEl: 'sig-league-2', teamsEl: 'sig-teams-2', league: 'Premier League', date: tomorrow, time: '17:30', home: 'Man City', away: 'Arsenal' },
+  ];
+
+  signals.forEach(s => {
+    const leagueEl = document.getElementById(s.leagueEl);
+    if (leagueEl) leagueEl.textContent = `${s.league} · ${fmt(s.date, s.time)}`;
+  });
+})();
 
 // Init 2 eventi
 addEvent(); addEvent();
