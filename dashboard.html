@@ -313,18 +313,7 @@ nav{position:sticky;top:0;z-index:100;padding:16px 32px;display:flex;align-items
 const SUPABASE_URL = 'https://zvftggieqlxujjtotvwg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp2ZnRnZ2llcWx4dWpqdG90dndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE0OTQ3NjIsImV4cCI6MjA4NzA3MDc2Mn0.ZatmSARBUZpibKPTBNhpXj0c07Thzu8RvT4NjMR6lxg';
 const { createClient } = window.supabase;
-const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true,
-    storage: {
-      getItem: (key) => { try { return localStorage.getItem(key); } catch(e) { return null; } },
-      setItem: (key, value) => { try { localStorage.setItem(key, value); } catch(e) {} },
-      removeItem: (key) => { try { localStorage.removeItem(key); } catch(e) {} }
-    }
-  }
-});
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 let currentUser = null;
 let currentProfile = null;
