@@ -822,59 +822,70 @@ async function handleLogin() {
   btn.disabled = true;
   btn.textContent = 'Accesso in corso...';
 
-  const resetBtn = () => {
-    btn.disabled = false;
-    btn.textContent = 'Accedi al tuo account';
-  };
+  const resetBtn = () => { btn.disabled = false; btn.textContent = 'Accedi al tuo account'; };
 
   try {
-    // Timeout 8 secondi — se Supabase non risponde mostra errore
-    const timeout = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('timeout')), 8000)
-    );
+    // Login diretto via REST API — più affidabile del client JS
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 10000);
 
-    const loginCall = sb.auth.signInWithPassword({ email, password: pass });
-    const { data, error } = await Promise.race([loginCall, timeout]);
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+      },
+      body: JSON.stringify({ email, password: pass }),
+      signal: controller.signal
+    });
+    clearTimeout(timer);
 
-    resetBtn();
+    const data = await res.json();
 
-    if (error) {
-      if (error.message === 'Invalid login credentials') {
+    if (!res.ok || data.error) {
+      resetBtn();
+      const msg = data.error_description || data.message || data.error || '';
+      if (msg.includes('Invalid login') || msg.includes('invalid_grant')) {
         showError('login-error', 'Email o password errati.');
-      } else if (error.message.includes('Email not confirmed')) {
-        showError('login-error', '📧 Email non confermata. Clicca il link nella tua email.');
+      } else if (msg.includes('Email not confirmed') || msg.includes('not confirmed')) {
+        showError('login-error', '📧 Email non confermata. Controlla la tua casella.');
       } else {
-        showError('login-error', 'Errore: ' + error.message);
+        showError('login-error', 'Errore: ' + msg);
       }
-    } else if (data?.session) {
-      currentUser = data.session.user;
+      return;
+    }
+
+    // Login riuscito — salva sessione manualmente
+    if (data.access_token) {
+      // Usa il client Supabase per settare la sessione
+      const { error: sessionErr } = await sb.auth.setSession({
+        access_token: data.access_token,
+        refresh_token: data.refresh_token
+      });
+
+      resetBtn();
+
+      if (sessionErr) {
+        // Anche se setSession fallisce, abbiamo il token — impostiamo currentUser manualmente
+        currentUser = data.user;
+      } else {
+        const { data: { session } } = await sb.auth.getSession();
+        currentUser = session?.user || data.user;
+      }
+
       await loadProfile();
       updateNavForUser();
       closeModal();
       showToast('✅ Accesso effettuato!', 'success');
-    } else {
-      showError('login-error', 'Risposta inattesa. Riprova.');
     }
 
   } catch(e) {
     resetBtn();
-    if (e.message === 'timeout') {
-      // Timeout — molto probabilmente un'estensione Chrome sta bloccando
-      // Proviamo a recuperare la sessione direttamente
-      try {
-        const { data: { session } } = await sb.auth.getSession();
-        if (session?.user) {
-          currentUser = session.user;
-          await loadProfile();
-          updateNavForUser();
-          closeModal();
-          showToast('✅ Accesso effettuato!', 'success');
-          return;
-        }
-      } catch(_) {}
-      showError('login-error', '⚠️ Connessione lenta. Apri questa pagina in modalità incognita (Ctrl+Shift+N) e riprova, oppure disabilita le estensioni del browser.');
+    if (e.name === 'AbortError') {
+      showError('login-error', '⚠️ Server non risponde. Controlla la connessione e riprova.');
     } else {
-      showError('login-error', 'Errore di connessione. Riprova.');
+      showError('login-error', 'Errore di rete: ' + e.message);
     }
   }
 }
