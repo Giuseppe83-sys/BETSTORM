@@ -793,25 +793,60 @@ async function handleLogin() {
   btn.disabled = true;
   btn.textContent = 'Accesso in corso...';
 
-  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+  const resetBtn = () => {
+    btn.disabled = false;
+    btn.textContent = 'Accedi al tuo account';
+  };
 
-  btn.disabled = false;
-  btn.textContent = 'Accedi al tuo account';
+  try {
+    // Timeout 8 secondi — se Supabase non risponde mostra errore
+    const timeout = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('timeout')), 8000)
+    );
 
-  if (error) {
-    if (error.message === 'Invalid login credentials') {
-      showError('login-error', 'Email o password errati.');
-    } else if (error.message.includes('Email not confirmed')) {
-      showError('login-error', '📧 Email non confermata. Controlla la tua casella e clicca il link di conferma.');
+    const loginCall = sb.auth.signInWithPassword({ email, password: pass });
+    const { data, error } = await Promise.race([loginCall, timeout]);
+
+    resetBtn();
+
+    if (error) {
+      if (error.message === 'Invalid login credentials') {
+        showError('login-error', 'Email o password errati.');
+      } else if (error.message.includes('Email not confirmed')) {
+        showError('login-error', '📧 Email non confermata. Clicca il link nella tua email.');
+      } else {
+        showError('login-error', 'Errore: ' + error.message);
+      }
+    } else if (data?.session) {
+      currentUser = data.session.user;
+      await loadProfile();
+      updateNavForUser();
+      closeModal();
+      showToast('✅ Accesso effettuato!', 'success');
     } else {
-      showError('login-error', error.message);
+      showError('login-error', 'Risposta inattesa. Riprova.');
     }
-  } else if (data?.session) {
-    currentUser = data.session.user;
-    await loadProfile();
-    updateNavForUser();
-    closeModal();
-    showToast('✅ Accesso effettuato!', 'success');
+
+  } catch(e) {
+    resetBtn();
+    if (e.message === 'timeout') {
+      // Timeout — molto probabilmente un'estensione Chrome sta bloccando
+      // Proviamo a recuperare la sessione direttamente
+      try {
+        const { data: { session } } = await sb.auth.getSession();
+        if (session?.user) {
+          currentUser = session.user;
+          await loadProfile();
+          updateNavForUser();
+          closeModal();
+          showToast('✅ Accesso effettuato!', 'success');
+          return;
+        }
+      } catch(_) {}
+      showError('login-error', '⚠️ Connessione lenta. Apri questa pagina in modalità incognita (Ctrl+Shift+N) e riprova, oppure disabilita le estensioni del browser.');
+    } else {
+      showError('login-error', 'Errore di connessione. Riprova.');
+    }
   }
 }
 
