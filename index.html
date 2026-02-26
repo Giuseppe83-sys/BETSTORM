@@ -745,18 +745,37 @@ sb.auth.onAuthStateChange(async (event, session) => {
   }
 });
 
-// Recupera sessione al caricamento pagina
+// Recupera sessione al caricamento pagina — legge localStorage direttamente
 (async () => {
-  const { data: { session } } = await sb.auth.getSession();
-  if (session?.user) {
-    currentUser = session.user;
-    await loadProfile();
-    updateNavForUser();
-    if (window.location.hash.includes('access_token')) {
-      history.replaceState(null, '', window.location.pathname);
-      showToast('✅ Email confermata! Sei loggato.', 'success');
+  try {
+    // Prima prova lettura diretta dal localStorage (più veloce, no LockManager)
+    const sessionKey = `sb-${SUPABASE_URL.split('//')[1].split('.')[0]}-auth-token`;
+    const raw = localStorage.getItem(sessionKey);
+    if (raw) {
+      const saved = JSON.parse(raw);
+      // Controlla che il token non sia scaduto
+      if (saved?.user && saved?.expires_at > Math.floor(Date.now() / 1000)) {
+        currentUser = saved.user;
+        await loadProfile();
+        updateNavForUser();
+        return;
+      }
     }
-  }
+  } catch(_) {}
+
+  // Fallback: usa il client Supabase
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session?.user) {
+      currentUser = session.user;
+      await loadProfile();
+      updateNavForUser();
+      if (window.location.hash.includes('access_token')) {
+        history.replaceState(null, '', window.location.pathname);
+        showToast('✅ Email confermata! Sei loggato.', 'success');
+      }
+    }
+  } catch(_) {}
 })();
 
 
@@ -856,24 +875,24 @@ async function handleLogin() {
       return;
     }
 
-    // Login riuscito — salva sessione manualmente
+    // Login riuscito — salva token nel localStorage manualmente (bypassa LockManager)
     if (data.access_token) {
-      // Usa il client Supabase per settare la sessione
-      const { error: sessionErr } = await sb.auth.setSession({
+      // Salva sessione direttamente nel localStorage senza passare dal client JS
+      const sessionKey = `sb-${SUPABASE_URL.split('//')[1].split('.')[0]}-auth-token`;
+      const sessionData = {
         access_token: data.access_token,
-        refresh_token: data.refresh_token
-      });
+        refresh_token: data.refresh_token,
+        expires_at: Math.floor(Date.now() / 1000) + (data.expires_in || 3600),
+        expires_in: data.expires_in || 3600,
+        token_type: 'bearer',
+        user: data.user
+      };
+      try { localStorage.setItem(sessionKey, JSON.stringify(sessionData)); } catch(_) {}
 
       resetBtn();
 
-      if (sessionErr) {
-        // Anche se setSession fallisce, abbiamo il token — impostiamo currentUser manualmente
-        currentUser = data.user;
-      } else {
-        const { data: { session } } = await sb.auth.getSession();
-        currentUser = session?.user || data.user;
-      }
-
+      // Imposta currentUser direttamente dai dati ricevuti
+      currentUser = data.user;
       await loadProfile();
       updateNavForUser();
       closeModal();
