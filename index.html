@@ -417,6 +417,46 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:60px 24px
 </section>
 
 <!-- COMBINAZIONI -->
+<!-- ANALYZER -->
+<section class="analyzer-section" id="analizza">
+  <div class="container">
+    <div class="reveal" style="text-align:center;margin-bottom:40px">
+      <div class="section-label">Tool gratuito</div>
+      <h2 class="section-title">Analisi <span class="highlight">rapida</span></h2>
+      <p class="section-sub">Inserisci fino a <strong>2 eventi</strong> e ottieni la probabilità combinata.
+        <span style="color:var(--green)">Registrati gratis</span> per analizzarne fino a 5.</p>
+    </div>
+    <div class="analyzer-card reveal">
+      <div id="events-container"></div>
+      <div class="analyzer-actions">
+        <button class="btn btn-outline" id="btn-add-event" onclick="addEvent()">
+          <i class="fas fa-plus"></i> Aggiungi evento
+        </button>
+        <button class="btn-analyze" id="btn-analyze" onclick="analyzeCombo()">
+          <div class="spinner" id="spin"></div>
+          <i class="fas fa-bolt" id="analyze-icon"></i>
+          <span id="analyze-text">ANALIZZA ORA</span>
+        </button>
+      </div>
+      <div class="result-box" id="result-box">
+        <div class="result-pct" id="result-pct"></div>
+        <div class="result-label">Probabilità combinata stimata</div>
+        <div class="result-bar"><div class="result-fill" id="result-fill"></div></div>
+        <div class="result-events" id="result-events"></div>
+        <div class="result-msg" id="result-msg"></div>
+        <!-- Upsell per utenti non loggati -->
+        <div id="upsell-box" style="display:none;margin-top:20px;padding:16px;background:rgba(0,230,118,.06);border:1px solid rgba(0,230,118,.2);border-radius:12px;text-align:center">
+          <div style="font-weight:600;margin-bottom:8px">⚡ Vuoi analizzare fino a 5 eventi?</div>
+          <div style="font-size:.85rem;color:var(--muted);margin-bottom:12px">Registrati gratis e sblocca l'analisi combinata avanzata</div>
+          <button class="btn btn-primary" onclick="openModal('register')" style="padding:10px 28px">Registrati gratis →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
 <section class="combos-section" id="combinazioni">
   <div class="container">
     <div class="reveal">
@@ -1146,26 +1186,25 @@ function analyzeCombo() {
 }
 
 function showResult(pct, events) {
-  const box  = document.getElementById('result-box');
+  const box   = document.getElementById('result-box');
   const pctEl = document.getElementById('result-pct');
-  const fill = document.getElementById('result-fill');
-  const msg  = document.getElementById('result-msg');
-  const count = document.getElementById('result-events-count');
-  const list  = document.getElementById('result-events-list');
+  const fill  = document.getElementById('result-fill');
+  const msg   = document.getElementById('result-msg');
+  const evDiv = document.getElementById('result-events');
+  const upsell = document.getElementById('upsell-box');
 
   box.classList.add('visible');
-  count.textContent = `${events.length} evento${events.length > 1 ? 'i' : ''} analizzato${events.length > 1 ? 'i' : ''}`;
 
   let color, gradient, message;
   if (pct >= 70) {
     color = 'var(--green)'; gradient = 'linear-gradient(90deg,var(--green2),var(--green))';
-    message = `<strong>Combinazione ad alto potenziale!</strong> Con ${events.length} event${events.length>1?'i':'o'}, la tua schedina raggiunge il <strong>${pct}%</strong> di probabilità statistica. Le condizioni sono favorevoli.`;
+    message = `🔥 <strong>Alta probabilità!</strong> La tua combinata raggiunge il <strong>${pct}%</strong>. Condizioni favorevoli.`;
   } else if (pct >= 50) {
     color = 'var(--yellow)'; gradient = 'linear-gradient(90deg,#f57f17,var(--yellow))';
-    message = `<strong>Combinazione nella media.</strong> La probabilità combinata è del <strong>${pct}%</strong>. Potrebbe valere la pena con quote alte. Considera di ridurre gli eventi per aumentare la probabilità.`;
+    message = `⚠️ <strong>Nella media.</strong> Probabilità combinata del <strong>${pct}%</strong>. Valuta con cautela.`;
   } else {
     color = '#ff7043'; gradient = 'linear-gradient(90deg,#bf360c,#ff7043)';
-    message = `<strong>Attenzione: combinazione rischiosa.</strong> La probabilità combinata scende al <strong>${pct}%</strong>. Ti suggeriamo di ridurre gli eventi o scegliere tipi di scommessa più probabili.`;
+    message = `❌ <strong>Rischio elevato.</strong> Probabilità del <strong>${pct}%</strong>. Considera scommesse più sicure.`;
   }
 
   pctEl.textContent = pct + '%'; pctEl.style.color = color;
@@ -1173,13 +1212,17 @@ function showResult(pct, events) {
   setTimeout(() => { fill.style.width = pct + '%'; }, 100);
   msg.innerHTML = message;
 
-  // Event breakdown
-  list.innerHTML = events.map(e => `
-    <div class="result-event-item">
-      <span style="color:var(--text);font-weight:500">${e.home} vs ${e.away}</span>
-      <span style="color:var(--muted)">${e.bet}</span>
-      <span class="ev-pct" style="color:${e.prob>=70?'var(--green)':e.prob>=50?'var(--yellow)':'#ff7043'}">${e.prob}%</span>
-    </div>`).join('');
+  if (evDiv) {
+    evDiv.innerHTML = events.map(e => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:.83rem">
+        <span style="color:var(--text);font-weight:500">${e.home} vs ${e.away}</span>
+        <span style="color:var(--muted)">${e.bet}</span>
+        <span style="color:${e.prob>=70?'var(--green)':e.prob>=50?'var(--yellow)':'#ff7043'};font-weight:600">${e.prob}%</span>
+      </div>`).join('');
+  }
+
+  // Mostra upsell solo per utenti non loggati
+  if (upsell) upsell.style.display = !currentUser ? 'block' : 'none';
 }
 
 // ============================================================
