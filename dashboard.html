@@ -319,24 +319,37 @@ let currentUser = null;
 let currentProfile = null;
 
 async function init() {
+  const showNotLogged = () => {
+    document.getElementById('loading-state').style.display = 'none';
+    document.getElementById('not-logged').style.display = 'block';
+  };
+
   try {
-    // Recupera sessione dal localStorage
-    const { data: { session }, error } = await sb.auth.getSession();
-    
-    if (error) throw error;
-    
+    // Prima legge localStorage direttamente (no LockManager)
+    const sessionKey = `sb-${SUPABASE_URL.split('//')[1].split('.')[0]}-auth-token`;
+    const raw = localStorage.getItem(sessionKey);
+    if (raw) {
+      const saved = JSON.parse(raw);
+      if (saved?.user && saved?.expires_at > Math.floor(Date.now() / 1000)) {
+        currentUser = saved.user;
+        await loadDashboard();
+        return;
+      }
+    }
+  } catch(_) {}
+
+  // Fallback: client Supabase
+  try {
+    const { data: { session } } = await sb.auth.getSession();
     if (session?.user) {
       currentUser = session.user;
       await loadDashboard();
     } else {
-      // Nessuna sessione trovata
-      document.getElementById('loading-state').style.display = 'none';
-      document.getElementById('not-logged').style.display = 'block';
+      showNotLogged();
     }
   } catch(e) {
     console.error('Init error:', e);
-    document.getElementById('loading-state').style.display = 'none';
-    document.getElementById('not-logged').style.display = 'block';
+    showNotLogged();
   }
 }
 
