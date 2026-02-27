@@ -1,9 +1,12 @@
+// Guard: evita errori se caricato più volte
+if (typeof BETSTORM_TEAMS === 'undefined') {
+
 // ============================================================
 // BETSTORM — Database Squadre & Statistiche
 // Aggiornato: 2025
 // ============================================================
 
-const BETSTORM_TEAMS = {
+var BETSTORM_TEAMS = {
 
   "Serie A": [
     { id: "atalanta",    name: "Atalanta",          short: "ATA", form: [1,1,1,0,1], goals_scored_avg: 2.1, goals_conceded_avg: 1.0, home_win_pct: 0.62, away_win_pct: 0.44 },
@@ -95,7 +98,7 @@ const BETSTORM_TEAMS = {
 };
 
 // Tipo scommesse con fattori statistici
-const BET_TYPES = [
+var BET_TYPES = [
   { value: "1x2_1",    label: "1X2 — Vittoria Casa",     factor: (h,a) => h.home_win_pct },
   { value: "1x2_x",    label: "1X2 — Pareggio",          factor: (h,a) => 0.28 - Math.abs(h.home_win_pct - a.away_win_pct) * 0.2 },
   { value: "1x2_2",    label: "1X2 — Vittoria Ospite",   factor: (h,a) => a.away_win_pct },
@@ -121,4 +124,7 @@ function calculateProbability(homeTeam, awayTeam, betTypeValue) {
   if (betTypeValue === '1x2_1') prob += (homeFormScore - 0.5) * 0.08;
   if (betTypeValue === '1x2_2') prob += (awayFormScore - 0.5) * 0.08;
   return Math.min(0.95, Math.max(0.10, prob));
+}
+
+
 }
