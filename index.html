@@ -99,7 +99,13 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:18px 40px;display:fl
 .btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 35px rgba(0,230,118,.5)}
 .btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#070a0f;font-weight:700;box-shadow:0 0 20px rgba(255,215,0,.25)}
 .btn-gold:hover{transform:translateY(-2px);box-shadow:0 0 35px rgba(255,215,0,.4)}
-.hamburger{display:none;cursor:pointer;color:var(--text);font-size:1.4rem;background:none;border:none}
+.hamburger{display:none;cursor:pointer;color:var(--text);font-size:1.4rem;background:none;border:none;padding:4px}
+.mobile-nav{display:none;position:fixed;inset:0;background:rgba(7,10,15,.97);z-index:999;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+.mobile-nav.open{display:flex}
+.mobile-nav a{color:var(--text);text-decoration:none;font-size:1.4rem;font-weight:600;padding:16px 32px;width:100%;text-align:center;border-bottom:1px solid rgba(255,255,255,.05);transition:color .2s}
+.mobile-nav a:hover{color:var(--green)}
+.mobile-nav .btn{margin:16px 32px;width:calc(100% - 64px);justify-content:center}
+.mobile-nav-close{position:absolute;top:20px;right:20px;background:none;border:none;color:var(--text);font-size:1.5rem;cursor:pointer;padding:8px}
 
 /* TICKER */
 .ticker-wrap{background:rgba(0,230,118,.05);border-bottom:1px solid rgba(0,230,118,.1);padding:10px 0;overflow:hidden;white-space:nowrap;margin-top:72px}
@@ -341,26 +347,119 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:60px 24px
 .toast.success{border-color:rgba(0,230,118,.3);color:var(--green)}
 .toast.error{border-color:rgba(255,82,82,.3);color:var(--red)}
 
+/* ============================================================
+   TABLET (max 768px)
+   ============================================================ */
 @media(max-width:768px){
-  nav{padding:16px 20px}
+  /* NAV */
+  nav{padding:14px 16px}
   .nav-links,.nav-cta{display:none}
   .hamburger{display:block}
-  .hero-stats{gap:24px}
+
+  /* HERO */
+  .hero{padding:110px 16px 60px}
+  .hero h1{font-size:2.2rem}
+  .hero-sub{font-size:1rem}
+  .hero-stats{gap:20px;flex-wrap:wrap}
   .stat-sep{display:none}
+  .hero-buttons{flex-direction:column;align-items:stretch;padding:0 16px}
+  .hero-buttons .btn{width:100%;justify-content:center}
+
+  /* TICKER */
+  .ticker-item{font-size:.75rem;margin-right:40px}
+
+  /* ANALYZER */
+  .analyzer-card{padding:20px}
   .event-row{grid-template-columns:1fr 1fr;grid-template-rows:auto auto auto}
   .event-row>*:nth-child(1){grid-column:1/-1}
-  .btn-remove{grid-column:2;justify-self:end;margin-top:0}
-  .analyzer-card{padding:20px}
-  .footer-grid{grid-template-columns:1fr 1fr;gap:32px}
-  .footer-brand{grid-column:1/-1}
+  .btn-remove{grid-column:2;justify-self:end}
+  .analyzer-actions{flex-direction:column;gap:10px}
+  .analyzer-actions .btn{width:100%;justify-content:center}
+  .btn-analyze{width:100%;justify-content:center}
+
+  /* SEGNALI */
+  .combos-grid{grid-template-columns:1fr;gap:16px}
+  .combo-card{padding:20px}
+
+  /* PRICING */
+  .pricing-grid{grid-template-columns:1fr;max-width:400px;margin:0 auto}
   .pricing-card.popular{transform:none}
+
+  /* MODAL */
+  .modal{padding:28px 20px;margin:16px;max-width:calc(100vw - 32px)}
+
+  /* SOCIAL */
+  .reviews-grid{grid-template-columns:1fr}
+
+  /* FAQ */
+  .faq-item{padding:16px}
+
+  /* FOOTER */
+  .footer-grid{grid-template-columns:1fr 1fr;gap:24px}
+  .footer-brand{grid-column:1/-1}
+
+  /* SECTION PADDING */
+  .analyzer-section,.combos-section,.pricing-section,.social-section,.faq-section{padding:60px 0}
+  .container{padding:0 16px}
 }
+
+/* ============================================================
+   MOBILE (max 480px)
+   ============================================================ */
 @media(max-width:480px){
-  .hero h1{font-size:2rem}
-  .footer-grid{grid-template-columns:1fr}
-  .hero-buttons{flex-direction:column;align-items:center}
+  /* NAV */
+  nav{padding:12px 14px}
+  .logo{font-size:1.1rem}
+
+  /* HERO */
+  .hero{padding:90px 14px 50px}
+  .hero h1{font-size:1.75rem;line-height:1.15}
+  .hero-sub{font-size:.9rem}
+  .hero-stats{flex-direction:column;align-items:center;gap:12px}
+  .stat-item{flex-direction:row;gap:8px}
+
+  /* TICKER */
+  .ticker-item{font-size:.7rem;gap:5px;margin-right:30px}
+
+  /* ANALYZER */
   .event-row{grid-template-columns:1fr}
-  .btn-remove{margin-top:0;align-self:flex-end}
+  .btn-remove{align-self:flex-end;margin-top:-4px}
+  .result-pct{font-size:3rem}
+
+  /* SEGNALI */
+  .combo-teams{font-size:1.1rem}
+  .combo-footer{flex-direction:column;gap:10px;align-items:flex-start}
+  .btn-unlock{width:100%;justify-content:center}
+
+  /* PRICING */
+  .pricing-card{padding:24px 18px}
+  .price{font-size:2.5rem}
+  .pricing-features li{font-size:.85rem}
+
+  /* MODAL */
+  .modal{padding:24px 16px;border-radius:16px}
+  .modal h3{font-size:1.3rem}
+  .modal-input{padding:11px 14px;font-size:.9rem}
+  .modal-submit{padding:13px}
+
+  /* MOBILE MENU */
+  .mobile-menu{padding:20px 14px}
+  .mobile-menu li a{font-size:1rem;padding:12px 0}
+
+  /* SECTION TITLES */
+  .section-title{font-size:1.6rem}
+  .section-label{font-size:.7rem}
+
+  /* FAQ */
+  .faq-question{font-size:.9rem}
+
+  /* FOOTER */
+  .footer-grid{grid-template-columns:1fr;gap:20px}
+  .footer-brand{grid-column:1}
+  .footer-bottom{flex-direction:column;gap:8px;text-align:center}
+
+  /* TOAST */
+  .toast{left:16px;right:16px;bottom:16px;max-width:none}
 }
 </style>
 </head>
@@ -384,6 +483,20 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:60px 24px
   </div>
   <button class="hamburger" onclick="toggleMobileMenu()"><i class="fas fa-bars"></i></button>
 </nav>
+
+<!-- MOBILE NAV OVERLAY -->
+<div class="mobile-nav" id="mobile-nav">
+  <button class="mobile-nav-close" onclick="closeMobileMenu()"><i class="fas fa-times"></i></button>
+  <a href="#analizza" onclick="closeMobileMenu()">Analizza</a>
+  <a href="#combinazioni" onclick="closeMobileMenu()">Segnali</a>
+  <a href="#piani" onclick="closeMobileMenu()">Piani</a>
+  <a href="#faq" onclick="closeMobileMenu()">FAQ</a>
+  <div id="mobile-nav-cta" style="width:100%;padding:0 24px;margin-top:8px">
+    <button class="btn btn-primary" onclick="openModal();closeMobileMenu()" style="width:100%;justify-content:center">
+      <i class="fas fa-bolt"></i> Inizia gratis
+    </button>
+  </div>
+</div>
 
 <!-- TICKER -->
 <div class="ticker-wrap">
@@ -723,60 +836,110 @@ let currentProfile = null;
 let isAnnual = false;
 
 // Inizializza sessione al caricamento
-// Gestione sessione centralizzata
-sb.auth.onAuthStateChange(async (event, session) => {
+// ============================================================
+// GESTIONE SESSIONE — sistema custom che bypassa LockManager
+// ============================================================
+
+const BS_SESSION_KEY = 'betstorm_session';
+const BS_LASTSEEN_KEY = 'betstorm_last_seen';
+const BS_GRACE_MS = 10 * 60 * 1000; // 10 minuti di grazia
+
+function bsSaveSession(userData, accessToken, refreshToken, expiresIn) {
+  const session = {
+    user: userData,
+    access_token: accessToken,
+    refresh_token: refreshToken,
+    // Sessione valida per 7 giorni (token Supabase dura 1h ma noi la rinnoviamo)
+    expires_at: Date.now() + 7 * 24 * 60 * 60 * 1000
+  };
+  try { localStorage.setItem(BS_SESSION_KEY, JSON.stringify(session)); } catch(_) {}
+  bsUpdateLastSeen();
+}
+
+function bsUpdateLastSeen() {
+  try { localStorage.setItem(BS_LASTSEEN_KEY, Date.now().toString()); } catch(_) {}
+}
+
+function bsClearSession() {
+  try {
+    localStorage.removeItem(BS_SESSION_KEY);
+    localStorage.removeItem(BS_LASTSEEN_KEY);
+    // Pulisci anche chiave Supabase nativa
+    const sbKey = `sb-${SUPABASE_URL.split('//')[1].split('.')[0]}-auth-token`;
+    localStorage.removeItem(sbKey);
+  } catch(_) {}
+}
+
+function bsGetSession() {
+  try {
+    const raw = localStorage.getItem(BS_SESSION_KEY);
+    if (!raw) return null;
+    const session = JSON.parse(raw);
+    if (!session?.user) return null;
+
+    // Controlla scadenza sessione (7 giorni)
+    if (Date.now() > session.expires_at) {
+      bsClearSession();
+      return null;
+    }
+
+    // Controlla grazia 10 minuti dopo ultima visita
+    const lastSeen = parseInt(localStorage.getItem(BS_LASTSEEN_KEY) || '0');
+    if (lastSeen && Date.now() - lastSeen > BS_GRACE_MS) {
+      // Più di 10 minuti fa — ma la sessione è ancora valida (7 giorni)
+      // Mantieni la sessione, aggiorna lastSeen
+    }
+
+    return session;
+  } catch(_) { return null; }
+}
+
+// Aggiorna lastSeen ogni 30 secondi mentre l'utente è sulla pagina
+setInterval(bsUpdateLastSeen, 30 * 1000);
+
+// Aggiorna lastSeen quando l'utente chiude/cambia tab
+window.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') bsUpdateLastSeen();
+});
+
+// onAuthStateChange solo per SIGNED_OUT esplicito
+sb.auth.onAuthStateChange((event) => {
   if (event === 'SIGNED_OUT') {
+    bsClearSession();
     currentUser = null;
     currentProfile = null;
     updateNavForGuest();
-    return;
-  }
-  if (session?.user) {
-    currentUser = session.user;
-    await loadProfile();
-    updateNavForUser();
-    if (event === 'SIGNED_IN') {
-      closeModal();
-      if (window.location.hash.includes('access_token')) {
-        history.replaceState(null, '', window.location.pathname);
-        showToast('✅ Email confermata! Sei loggato.', 'success');
-      }
-    }
   }
 });
 
-// Recupera sessione al caricamento pagina — legge localStorage direttamente
+// Carica sessione al boot
 (async () => {
-  try {
-    // Prima prova lettura diretta dal localStorage (più veloce, no LockManager)
-    const sessionKey = `sb-${SUPABASE_URL.split('//')[1].split('.')[0]}-auth-token`;
-    const raw = localStorage.getItem(sessionKey);
-    if (raw) {
-      const saved = JSON.parse(raw);
-      // Controlla che il token non sia scaduto
-      if (saved?.user && saved?.expires_at > Math.floor(Date.now() / 1000)) {
-        currentUser = saved.user;
-        await loadProfile();
-        updateNavForUser();
-        return;
-      }
+  const session = bsGetSession();
+  if (session) {
+    currentUser = session.user;
+    bsUpdateLastSeen();
+    await loadProfile();
+    updateNavForUser();
+    if (window.location.hash.includes('access_token')) {
+      history.replaceState(null, '', window.location.pathname);
+      showToast('✅ Email confermata! Sei loggato.', 'success');
     }
-  } catch(_) {}
+    return;
+  }
 
-  // Fallback: usa il client Supabase
+  // Fallback: prova Supabase nativo
   try {
-    const { data: { session } } = await sb.auth.getSession();
-    if (session?.user) {
-      currentUser = session.user;
+    const { data: { session: sbSession } } = await sb.auth.getSession();
+    if (sbSession?.user) {
+      bsSaveSession(sbSession.user, sbSession.access_token, sbSession.refresh_token, 3600);
+      currentUser = sbSession.user;
       await loadProfile();
       updateNavForUser();
-      if (window.location.hash.includes('access_token')) {
-        history.replaceState(null, '', window.location.pathname);
-        showToast('✅ Email confermata! Sei loggato.', 'success');
-      }
     }
   } catch(_) {}
 })();
+
+
 
 
 async function loadProfile() {
@@ -796,6 +959,16 @@ function updateNavForUser() {
       ${currentUser.email.split('@')[0]}
       <span class="plan-chip">${plan.toUpperCase()}</span>
     </button>`;
+  // Aggiorna mobile nav CTA
+  const mobileCta = document.getElementById('mobile-nav-cta');
+  if (mobileCta && currentUser) {
+    const plan = currentProfile?.plan || 'free';
+    mobileCta.innerHTML = `<div style="width:100%;padding:0 24px;display:flex;flex-direction:column;gap:10px">
+      <div style="text-align:center;font-size:.85rem;color:var(--muted)">${currentUser.email}</div>
+      <a href="/dashboard.html" onclick="closeMobileMenu()" class="btn btn-primary" style="width:100%;justify-content:center;text-decoration:none"><i class="fas fa-chart-line"></i> Dashboard</a>
+      <button onclick="handleLogout();closeMobileMenu()" class="btn btn-outline" style="width:100%;justify-content:center"><i class="fas fa-sign-out-alt"></i> Esci</button>
+    </div>`;
+  }
 }
 
 function updateNavForGuest() {
@@ -875,23 +1048,10 @@ async function handleLogin() {
       return;
     }
 
-    // Login riuscito — salva token nel localStorage manualmente (bypassa LockManager)
+    // Login riuscito — salva sessione custom
     if (data.access_token) {
-      // Salva sessione direttamente nel localStorage senza passare dal client JS
-      const sessionKey = `sb-${SUPABASE_URL.split('//')[1].split('.')[0]}-auth-token`;
-      const sessionData = {
-        access_token: data.access_token,
-        refresh_token: data.refresh_token,
-        expires_at: Math.floor(Date.now() / 1000) + (data.expires_in || 3600),
-        expires_in: data.expires_in || 3600,
-        token_type: 'bearer',
-        user: data.user
-      };
-      try { localStorage.setItem(sessionKey, JSON.stringify(sessionData)); } catch(_) {}
-
+      bsSaveSession(data.user, data.access_token, data.refresh_token, data.expires_in || 3600);
       resetBtn();
-
-      // Imposta currentUser direttamente dai dati ricevuti
       currentUser = data.user;
       await loadProfile();
       updateNavForUser();
@@ -967,7 +1127,11 @@ async function handleRegister() {
 }
 
 async function handleLogout() {
-  await sb.auth.signOut();
+  bsClearSession();
+  currentUser = null;
+  currentProfile = null;
+  updateNavForGuest();
+  try { await sb.auth.signOut(); } catch(_) {}
   showToast('👋 Disconnesso correttamente.', 'success');
 }
 
@@ -1325,9 +1489,15 @@ function showToast(msg, type = 'success') {
 // MOBILE MENU
 // ============================================================
 function toggleMobileMenu() {
-  const links = document.querySelector('.nav-links');
-  const cta = document.querySelector('.nav-cta');
-  [links, cta].forEach(el => { if(el) el.style.display = el.style.display === 'flex' ? '' : 'flex'; });
+  const nav = document.getElementById('mobile-nav');
+  if (nav) nav.classList.toggle('open');
+  document.body.style.overflow = nav?.classList.contains('open') ? 'hidden' : '';
+}
+
+function closeMobileMenu() {
+  const nav = document.getElementById('mobile-nav');
+  if (nav) nav.classList.remove('open');
+  document.body.style.overflow = '';
 }
 
 // ============================================================
