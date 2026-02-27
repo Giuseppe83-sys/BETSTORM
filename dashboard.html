@@ -66,7 +66,31 @@ nav{position:sticky;top:0;z-index:100;padding:16px 32px;display:flex;align-items
 
 /* GRID */
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:32px}
-@media(max-width:768px){.grid-2{grid-template-columns:1fr}}
+@media(max-width:768px){
+  .dash-nav{padding:12px 16px}
+  .dash-nav span{display:none}
+  .stats-grid{grid-template-columns:1fr 1fr;gap:12px}
+  .stat-card{padding:16px}
+  .grid-2{grid-template-columns:1fr}
+  .section-card{padding:20px}
+  .combo-event-row{grid-template-columns:1fr 1fr;gap:8px}
+  .combo-event-row .combo-select{grid-column:1/-1}
+  .plan-card{flex-direction:column;align-items:flex-start;gap:12px}
+  .plan-actions{width:100%}
+  .plan-actions .btn{width:100%;justify-content:center}
+}
+@media(max-width:480px){
+  .stats-grid{grid-template-columns:1fr}
+  .stat-card{padding:14px}
+  .stat-value{font-size:1.8rem}
+  .combo-event-row{grid-template-columns:1fr}
+  .btn-remove{align-self:flex-end}
+  #combo-btn{font-size:.9rem;padding:12px}
+  .section-title{font-size:1rem}
+  .dash-nav{padding:10px 14px}
+  .dash-nav .logo{font-size:1rem}
+  .analyses-list .analysis-item{flex-direction:column;align-items:flex-start;gap:4px}
+}
 
 .section-card{background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:28px}
 .section-title{font-size:1rem;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:8px}
@@ -318,37 +342,66 @@ const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 let currentUser = null;
 let currentProfile = null;
 
+// Stessa gestione sessione custom di index.html
+const BS_SESSION_KEY = 'betstorm_session';
+const BS_LASTSEEN_KEY = 'betstorm_last_seen';
+
+function bsGetSession() {
+  try {
+    const raw = localStorage.getItem(BS_SESSION_KEY);
+    if (!raw) return null;
+    const session = JSON.parse(raw);
+    if (!session?.user || Date.now() > session.expires_at) {
+      localStorage.removeItem(BS_SESSION_KEY);
+      return null;
+    }
+    return session;
+  } catch(_) { return null; }
+}
+
+function bsClearSession() {
+  try {
+    localStorage.removeItem(BS_SESSION_KEY);
+    localStorage.removeItem(BS_LASTSEEN_KEY);
+    const sbKey = `sb-${SUPABASE_URL.split('//')[1].split('.')[0]}-auth-token`;
+    localStorage.removeItem(sbKey);
+  } catch(_) {}
+}
+
+function bsUpdateLastSeen() {
+  try { localStorage.setItem(BS_LASTSEEN_KEY, Date.now().toString()); } catch(_) {}
+}
+
+setInterval(bsUpdateLastSeen, 30 * 1000);
+window.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') bsUpdateLastSeen();
+});
+
 async function init() {
   const showNotLogged = () => {
     document.getElementById('loading-state').style.display = 'none';
     document.getElementById('not-logged').style.display = 'block';
   };
 
-  try {
-    // Prima legge localStorage direttamente (no LockManager)
-    const sessionKey = `sb-${SUPABASE_URL.split('//')[1].split('.')[0]}-auth-token`;
-    const raw = localStorage.getItem(sessionKey);
-    if (raw) {
-      const saved = JSON.parse(raw);
-      if (saved?.user && saved?.expires_at > Math.floor(Date.now() / 1000)) {
-        currentUser = saved.user;
-        await loadDashboard();
-        return;
-      }
-    }
-  } catch(_) {}
+  // Leggi sessione custom
+  const session = bsGetSession();
+  if (session) {
+    currentUser = session.user;
+    bsUpdateLastSeen();
+    await loadDashboard();
+    return;
+  }
 
-  // Fallback: client Supabase
+  // Fallback Supabase nativo
   try {
-    const { data: { session } } = await sb.auth.getSession();
-    if (session?.user) {
-      currentUser = session.user;
+    const { data: { session: sbSession } } = await sb.auth.getSession();
+    if (sbSession?.user) {
+      currentUser = sbSession.user;
       await loadDashboard();
     } else {
       showNotLogged();
     }
   } catch(e) {
-    console.error('Init error:', e);
     showNotLogged();
   }
 }
@@ -616,7 +669,8 @@ function updateUserStats(analyses) {
 }
 
 async function handleLogout() {
-  await sb.auth.signOut();
+  bsClearSession();
+  try { await sb.auth.signOut(); } catch(_) {}
   window.location.href = '/';
 }
 
