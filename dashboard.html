@@ -10,403 +10,278 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
-
-
-
-:root{--bg:#070a0f;--bg2:#0d1117;--bg3:#111820;--green:#00e676;--green2:#00c853;--gold:#ffd700;--gold2:#ffab00;--red:#ff5252;--text:#e8edf5;--muted:#6b7a8d;--border:rgba(255,255,255,.07);--glass:rgba(255,255,255,.04)}
+:root{
+  --bg:#070a0f;--bg2:#0d1117;--bg3:#111820;
+  --green:#00e676;--green2:#00c853;
+  --gold:#ffd700;--red:#ff5252;
+  --text:#e8edf5;--muted:#6b7a8d;
+  --border:rgba(255,255,255,.07);
+  --glass:rgba(255,255,255,.03);
+}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh}
-body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 40% at 50% 0%,rgba(0,230,118,.07) 0%,transparent 70%);pointer-events:none}
-h1,h2,h3,h4{font-family:'Syne',sans-serif}
 
 /* NAV */
-nav{position:sticky;top:0;z-index:100;padding:16px 32px;display:flex;align-items:center;justify-content:space-between;background:rgba(7,10,15,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.dash-nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:16px 32px;background:rgba(7,10,15,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
 .logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text)}
 .logo-icon{width:30px;height:30px;background:linear-gradient(135deg,var(--green),var(--gold));border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.85rem}
 .logo span{color:var(--green)}
 .nav-right{display:flex;align-items:center;gap:12px}
 .btn{padding:9px 18px;border-radius:8px;font-family:'DM Sans',sans-serif;font-weight:500;font-size:.85rem;cursor:pointer;border:none;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:7px}
-.btn-outline{background:transparent;border:1px solid var(--border);color:var(--muted)}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}
 .btn-outline:hover{border-color:var(--green);color:var(--green)}
-.btn-primary{background:linear-gradient(135deg,var(--green),var(--green2));color:#070a0f;font-weight:700;box-shadow:0 0 16px rgba(0,230,118,.25)}
-.btn-primary:hover{transform:translateY(-1px);box-shadow:0 0 28px rgba(0,230,118,.4)}
-.btn-red{background:rgba(255,82,82,.1);border:1px solid rgba(255,82,82,.2);color:var(--red)}
+.btn-primary{background:linear-gradient(135deg,var(--green),var(--green2));color:#070a0f;font-weight:700}
+.btn-primary:hover{transform:translateY(-1px)}
+.btn-red{background:rgba(255,82,82,.1);border:1px solid rgba(255,82,82,.3);color:var(--red)}
 .btn-red:hover{background:rgba(255,82,82,.2)}
 
 /* LAYOUT */
-.dashboard{max-width:1100px;margin:0 auto;padding:40px 24px}
-.dashboard-header{margin-bottom:40px}
-.greeting{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;letter-spacing:-.02em;margin-bottom:6px}
-.greeting span{color:var(--green)}
-.greeting-sub{color:var(--muted);font-size:.95rem}
+.dash-wrap{max-width:1100px;margin:0 auto;padding:40px 24px}
+.dash-header{margin-bottom:32px}
+.dash-header h1{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800}
+.dash-header p{color:var(--muted);margin-top:6px}
 
-/* STATS ROW */
-.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:32px}
-.stat-card{background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:22px;display:flex;align-items:center;gap:16px;transition:all .2s}
-.stat-card:hover{border-color:rgba(0,230,118,.2);transform:translateY(-2px)}
-.stat-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
-.stat-icon.green{background:rgba(0,230,118,.12)}
-.stat-icon.gold{background:rgba(255,215,0,.12)}
-.stat-icon.purple{background:rgba(124,77,255,.12)}
-.stat-value{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;line-height:1}
-.stat-label{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
-
-/* PLAN CARD */
-.plan-card{background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px}
-.plan-card.pro{border-color:rgba(0,230,118,.25);background:linear-gradient(135deg,rgba(0,230,118,.06) 0%,var(--bg3) 60%)}
-.plan-card.elite{border-color:rgba(255,215,0,.25);background:linear-gradient(135deg,rgba(255,215,0,.06) 0%,var(--bg3) 60%)}
-.plan-info{display:flex;align-items:center;gap:16px}
-.plan-avatar{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem}
-.plan-avatar.free{background:rgba(255,255,255,.06)}
-.plan-avatar.pro{background:linear-gradient(135deg,var(--green),var(--green2))}
-.plan-avatar.elite{background:linear-gradient(135deg,var(--gold),var(--gold2))}
-.plan-name{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700}
-.plan-status{font-size:.8rem;color:var(--muted);margin-top:3px}
-.plan-status.active{color:var(--green)}
-.plan-actions{display:flex;gap:10px;flex-wrap:wrap}
+/* STATS TOP */
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px 24px}
+.stat-label{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:8px}
+.stat-value{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--green)}
 
 /* GRID */
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:32px}
-@media(max-width:768px){
-  .dash-nav{padding:12px 16px}
-  .dash-nav span{display:none}
-  .stats-grid{grid-template-columns:1fr 1fr;gap:12px}
-  .stat-card{padding:16px}
-  .grid-2{grid-template-columns:1fr}
-  .section-card{padding:20px}
-  .combo-event-row{grid-template-columns:1fr 1fr;gap:8px}
-  .combo-event-row .combo-select{grid-column:1/-1}
-  .plan-card{flex-direction:column;align-items:flex-start;gap:12px}
-  .plan-actions{width:100%}
-  .plan-actions .btn{width:100%;justify-content:center}
-}
-@media(max-width:480px){
-  .stats-grid{grid-template-columns:1fr}
-  .stat-card{padding:14px}
-  .stat-value{font-size:1.8rem}
-  .combo-event-row{grid-template-columns:1fr}
-  .btn-remove{align-self:flex-end}
-  #combo-btn{font-size:.9rem;padding:12px}
-  .section-title{font-size:1rem}
-  .dash-nav{padding:10px 14px}
-  .dash-nav .logo{font-size:1rem}
-  .analyses-list .analysis-item{flex-direction:column;align-items:flex-start;gap:4px}
-}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px}
+.section-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:28px}
+.section-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:8px}
+.section-title i{color:var(--green)}
 
-.section-card{background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:28px}
-.section-title{font-size:1rem;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:8px}
-.section-title i{color:var(--green);font-size:.9rem}
+/* PIANO */
+.plan-card{background:var(--glass);border:1px solid var(--border);border-radius:12px;padding:20px;display:flex;align-items:center;gap:16px;margin-bottom:16px}
+.plan-card.pro{border-color:rgba(0,230,118,.3)}
+.plan-card.elite{border-color:rgba(255,215,0,.3)}
+.plan-avatar{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.plan-avatar.free{background:rgba(255,255,255,.05)}
+.plan-avatar.pro{background:rgba(0,230,118,.1)}
+.plan-avatar.elite{background:rgba(255,215,0,.1)}
+.plan-info{flex:1}
+.plan-name{font-weight:700;font-size:1rem}
+.plan-status{font-size:.8rem;color:var(--muted);margin-top:2px}
+.plan-status.active{color:var(--green)}
+.plan-actions{display:flex;gap:8px;flex-wrap:wrap}
 
-/* ANALYSES LIST */
-.analyses-list{display:flex;flex-direction:column;gap:10px;max-height:320px;overflow-y:auto}
-.analyses-list::-webkit-scrollbar{width:4px}
-.analyses-list::-webkit-scrollbar-track{background:transparent}
-.analyses-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
-.analysis-item{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;transition:all .2s}
-.analysis-item:hover{border-color:rgba(0,230,118,.2)}
-.analysis-events{font-size:.8rem;color:var(--muted);margin-top:3px}
-.analysis-pct{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;flex-shrink:0}
-.analysis-date{font-size:.72rem;color:var(--muted)}
-.empty-state{text-align:center;padding:40px 20px;color:var(--muted);font-size:.875rem}
-.empty-state i{font-size:2rem;margin-bottom:12px;display:block;opacity:.3}
+/* ANALISI */
+.analysis-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.analysis-item:last-child{border-bottom:none}
+.analysis-date{font-size:.75rem;color:var(--muted);margin-top:2px}
+.analysis-pct{font-weight:700;font-size:1.1rem;flex-shrink:0}
 
-/* COMBO ANALYZER */
-.combo-event-row{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;padding:16px;display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:end}
-.combo-event-row>div:first-child{grid-column:1/-1}
-@media(max-width:700px){.combo-event-row{grid-template-columns:1fr 1fr}
-.combo-event-row>div:first-child{grid-column:1/-1}
-.combo-event-row>div:nth-child(4){grid-column:1/-1}}
-@media(max-width:480px){.combo-event-row{grid-template-columns:1fr}
-.combo-event-row>div{grid-column:1/-1}}
-.combo-input{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.82rem;width:100%;outline:none;transition:border-color .2s}
-.combo-input:focus{border-color:rgba(0,230,118,.4)}
-.combo-input::placeholder{color:var(--muted)}
-.combo-select{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.82rem;width:100%;outline:none;cursor:pointer}
-.combo-select option{background:var(--bg2)}
-.btn-remove{background:rgba(255,82,82,.1);border:1px solid rgba(255,82,82,.15);color:var(--red);border-radius:8px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;flex-shrink:0}
-.btn-remove:hover{background:rgba(255,82,82,.25)}
-.event-num{font-family:'Syne',sans-serif;font-size:.75rem;color:var(--green);font-weight:700;background:rgba(0,230,118,.1);border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+/* STATS BARRE */
+.stat-bar-row{margin-bottom:16px}
+.stat-bar-label{display:flex;justify-content:space-between;font-size:.82rem;margin-bottom:6px}
+.stat-bar-val{font-weight:600;color:var(--green)}
+.bar-track{height:6px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden}
+.bar-fill{height:100%;background:linear-gradient(90deg,var(--green2),var(--green));border-radius:99px;transition:width 1s ease;width:0}
 
-/* QUICK ANALYZE */
-.quick-form{display:flex;flex-direction:column;gap:12px}
-.quick-input{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.875rem;width:100%;outline:none;transition:border-color .2s}
-.quick-input:focus{border-color:rgba(0,230,118,.4)}
-.quick-input::placeholder{color:var(--muted)}
-.quick-select{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.875rem;width:100%;outline:none;cursor:pointer;-webkit-appearance:none}
-.quick-select option{background:var(--bg2)}
-.quick-result{background:rgba(0,230,118,.05);border:1px solid rgba(0,230,118,.15);border-radius:10px;padding:16px;text-align:center;display:none}
-.quick-result.show{display:block;animation:fadeIn .3s ease}
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-.quick-pct{font-family:'Syne',sans-serif;font-size:2.5rem;font-weight:800}
+/* ACCOUNT INFO */
+.acc-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);font-size:.875rem}
+.acc-row:last-child{border-bottom:none}
+.acc-label{color:var(--muted);text-transform:uppercase;font-size:.72rem;letter-spacing:.06em}
+.acc-val{font-weight:500}
 
-/* PROGRESS */
-.progress-track{height:6px;background:rgba(255,255,255,.06);border-radius:50px;overflow:hidden;margin:8px 0}
-.progress-fill{height:100%;border-radius:50px;transition:width 1s ease}
+/* COMBO ANALISI */
+.combo-full{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:24px}
+.event-row-label{display:block;font-size:.72rem;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em}
 
-/* ACCOUNT */
-.account-info{display:flex;flex-direction:column;gap:14px}
-.account-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)}
-.account-row:last-child{border-bottom:none}
-.account-label{font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
-.account-value{font-size:.875rem;font-weight:500}
+/* AUTOCOMPLETE */
+.team-autocomplete{position:relative}
+.team-input,.league-select,.bet-select{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.875rem;width:100%;outline:none;transition:border-color .2s}
+.team-input:focus,.league-select:focus,.bet-select:focus{border-color:rgba(0,230,118,.4)}
+.team-input::placeholder{color:var(--muted)}
+.league-select option,.bet-select option{background:var(--bg2)}
+.autocomplete-dropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--bg2);border:1px solid rgba(0,230,118,.25);border-radius:10px;overflow:hidden;z-index:200;max-height:220px;overflow-y:auto;display:none}
+.autocomplete-dropdown.open{display:block}
+.autocomplete-item{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;transition:background .15s;font-size:.85rem}
+.autocomplete-item:hover{background:rgba(0,230,118,.08)}
+.team-short{font-weight:700;color:var(--green);width:36px;flex-shrink:0;font-size:.75rem}
+.form-dots{display:flex;gap:3px;margin-left:auto}
+.form-dot{width:8px;height:8px;border-radius:50%}
+.form-dot.w{background:var(--green)}
+.form-dot.l{background:#ff5252}
+
+/* EVENTO ROW */
+.event-row{background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:12px;align-items:end}
+.event-row>div:first-child{grid-column:1/-1}
+.btn-remove{background:rgba(255,82,82,.1);border:1px solid rgba(255,82,82,.3);color:var(--red);border-radius:8px;padding:10px 12px;cursor:pointer;transition:all .2s;height:40px}
+.btn-remove:hover{background:rgba(255,82,82,.2)}
+
+/* COMBO RESULT */
+.combo-result{background:var(--glass);border:1px solid var(--border);border-radius:14px;padding:24px;margin-top:20px;display:none}
+.combo-pct{font-family:'Syne',sans-serif;font-size:3.5rem;font-weight:800;text-align:center}
+.combo-bar-track{height:8px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden;margin:12px 0}
+.combo-bar-fill{height:100%;border-radius:99px;transition:width 1.2s ease;width:0}
+.combo-verdict{text-align:center;font-size:.9rem;margin-bottom:16px}
+
+/* LOADING */
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:16px;color:var(--muted)}
+.spinner{width:40px;height:40px;border:3px solid rgba(255,255,255,.06);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* NOT LOGGED */
+.not-logged-box{max-width:400px;margin:80px auto;text-align:center;padding:40px}
+.not-logged-box h2{font-family:'Syne',sans-serif;font-size:1.5rem;margin-bottom:12px}
+.not-logged-box p{color:var(--muted);margin-bottom:24px}
 
 /* TOAST */
-.toast{position:fixed;bottom:24px;right:24px;z-index:9000;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:14px 20px;font-size:.875rem;transform:translateX(400px);transition:transform .4s cubic-bezier(.34,1.56,.64,1);display:flex;align-items:center;gap:10px}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:14px 20px;max-width:320px;transform:translateX(400px);transition:transform .4s cubic-bezier(.34,1.56,.64,1);display:flex;align-items:center;gap:10px;z-index:999}
 .toast.show{transform:translateX(0)}
 .toast.success{border-color:rgba(0,230,118,.3);color:var(--green)}
 .toast.error{border-color:rgba(255,82,82,.3);color:var(--red)}
 
-/* LOADING */
-.loading{display:flex;align-items:center;justify-content:center;min-height:60vh;flex-direction:column;gap:16px;color:var(--muted)}
-.loading-spinner{width:40px;height:40px;border:3px solid rgba(255,255,255,.06);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-
-
-/* AUTOCOMPLETE */
-.team-autocomplete{position:relative}
-.team-input{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.875rem;width:100%;outline:none;transition:border-color .2s}
-.team-input:focus{border-color:rgba(0,230,118,.4)}
-.team-input::placeholder{color:var(--muted)}
-.autocomplete-dropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--bg2);border:1px solid rgba(0,230,118,.25);border-radius:10px;overflow:hidden;z-index:200;max-height:220px;overflow-y:auto;display:none}
-.autocomplete-dropdown.open{display:block}
-.autocomplete-item{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;transition:background .15s;font-size:.85rem}
-.autocomplete-item:hover{background:rgba(0,230,118,.08)}
-.team-short{font-weight:700;color:var(--green);width:36px;flex-shrink:0;font-size:.75rem}
-.form-dots{display:flex;gap:3px;margin-left:auto}
-.form-dot{width:8px;height:8px;border-radius:50%}
-.form-dot.w{background:var(--green)}
-.form-dot.l{background:#ff5252}
-.event-row-label{display:block;font-size:.72rem;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em}
-.combo-event-row{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;padding:16px;display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:12px;align-items:end;margin-bottom:12px}
-.combo-event-row>div:first-child{grid-column:1/-1}
-.combo-event-row .btn-remove{background:rgba(255,82,82,.1);border:1px solid rgba(255,82,82,.3);color:#ff5252;border-radius:8px;padding:8px 12px;cursor:pointer;transition:all .2s}
-.combo-event-row .btn-remove:hover{background:rgba(255,82,82,.2)}
-@media(max-width:700px){.combo-event-row{grid-template-columns:1fr 1fr}.combo-event-row>div:first-child,.combo-event-row>div:nth-child(4){grid-column:1/-1}}
-@media(max-width:480px){.combo-event-row{grid-template-columns:1fr}}
-
-
-
-/* AUTOCOMPLETE */
-.team-autocomplete{position:relative}
-.team-input{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.875rem;width:100%;outline:none;transition:border-color .2s}
-.team-input:focus{border-color:rgba(0,230,118,.4)}
-.team-input::placeholder{color:var(--muted)}
-.autocomplete-dropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--bg2);border:1px solid rgba(0,230,118,.25);border-radius:10px;overflow:hidden;z-index:200;max-height:220px;overflow-y:auto;display:none}
-.autocomplete-dropdown.open{display:block}
-.autocomplete-item{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;transition:background .15s;font-size:.85rem}
-.autocomplete-item:hover{background:rgba(0,230,118,.08)}
-.team-short{font-weight:700;color:var(--green);width:36px;flex-shrink:0;font-size:.75rem}
-.form-dots{display:flex;gap:3px;margin-left:auto}
-.form-dot{width:8px;height:8px;border-radius:50%}
-.form-dot.w{background:var(--green)}
-.form-dot.l{background:#ff5252}
-.event-row-label{display:block;font-size:.72rem;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em}
-.combo-event-row{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;padding:16px;display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:12px;align-items:end;margin-bottom:12px}
-.combo-event-row>div:first-child{grid-column:1/-1}
-.combo-event-row .btn-remove{background:rgba(255,82,82,.1);border:1px solid rgba(255,82,82,.3);color:#ff5252;border-radius:8px;padding:8px 12px;cursor:pointer;transition:all .2s}
-@media(max-width:700px){.combo-event-row{grid-template-columns:1fr 1fr}.combo-event-row>div:first-child,.combo-event-row>div:nth-child(4){grid-column:1/-1}}
-@media(max-width:480px){.combo-event-row{grid-template-columns:1fr}}
-
+/* RESPONSIVE */
+@media(max-width:768px){
+  .dash-nav{padding:12px 16px}
+  .dash-wrap{padding:24px 16px}
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .grid-2{grid-template-columns:1fr}
+  .event-row{grid-template-columns:1fr 1fr}
+  .event-row>div:first-child,.event-row>div:nth-child(4){grid-column:1/-1}
+  .plan-card{flex-direction:column;align-items:flex-start}
+}
+@media(max-width:480px){
+  .stats-grid{grid-template-columns:1fr}
+  .event-row{grid-template-columns:1fr}
+  .event-row>div{grid-column:1/-1}
+}
 </style>
 </head>
 <body>
-<nav>
+
+<!-- NAV -->
+<nav class="dash-nav">
   <a href="/" class="logo">
     <div class="logo-icon">🌪️</div>
-    Bet<span>Storm</span>
+    <b>Bet</b>&nbsp;<span>Storm</span>
   </a>
   <div class="nav-right">
     <a href="/" class="btn btn-outline"><i class="fas fa-home"></i> Home</a>
-    <button class="btn btn-red" id="btn-logout" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Esci</button>
+    <button onclick="handleLogout()" class="btn btn-red"><i class="fas fa-sign-out-alt"></i> Esci</button>
   </div>
 </nav>
 
-<!-- LOADING STATE -->
-<div class="loading" id="loading-state">
-  <div class="loading-spinner"></div>
+<!-- LOADING -->
+<div id="loading-state" class="loading">
+  <div class="spinner"></div>
   <p>Caricamento dashboard...</p>
 </div>
 
-<!-- DASHBOARD -->
-<div class="dashboard" id="dashboard" style="display:none">
-
-  <!-- HEADER -->
-  <div class="dashboard-header">
-    <h1 class="greeting">Ciao, <span id="user-name">utente</span>! 👋</h1>
-    <p class="greeting-sub">Ecco il riepilogo del tuo account BetStorm.</p>
+<!-- NOT LOGGED -->
+<div id="not-logged" style="display:none">
+  <div class="not-logged-box">
+    <h2>Accesso richiesto</h2>
+    <p>Devi essere loggato per vedere la dashboard.</p>
+    <a href="/" class="btn btn-primary"><i class="fas fa-bolt"></i> Vai alla home</a>
   </div>
-
-  <!-- STATS -->
-  <div class="stats-row">
-    <div class="stat-card">
-      <div class="stat-icon green"><i class="fas fa-chart-line" style="color:var(--green)"></i></div>
-      <div>
-        <div class="stat-value" id="stat-analyses">0</div>
-        <div class="stat-label">Analisi totali</div>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon gold"><i class="fas fa-bolt" style="color:var(--gold)"></i></div>
-      <div>
-        <div class="stat-value" id="stat-today">0</div>
-        <div class="stat-label">Analisi oggi</div>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon purple"><i class="fas fa-calendar" style="color:#7c4dff"></i></div>
-      <div>
-        <div class="stat-value" id="stat-member">—</div>
-        <div class="stat-label">Membro dal</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- PLAN -->
-  <div class="plan-card" id="plan-card">
-    <div class="plan-info">
-      <div class="plan-avatar" id="plan-avatar">⚡</div>
-      <div>
-        <div class="plan-name" id="plan-name">Piano Free</div>
-        <div class="plan-status" id="plan-status">Attivo</div>
-      </div>
-    </div>
-    <div class="plan-actions" id="plan-actions">
-      <a href="/#piani" class="btn btn-primary"><i class="fas fa-bolt"></i> Upgrade a Pro</a>
-    </div>
-  </div>
-
-  <!-- ANALISI COMBINATA -->
-  <div class="section-card" style="margin-bottom:32px">
-    <div class="section-title"><i class="fas fa-layer-group"></i> Analisi Combinata AI
-      <span style="margin-left:auto;font-size:.75rem;color:var(--muted);font-weight:400">Fino a 5 eventi</span>
-    </div>
-
-    <div id="combo-events" style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px"></div>
-
-    <button onclick="addComboEvent()" class="btn btn-outline" style="width:100%;justify-content:center;margin-bottom:20px">
-      <i class="fas fa-plus"></i> Aggiungi evento
-    </button>
-
-    <button onclick="runComboAnalysis()" class="btn btn-primary" id="combo-btn" style="width:100%;justify-content:center;padding:14px;font-size:1rem">
-      <i class="fas fa-bolt"></i> Analizza Combinata
-    </button>
-
-    <div id="combo-result" style="display:none;margin-top:20px;background:rgba(0,230,118,.05);border:1px solid rgba(0,230,118,.15);border-radius:14px;padding:24px;text-align:center">
-      <div style="font-family:'Syne',sans-serif;font-size:3rem;font-weight:800" id="combo-pct-display">—</div>
-      <div style="font-size:.85rem;color:var(--muted);margin-bottom:16px">Probabilità combinata stimata</div>
-      <div class="progress-track" style="height:8px;margin-bottom:16px">
-        <div class="progress-fill" id="combo-fill" style="background:linear-gradient(90deg,var(--green2),var(--green));width:0;transition:width 1.2s ease"></div>
-      </div>
-      <div style="font-size:.9rem;font-weight:500" id="combo-verdict"></div>
-      <div style="font-size:.78rem;color:var(--muted);margin-top:8px" id="combo-events-summary"></div>
-    </div>
-  </div>
-
-  <!-- GRID -->
-  <div class="grid-2">
-
-    <!-- ANALISI RECENTI -->
-    <div class="section-card">
-      <div class="section-title"><i class="fas fa-history"></i> Analisi recenti</div>
-      <div class="analyses-list" id="analyses-list">
-        <div class="empty-state"><i class="fas fa-chart-bar"></i>Nessuna analisi ancora.<br>Usa l'analisi combinata!</div>
-      </div>
-    </div>
-
-    <!-- STATS ACCOUNT -->
-    <div class="section-card">
-      <div class="section-title"><i class="fas fa-chart-pie"></i> Le tue statistiche</div>
-      <div style="display:flex;flex-direction:column;gap:16px" id="user-stats">
-        <div>
-          <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:6px">
-            <span style="color:var(--muted)">Tasso successo stimato</span>
-            <span style="color:var(--green);font-weight:600" id="success-rate">—</span>
-          </div>
-          <div class="progress-track"><div class="progress-fill" id="success-fill" style="background:var(--green)"></div></div>
-        </div>
-        <div>
-          <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:6px">
-            <span style="color:var(--muted)">Analisi questo mese</span>
-            <span style="font-weight:600" id="monthly-count">0</span>
-          </div>
-          <div class="progress-track"><div class="progress-fill" id="monthly-fill" style="background:var(--gold)"></div></div>
-        </div>
-        <div>
-          <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:6px">
-            <span style="color:var(--muted)">Probabilità media</span>
-            <span style="font-weight:600" id="avg-pct">—</span>
-          </div>
-          <div class="progress-track"><div class="progress-fill" id="avg-fill" style="background:#7c4dff"></div></div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- ACCOUNT INFO -->
-  <div class="section-card">
-    <div class="section-title"><i class="fas fa-user"></i> Il tuo account</div>
-    <div class="account-info">
-      <div class="account-row">
-        <span class="account-label">Email</span>
-        <span class="account-value" id="acc-email">—</span>
-      </div>
-      <div class="account-row">
-        <span class="account-label">Piano attivo</span>
-        <span class="account-value" id="acc-plan">—</span>
-      </div>
-      <div class="account-row">
-        <span class="account-label">Stato abbonamento</span>
-        <span class="account-value" id="acc-status">—</span>
-      </div>
-      <div class="account-row">
-        <span class="account-label">Membro dal</span>
-        <span class="account-value" id="acc-since">—</span>
-      </div>
-      <div class="account-row" style="border-bottom:none;padding-top:20px">
-        <span></span>
-        <div style="display:flex;gap:10px;flex-wrap:wrap">
-          <button class="btn btn-outline" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Disconnetti</button>
-          <button class="btn btn-red" onclick="confirmDelete()"><i class="fas fa-trash"></i> Elimina account</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
 </div>
 
-<!-- NOT LOGGED -->
-<div style="display:none;text-align:center;padding:80px 24px" id="not-logged">
-  <div style="font-size:3rem;margin-bottom:20px">🔒</div>
-  <h2 style="font-family:'Syne',sans-serif;margin-bottom:12px">Accesso richiesto</h2>
-  <p style="color:var(--muted);margin-bottom:28px">Devi essere loggato per vedere la dashboard.</p>
-  <a href="/" class="btn btn-primary"><i class="fas fa-home"></i> Torna alla home</a>
+<!-- DASHBOARD -->
+<div id="dashboard" style="display:none">
+  <div class="dash-wrap">
+
+    <div class="dash-header">
+      <h1>Ciao, <span id="user-name" style="color:var(--green)">...</span> 👋</h1>
+      <p>Ecco il tuo riepilogo BetStorm</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Analisi totali</div>
+        <div class="stat-value" id="stat-analyses">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Analisi oggi</div>
+        <div class="stat-value" id="stat-today">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Membro dal</div>
+        <div class="stat-value" style="font-size:1.2rem;padding-top:6px" id="stat-member">—</div>
+      </div>
+    </div>
+
+    <!-- ANALISI COMBINATA -->
+    <div class="combo-full">
+      <div class="section-title"><i class="fas fa-bolt"></i> Analisi Combinata AI</div>
+      <div id="combo-events"></div>
+      <div style="display:flex;gap:10px;margin-top:4px">
+        <button class="btn btn-outline" onclick="addComboEvent()" style="flex:1">
+          <i class="fas fa-plus"></i> Aggiungi evento
+        </button>
+        <button class="btn btn-primary" id="combo-btn" onclick="runComboAnalysis()" style="flex:2">
+          <i class="fas fa-bolt"></i> Analizza Combinata
+        </button>
+      </div>
+      <div class="combo-result" id="combo-result">
+        <div class="combo-pct" id="combo-pct-display">—</div>
+        <div class="combo-bar-track"><div class="combo-bar-fill" id="combo-fill"></div></div>
+        <div class="combo-verdict" id="combo-verdict"></div>
+        <div id="combo-events-summary"></div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="section-card">
+        <div class="section-title"><i class="fas fa-crown"></i> Il tuo piano</div>
+        <div class="plan-card" id="plan-card">
+          <div class="plan-avatar free" id="plan-avatar">⚡</div>
+          <div class="plan-info">
+            <div class="plan-name" id="plan-name">Piano Free</div>
+            <div class="plan-status" id="plan-status">3 analisi/giorno</div>
+          </div>
+        </div>
+        <div class="plan-actions" id="plan-actions"></div>
+      </div>
+      <div class="section-card">
+        <div class="section-title"><i class="fas fa-history"></i> Analisi recenti</div>
+        <div id="analyses-list"><p style="color:var(--muted);font-size:.85rem">Nessuna analisi ancora.</p></div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="section-card">
+        <div class="section-title"><i class="fas fa-chart-bar"></i> Le tue statistiche</div>
+        <div class="stat-bar-row">
+          <div class="stat-bar-label"><span>Tasso successo</span><span class="stat-bar-val" id="success-rate">—</span></div>
+          <div class="bar-track"><div class="bar-fill" id="success-fill"></div></div>
+        </div>
+        <div class="stat-bar-row">
+          <div class="stat-bar-label"><span>Analisi questo mese</span><span class="stat-bar-val" id="monthly-count">—</span></div>
+          <div class="bar-track"><div class="bar-fill" id="monthly-fill"></div></div>
+        </div>
+        <div class="stat-bar-row">
+          <div class="stat-bar-label"><span>Probabilità media</span><span class="stat-bar-val" id="avg-pct">—</span></div>
+          <div class="bar-track"><div class="bar-fill" id="avg-fill"></div></div>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-title"><i class="fas fa-user-circle"></i> Account</div>
+        <div class="acc-row"><span class="acc-label">Email</span><span class="acc-val" id="acc-email">—</span></div>
+        <div class="acc-row"><span class="acc-label">Piano attivo</span><span class="acc-val" id="acc-plan">—</span></div>
+        <div class="acc-row"><span class="acc-label">Stato abbonamento</span><span class="acc-val" id="acc-status">—</span></div>
+        <div class="acc-row"><span class="acc-label">Membro dal</span><span class="acc-val" id="acc-since">—</span></div>
+        <div style="display:flex;gap:8px;margin-top:20px;flex-wrap:wrap">
+          <button onclick="handleLogout()" class="btn btn-outline"><i class="fas fa-sign-out-alt"></i> Disconnetti</button>
+          <button onclick="confirmDelete()" class="btn btn-red"><i class="fas fa-trash"></i> Elimina account</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-
-<nav>
-  <a href="/" class="logo">
-    <div class="logo-icon">🌪️</div>
-    Bet<span>Storm</span>
-  </a>
-  <div class="nav-right">
-    <a href="/" class="btn btn-outline"><i class="fas fa-home"></i> Home</a>
-    <button class="btn btn-red" id="btn-logout" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Esci</button>
-  </div>
-</nav>
-
-<!-- LOADING STATE -->
-<div class="loading"
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="teams.js"></script>
 <script>
-
-
-const SUPABASE_URL = 'https://zvftggieqlxujjtotvwg.supabase.co';
+const SUPABASE_URL      = 'https://zvftggieqlxujjtotvwg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp2ZnRnZ2llcWx4dWpqdG90dndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE0OTQ3NjIsImV4cCI6MjA4NzA3MDc2Mn0.ZatmSARBUZpibKPTBNhpXj0c07Thzu8RvT4NjMR6lxg';
 const { createClient } = window.supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -414,452 +289,202 @@ const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 let currentUser = null;
 let currentProfile = null;
 
-// ============================================================
-// SESSION MANAGEMENT
-// ============================================================
-const BS_SESSION_KEY = 'betstorm_session';
-const BS_LASTSEEN_KEY = 'betstorm_last_seen';
-
-function bsGetSession() {
+// SESSION
+const BS_KEY  = 'betstorm_session';
+const BS_SEEN = 'betstorm_last_seen';
+function bsGet() {
   try {
-    const raw = localStorage.getItem(BS_SESSION_KEY);
+    const raw = localStorage.getItem(BS_KEY);
     if (!raw) return null;
     const s = JSON.parse(raw);
-    if (!s?.user || Date.now() > s.expires_at) { localStorage.removeItem(BS_SESSION_KEY); return null; }
+    if (!s?.user || Date.now() > s.expires_at) { localStorage.removeItem(BS_KEY); return null; }
     return s;
   } catch(_) { return null; }
 }
-
-function bsClearSession() {
-  try {
-    localStorage.removeItem(BS_SESSION_KEY);
-    localStorage.removeItem(BS_LASTSEEN_KEY);
-    localStorage.removeItem(`sb-${SUPABASE_URL.split('//')[1].split('.')[0]}-auth-token`);
-  } catch(_) {}
+function bsClear() {
+  try { localStorage.removeItem(BS_KEY); localStorage.removeItem(BS_SEEN); localStorage.removeItem('sb-zvftggieqlxujjtotvwg-auth-token'); } catch(_) {}
 }
+function bsTouch() { try { localStorage.setItem(BS_SEEN, Date.now().toString()); } catch(_) {} }
+setInterval(bsTouch, 30000);
+window.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') bsTouch(); });
 
-function bsUpdateLastSeen() {
-  try { localStorage.setItem(BS_LASTSEEN_KEY, Date.now().toString()); } catch(_) {}
-}
-
-setInterval(bsUpdateLastSeen, 30000);
-window.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'hidden') bsUpdateLastSeen();
-});
-
-// ============================================================
 // INIT
-// ============================================================
 async function init() {
-  const showNotLogged = () => {
-    document.getElementById('loading-state').style.display = 'none';
-    document.getElementById('not-logged').style.display = 'block';
-  };
-
-  const session = bsGetSession();
-  if (session) {
-    currentUser = session.user;
-    bsUpdateLastSeen();
-    await loadDashboard();
-    return;
-  }
-
+  const session = bsGet();
+  if (session) { currentUser = session.user; bsTouch(); await loadDashboard(); return; }
   try {
-    const { data: { session: sbSession } } = await sb.auth.getSession();
-    if (sbSession?.user) {
-      currentUser = sbSession.user;
-      await loadDashboard();
-    } else {
-      showNotLogged();
-    }
-  } catch(e) {
-    showNotLogged();
-  }
+    const { data: { session: s } } = await sb.auth.getSession();
+    if (s?.user) { currentUser = s.user; await loadDashboard(); }
+    else showNotLogged();
+  } catch(_) { showNotLogged(); }
 }
-
-// ============================================================
-// LOAD DASHBOARD
-// ============================================================
-async function loadDashboard() {
-  let { data: profile } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
-
-  if (!profile) {
-    await sb.from('profiles').insert({
-      id: currentUser.id,
-      email: currentUser.email,
-      full_name: currentUser.user_metadata?.full_name || currentUser.email.split('@')[0],
-      plan: 'free'
-    });
-    const { data: np } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
-    profile = np;
-  }
-  currentProfile = profile;
-
-  const { data: analyses } = await sb.from('analyses').select('*')
-    .eq('user_id', currentUser.id).order('created_at', { ascending: false }).limit(20);
-
+function showNotLogged() {
   document.getElementById('loading-state').style.display = 'none';
-  document.getElementById('dashboard').style.display = 'block';
-
-  const name = profile?.full_name || currentUser.email.split('@')[0];
-  document.getElementById('user-name').textContent = name;
-  document.getElementById('stat-analyses').textContent = analyses?.length || 0;
-  document.getElementById('stat-today').textContent = profile?.analyses_today || 0;
-  const since = new Date(currentUser.created_at);
-  document.getElementById('stat-member').textContent = since.toLocaleDateString('it-IT', { month: 'short', year: 'numeric' });
-
-  const plan = profile?.plan || 'free';
-  renderPlan(plan, profile);
-
-  document.getElementById('acc-email').textContent = currentUser.email;
-  document.getElementById('acc-plan').textContent = plan.charAt(0).toUpperCase() + plan.slice(1);
-  document.getElementById('acc-status').textContent = plan === 'free' ? '— Piano gratuito' : '✅ Attivo';
-  document.getElementById('acc-since').textContent = since.toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' });
-
-  renderAnalyses(analyses);
-  updateUserStats(analyses);
-  if (document.getElementById('combo-events').children.length === 0) addComboEvent();
+  document.getElementById('not-logged').style.display    = 'block';
 }
 
-function renderPlan(plan, profile) {
-  const avatar = document.getElementById('plan-avatar');
-  const nameEl = document.getElementById('plan-name');
-  const statusEl = document.getElementById('plan-status');
-  const actions = document.getElementById('plan-actions');
-  if (plan === 'pro') {
-    avatar.textContent = '⚡'; avatar.className = 'plan-avatar pro';
-    nameEl.textContent = 'Piano Pro';
-    statusEl.textContent = '✅ Abbonamento attivo'; statusEl.className = 'plan-status active';
-    actions.innerHTML = `<a href="/#piani" class="btn btn-outline"><i class="fas fa-arrow-up"></i> Upgrade a Elite</a>`;
-  } else if (plan === 'elite') {
-    avatar.textContent = '👑'; avatar.className = 'plan-avatar elite';
-    nameEl.textContent = 'Piano Elite';
-    statusEl.textContent = '✅ Abbonamento attivo'; statusEl.className = 'plan-status active';
-    actions.innerHTML = `<span style="font-size:.8rem;color:var(--muted)">Hai il piano più completo 🎉</span>`;
-  } else {
-    avatar.textContent = '⚡'; avatar.className = 'plan-avatar free';
-    nameEl.textContent = 'Piano Free';
-    statusEl.textContent = '3 analisi/giorno';
-    actions.innerHTML = `<a href="/#piani" class="btn btn-primary"><i class="fas fa-bolt"></i> Upgrade a Pro — €9.99/mese</a>`;
-  }
+// LOAD
+async function loadDashboard() {
+  try {
+    let { data: profile } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
+    if (!profile) {
+      await sb.from('profiles').insert({ id: currentUser.id, email: currentUser.email, full_name: currentUser.user_metadata?.full_name || currentUser.email.split('@')[0], plan: 'free' });
+      const r = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
+      profile = r.data;
+    }
+    currentProfile = profile;
+    const { data: analyses } = await sb.from('analyses').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false }).limit(20);
+    document.getElementById('loading-state').style.display = 'none';
+    document.getElementById('dashboard').style.display     = 'block';
+    document.getElementById('user-name').textContent = profile?.full_name || currentUser.email.split('@')[0];
+    document.getElementById('stat-analyses').textContent = analyses?.length || 0;
+    document.getElementById('stat-today').textContent    = profile?.analyses_today || 0;
+    const since = new Date(currentUser.created_at);
+    document.getElementById('stat-member').textContent = since.toLocaleDateString('it-IT', { month:'short', year:'numeric' });
+    const plan = profile?.plan || 'free';
+    renderPlan(plan);
+    document.getElementById('acc-email').textContent  = currentUser.email;
+    document.getElementById('acc-plan').textContent   = plan.charAt(0).toUpperCase() + plan.slice(1);
+    document.getElementById('acc-status').textContent = plan === 'free' ? '— Piano gratuito' : '✅ Attivo';
+    document.getElementById('acc-since').textContent  = since.toLocaleDateString('it-IT', { day:'numeric', month:'long', year:'numeric' });
+    renderAnalyses(analyses);
+    renderStats(analyses);
+    if (!document.getElementById('combo-events').children.length) addComboEvent();
+  } catch(e) { console.error(e); showNotLogged(); }
+}
+
+function renderPlan(plan) {
+  const av = document.getElementById('plan-avatar'), nm = document.getElementById('plan-name'), st = document.getElementById('plan-status'), ac = document.getElementById('plan-actions');
+  if (plan === 'pro') { av.textContent='⚡'; av.className='plan-avatar pro'; nm.textContent='Piano Pro'; st.textContent='✅ Abbonamento attivo'; st.className='plan-status active'; ac.innerHTML=`<a href="/#piani" class="btn btn-outline"><i class="fas fa-arrow-up"></i> Upgrade a Elite</a>`; }
+  else if (plan === 'elite') { av.textContent='👑'; av.className='plan-avatar elite'; nm.textContent='Piano Elite'; st.textContent='✅ Abbonamento attivo'; st.className='plan-status active'; ac.innerHTML=`<span style="font-size:.8rem;color:var(--muted)">Hai il piano più completo 🎉</span>`; }
+  else { av.textContent='⚡'; av.className='plan-avatar free'; nm.textContent='Piano Free'; st.textContent='3 analisi/giorno'; ac.innerHTML=`<a href="/#piani" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px"><i class="fas fa-bolt"></i> Upgrade a Pro — €9.99/mese</a>`; }
 }
 
 function renderAnalyses(analyses) {
   const list = document.getElementById('analyses-list');
-  if (!analyses || analyses.length === 0) { list.innerHTML = '<p style="color:var(--muted);font-size:.85rem">Nessuna analisi ancora.</p>'; return; }
+  if (!analyses?.length) { list.innerHTML = '<p style="color:var(--muted);font-size:.85rem">Nessuna analisi ancora.</p>'; return; }
   list.innerHTML = analyses.map(a => {
-    const pct = a.result_pct || 0;
-    const color = pct >= 70 ? 'var(--green)' : pct >= 50 ? 'var(--yellow)' : '#ff7043';
-    const date = new Date(a.created_at).toLocaleDateString('it-IT', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
-    const events = Array.isArray(a.events) ? a.events.map(e => `${e.home} vs ${e.away}`).join(', ') : '—';
-    return `<div class="analysis-item">
-      <div style="flex:1;min-width:0"><div style="font-size:.875rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${events}</div><div class="analysis-date">${date}</div></div>
-      <div class="analysis-pct" style="color:${color}">${pct}%</div>
-    </div>`;
+    const pct = a.result_pct || 0, color = pct>=70?'var(--green)':pct>=50?'#ffd600':'#ff7043';
+    const date = new Date(a.created_at).toLocaleDateString('it-IT',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+    const evts = Array.isArray(a.events) ? a.events.map(e=>`${e.home} vs ${e.away}`).join(', ') : '—';
+    return `<div class="analysis-item"><div style="flex:1;min-width:0"><div style="font-size:.875rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${evts}</div><div class="analysis-date">${date}</div></div><div class="analysis-pct" style="color:${color}">${pct}%</div></div>`;
   }).join('');
 }
 
-function updateUserStats(analyses) {
-  if (!analyses || analyses.length === 0) return;
-  const good = analyses.filter(a => (a.result_pct||0) >= 65).length;
-  const successRate = Math.round((good / analyses.length) * 100);
-  const thisMonth = analyses.filter(a => new Date(a.created_at).getMonth() === new Date().getMonth()).length;
-  const avgPct = Math.round(analyses.reduce((s, a) => s + (a.result_pct||0), 0) / analyses.length);
-
-  const sr = document.getElementById('success-rate'); if (sr) sr.textContent = successRate + '%';
-  const sf = document.getElementById('success-fill'); if (sf) sf.style.width = successRate + '%';
-  const mc = document.getElementById('monthly-count'); if (mc) mc.textContent = thisMonth;
-  const mf = document.getElementById('monthly-fill'); if (mf) mf.style.width = Math.min(100, thisMonth * 10) + '%';
-  const ap = document.getElementById('avg-pct'); if (ap) ap.textContent = avgPct + '%';
-  const af = document.getElementById('avg-fill'); if (af) af.style.width = avgPct + '%';
+function renderStats(analyses) {
+  if (!analyses?.length) return;
+  const good = analyses.filter(a=>(a.result_pct||0)>=65).length;
+  const s = Math.round(good/analyses.length*100);
+  const m = analyses.filter(a=>new Date(a.created_at).getMonth()===new Date().getMonth()).length;
+  const avg = Math.round(analyses.reduce((t,a)=>t+(a.result_pct||0),0)/analyses.length);
+  const set = (id,v,fid,p) => { const e=document.getElementById(id); if(e) e.textContent=v; const f=document.getElementById(fid); if(f) setTimeout(()=>f.style.width=p+'%',100); };
+  set('success-rate',s+'%','success-fill',s);
+  set('monthly-count',m,'monthly-fill',Math.min(100,m*10));
+  set('avg-pct',avg+'%','avg-fill',avg);
 }
 
-// BET_TYPES caricato da teams.js
-
-let comboCount = 0;
-
-// ============================================================
 // AUTOCOMPLETE
-// ============================================================
-function getTeamsByLeague(league) { return (typeof BETSTORM_TEAMS !== 'undefined' && BETSTORM_TEAMS[league]) || []; }
-function getTeamById(id) {
-  if (typeof BETSTORM_TEAMS === 'undefined') return null;
-  for (const league of Object.values(BETSTORM_TEAMS)) {
-    const t = league.find(t => t.id === id);
-    if (t) return t;
-  }
-  return null;
+function _teams(l) { return (typeof BETSTORM_TEAMS!=='undefined'?BETSTORM_TEAMS[l]:null)||[]; }
+function _teamById(id) { if(typeof BETSTORM_TEAMS==='undefined') return null; for(const a of Object.values(BETSTORM_TEAMS)){const t=a.find(t=>t.id===id);if(t)return t;} return null; }
+function filterTeams(eid,side) {
+  const row=document.querySelector(`.event-row[data-id="${eid}"]`); if(!row) return;
+  const q=row.querySelector(`.${side}-input`).value.toLowerCase();
+  const teams=_teams(row.querySelector('.league-select').value).filter(t=>t.name.toLowerCase().includes(q));
+  _renderDrop(eid,side,teams); document.getElementById(`${side}-drop-${eid}`).classList.add('open');
+}
+function showDropdown(eid,side) {
+  const row=document.querySelector(`.event-row[data-id="${eid}"]`); if(!row) return;
+  const l=row.querySelector('.league-select').value; if(!l) return;
+  const q=row.querySelector(`.${side}-input`).value.toLowerCase();
+  _renderDrop(eid,side,_teams(l).filter(t=>!q||t.name.toLowerCase().includes(q)));
+  document.getElementById(`${side}-drop-${eid}`).classList.add('open');
+}
+function hideDropdown(eid,side,delay=0) { setTimeout(()=>{const el=document.getElementById(`${side}-drop-${eid}`);if(el)el.classList.remove('open');},delay); }
+function _renderDrop(eid,side,teams) {
+  const el=document.getElementById(`${side}-drop-${eid}`); if(!el) return;
+  el.innerHTML=teams.slice(0,20).map(t=>`<div class="autocomplete-item" onmousedown="selectTeam(${eid},'${side}','${t.id}','${t.name}')"><span class="team-short">${t.short}</span><span>${t.name}</span><span class="form-dots">${t.form.map(f=>`<span class="form-dot ${f?'w':'l'}"></span>`).join('')}</span></div>`).join('')||'<div style="padding:12px;color:var(--muted);font-size:.8rem">Nessuna squadra trovata</div>';
+}
+function selectTeam(eid,side,id,name) {
+  const row=document.querySelector(`.event-row[data-id="${eid}"]`); if(!row) return;
+  row.querySelector(`.${side}-input`).value=name; row.querySelector(`.${side}-team-id`).value=id; hideDropdown(eid,side);
+}
+function updateLeague(eid) {
+  const row=document.querySelector(`.event-row[data-id="${eid}"]`); if(!row) return;
+  ['home','away'].forEach(s=>{row.querySelector(`.${s}-input`).value=''; row.querySelector(`.${s}-team-id`).value='';});
 }
 
-function filterTeams(eventId, side) {
-  const row = document.querySelector(`.event-row[data-id="${eventId}"]`);
-  if (!row) return;
-  const league = row.querySelector('.league-select').value;
-  const query = row.querySelector(`.${side}-input`).value.toLowerCase();
-  const teams = getTeamsByLeague(league).filter(t => t.name.toLowerCase().includes(query));
-  renderDropdown(eventId, side, teams);
-  document.getElementById(`${side}-drop-${eventId}`).classList.add('open');
-}
-
-function showDropdown(eventId, side, delay = 0) {
-  setTimeout(() => {
-    const row = document.querySelector(`.event-row[data-id="${eventId}"]`);
-    if (!row) return;
-    const league = row.querySelector('.league-select').value;
-    if (!league) return;
-    const query = row.querySelector(`.${side}-input`).value.toLowerCase();
-    const teams = getTeamsByLeague(league).filter(t => !query || t.name.toLowerCase().includes(query));
-    renderDropdown(eventId, side, teams);
-    document.getElementById(`${side}-drop-${eventId}`).classList.add('open');
-  }, delay);
-}
-
-function hideDropdown(eventId, side, delay = 0) {
-  setTimeout(() => {
-    const el = document.getElementById(`${side}-drop-${eventId}`);
-    if (el) el.classList.remove('open');
-  }, delay);
-}
-
-function renderDropdown(eventId, side, teams) {
-  const el = document.getElementById(`${side}-drop-${eventId}`);
-  if (!el) return;
-  el.innerHTML = teams.slice(0, 20).map(t =>
-    `<div class="autocomplete-item" onmousedown="selectTeam(${eventId},'${side}','${t.id}','${t.name}')">
-      <span class="team-short">${t.short}</span>
-      <span>${t.name}</span>
-      <span class="form-dots">${t.form.map(f => `<span class="form-dot ${f?'w':'l'}"></span>`).join('')}</span>
-    </div>`
-  ).join('') || '<div style="padding:12px;color:var(--muted);font-size:.8rem">Nessuna squadra trovata</div>';
-}
-
-function selectTeam(eventId, side, teamId, teamName) {
-  const row = document.querySelector(`.event-row[data-id="${eventId}"]`);
-  if (!row) return;
-  row.querySelector(`.${side}-input`).value = teamName;
-  row.querySelector(`.${side}-team-id`).value = teamId;
-  hideDropdown(eventId, side);
-}
-
-function updateTeamDropdowns(id) {
-  const row = document.querySelector(`.event-row[data-id="${id}"]`);
-  if (!row) return;
-  const league = row.querySelector('.league-select').value;
-  row.querySelector('.home-input').value = '';
-  row.querySelector('.away-input').value = '';
-  row.querySelector('.home-team-id').value = '';
-  row.querySelector('.away-team-id').value = '';
-  renderDropdown(id, 'home', getTeamsByLeague(league));
-  renderDropdown(id, 'away', getTeamsByLeague(league));
-}
-
-// ============================================================
-// COMBO EVENT
-// ============================================================
+// COMBO
+let comboCount=0;
 function addComboEvent() {
-  const container = document.getElementById('combo-events');
-  if (container.children.length >= 5) { showToast('Massimo 5 eventi per combinata', 'error'); return; }
+  const c=document.getElementById('combo-events');
+  if(c.children.length>=5){showToast('Massimo 5 eventi','error');return;}
   comboCount++;
-  const id = comboCount;
-  const leagueOpts = (typeof BETSTORM_TEAMS !== 'undefined') ? Object.keys(BETSTORM_TEAMS).map(l => `<option value="${l}">${l}</option>`).join('') : '';
-  const betOpts = BET_TYPES.map(b => `<option value="${b.value}">${b.label}</option>`).join('');
-
-  const row = document.createElement('div');
-  row.className = 'combo-event-row event-row';
-  row.dataset.id = id;
-  row.innerHTML = `
-    <div style="grid-column:1/-1">
-      <span class="event-row-label">Campionato</span>
-      <select class="league-select" onchange="updateTeamDropdowns(${id})" style="width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:.875rem;outline:none">
-        <option value="">— Seleziona campionato —</option>${leagueOpts}
-      </select>
-    </div>
-    <div>
-      <span class="event-row-label">Squadra Casa</span>
-      <div class="team-autocomplete">
-        <input type="text" class="team-input home-input" placeholder="Cerca squadra..." autocomplete="off"
-          oninput="filterTeams(${id},'home')" onfocus="showDropdown(${id},'home')" onblur="hideDropdown(${id},'home',300)">
-        <input type="hidden" class="home-team-id">
-        <div class="autocomplete-dropdown" id="home-drop-${id}"></div>
-      </div>
-    </div>
-    <div>
-      <span class="event-row-label">Squadra Ospite</span>
-      <div class="team-autocomplete">
-        <input type="text" class="team-input away-input" placeholder="Cerca squadra..." autocomplete="off"
-          oninput="filterTeams(${id},'away')" onfocus="showDropdown(${id},'away')" onblur="hideDropdown(${id},'away',300)">
-        <input type="hidden" class="away-team-id">
-        <div class="autocomplete-dropdown" id="away-drop-${id}"></div>
-      </div>
-    </div>
-    <div>
-      <span class="event-row-label">Tipo scommessa</span>
-      <select class="bet-select" style="width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:.875rem;outline:none">${betOpts}</select>
-    </div>
-    <div style="display:flex;align-items:flex-end">
-      <button class="btn-remove" onclick="removeComboEvent(this)" title="Rimuovi"><i class="fas fa-times"></i></button>
-    </div>
-  `;
-  container.appendChild(row);
+  const id=comboCount;
+  const leagues=(typeof BETSTORM_TEAMS!=='undefined')?Object.keys(BETSTORM_TEAMS).map(l=>`<option value="${l}">${l}</option>`).join(''):'';
+  const bets=BET_TYPES.map(b=>`<option value="${b.value}">${b.label}</option>`).join('');
+  const row=document.createElement('div');
+  row.className='event-row'; row.dataset.id=id;
+  row.innerHTML=`
+    <div><span class="event-row-label">Campionato</span><select class="league-select" onchange="updateLeague(${id})" style="width:100%"><option value="">— Seleziona —</option>${leagues}</select></div>
+    <div><span class="event-row-label">Squadra Casa</span><div class="team-autocomplete"><input type="text" class="team-input home-input" placeholder="Cerca squadra..." autocomplete="off" oninput="filterTeams(${id},'home')" onfocus="showDropdown(${id},'home')" onblur="hideDropdown(${id},'home',300)"><input type="hidden" class="home-team-id"><div class="autocomplete-dropdown" id="home-drop-${id}"></div></div></div>
+    <div><span class="event-row-label">Squadra Ospite</span><div class="team-autocomplete"><input type="text" class="team-input away-input" placeholder="Cerca squadra..." autocomplete="off" oninput="filterTeams(${id},'away')" onfocus="showDropdown(${id},'away')" onblur="hideDropdown(${id},'away',300)"><input type="hidden" class="away-team-id"><div class="autocomplete-dropdown" id="away-drop-${id}"></div></div></div>
+    <div><span class="event-row-label">Scommessa</span><select class="bet-select" style="width:100%">${bets}</select></div>
+    <div><button class="btn-remove" onclick="this.closest('.event-row').remove()" title="Rimuovi"><i class="fas fa-times"></i></button></div>`;
+  c.appendChild(row);
 }
 
-function removeComboEvent(btn) {
-  btn.closest('.combo-event-row').remove();
-  document.getElementById('combo-result').style.display = 'none';
-}
-
-// ============================================================
-// ANALYZE
-// ============================================================
-function calcProb(homeTeam, awayTeam, betValue) {
-  // Usa dati reali se disponibili
-  if (homeTeam && awayTeam) {
-    const hOff = homeTeam.goals_scored_avg || 1.5;
-    const hDef = homeTeam.goals_conceded_avg || 1.2;
-    const aOff = awayTeam.goals_scored_avg || 1.3;
-    const aDef = awayTeam.goals_conceded_avg || 1.4;
-    const hWin = homeTeam.home_win_pct || 0.50;
-    const aWin = awayTeam.away_win_pct || 0.35;
-    const expGoals = (hOff + aDef + aOff + hDef) / 2;
-
-    switch(betValue) {
-      case 'gg':     return Math.min(0.88, Math.max(0.30, 0.4 + (hOff * aOff * 0.15)));
-      case 'over25': return Math.min(0.88, Math.max(0.30, expGoals > 2.5 ? 0.65 : 0.45));
-      case 'under25':return Math.min(0.88, Math.max(0.30, expGoals < 2.5 ? 0.62 : 0.42));
-      case 'over15': return Math.min(0.88, Math.max(0.30, expGoals > 1.5 ? 0.75 : 0.55));
-      case 'under35':return Math.min(0.88, Math.max(0.30, expGoals < 3.5 ? 0.78 : 0.55));
-      case '1':      return Math.min(0.88, Math.max(0.25, hWin + 0.05));
-      case '2':      return Math.min(0.88, Math.max(0.25, aWin));
-      case '1x':     return Math.min(0.88, Math.max(0.40, hWin + 0.25));
-      case 'x2':     return Math.min(0.88, Math.max(0.40, aWin + 0.28));
-      case 'x':      return Math.min(0.88, Math.max(0.20, 0.28));
-      case 'ng':     return Math.min(0.88, Math.max(0.25, 1 - (hOff * aOff * 0.15) - 0.2));
-      case 'hc':     return Math.min(0.88, Math.max(0.25, hWin - 0.10));
-      default:       return 0.55;
-    }
-  }
-  // Fallback senza dati squadra
-  const bt = BET_TYPES.find(b => b.value === betValue);
-  const base = bt ? bt.base : 0.55;
-  return Math.min(0.88, Math.max(0.30, base));
+function calcProb(h,a,v) {
+  const bt=BET_TYPES.find(b=>b.value===v);
+  if(!h||!a) return bt?.base||0.55;
+  const hO=h.goals_scored_avg||1.5,hD=h.goals_conceded_avg||1.2,aO=a.goals_scored_avg||1.3,aD=a.goals_conceded_avg||1.4;
+  const hW=h.home_win_pct||0.50,aW=a.away_win_pct||0.35,exp=(hO+aD+aO+hD)/2;
+  const cl=v=>Math.min(0.88,Math.max(0.20,v));
+  switch(v){case 'gg':return cl(0.4+hO*aO*0.15);case 'over25':return cl(exp>2.5?0.65:0.42);case 'under25':return cl(exp<2.5?0.62:0.40);case 'over15':return cl(exp>1.5?0.75:0.52);case 'under35':return cl(exp<3.5?0.78:0.52);case '1':return cl(hW+0.05);case '2':return cl(aW);case '1x':return cl(hW+0.25);case 'x2':return cl(aW+0.28);case 'x':return cl(0.28);case 'ng':return cl(0.55-hO*aO*0.12);case 'hc':return cl(hW-0.10);default:return bt?.base||0.55;}
 }
 
 async function runComboAnalysis() {
-  const rows = document.querySelectorAll('.combo-event-row');
-  if (rows.length === 0) { showToast('Aggiungi almeno un evento', 'error'); return; }
-
-  const btn = document.getElementById('combo-btn');
-  btn.disabled = true;
-  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analisi in corso...';
-
-  const events = [];
-  let combined = 1;
-
-  rows.forEach(row => {
-    const homeId   = row.querySelector('.home-team-id')?.value || '';
-    const awayId   = row.querySelector('.away-team-id')?.value || '';
-    const betValue = row.querySelector('.bet-select')?.value || 'gg';
-    const homeName = row.querySelector('.home-input')?.value.trim() || 'Squadra A';
-    const awayName = row.querySelector('.away-input')?.value.trim() || 'Squadra B';
-    const betType  = BET_TYPES.find(b => b.value === betValue);
-
-    const prob = calcProb(getTeamById(homeId), getTeamById(awayId), betValue);
-    combined *= prob;
-    events.push({ home: homeName, away: awayName, bet: betType?.label || betValue, prob: Math.round(prob * 100) });
+  const rows=document.querySelectorAll('.event-row');
+  if(!rows.length){showToast('Aggiungi almeno un evento','error');return;}
+  const btn=document.getElementById('combo-btn');
+  btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Analisi in corso...';
+  const events=[]; let combined=1;
+  rows.forEach(row=>{
+    const hId=row.querySelector('.home-team-id')?.value||'', aId=row.querySelector('.away-team-id')?.value||'', bv=row.querySelector('.bet-select')?.value||'gg';
+    const hN=row.querySelector('.home-input')?.value.trim()||'Squadra A', aN=row.querySelector('.away-input')?.value.trim()||'Squadra B';
+    const prob=calcProb(_teamById(hId),_teamById(aId),bv);
+    combined*=prob; events.push({home:hN,away:aN,bet:BET_TYPES.find(b=>b.value===bv)?.label||bv,prob:Math.round(prob*100)});
   });
-
-  if (rows.length > 1) combined *= Math.pow(0.97, rows.length - 1);
-  const finalPct = Math.min(92, Math.max(18, Math.round(combined * 100)));
-
-  await new Promise(r => setTimeout(r, 1000));
-
-  btn.disabled = false;
-  btn.innerHTML = '<i class="fas fa-bolt"></i> Analizza Combinata';
-
-  showComboResult(finalPct, events);
-
-  if (currentUser) {
-    sb.from('analyses').insert({ user_id: currentUser.id, events, result_pct: finalPct })
-      .then(() => sb.from('analyses').select('*').eq('user_id', currentUser.id)
-        .order('created_at', { ascending: false }).limit(20)
-        .then(res => { renderAnalyses(res.data); updateUserStats(res.data); }));
-  }
+  if(rows.length>1) combined*=Math.pow(0.97,rows.length-1);
+  const pct=Math.min(92,Math.max(18,Math.round(combined*100)));
+  await new Promise(r=>setTimeout(r,1000));
+  btn.disabled=false; btn.innerHTML='<i class="fas fa-bolt"></i> Analizza Combinata';
+  const res=document.getElementById('combo-result'); res.style.display='block';
+  const color=pct>=70?'var(--green)':pct>=50?'#ffd600':'#ff5252';
+  const grad=pct>=70?'linear-gradient(90deg,#00b248,#00e676)':pct>=50?'linear-gradient(90deg,#f57f17,#ffd600)':'linear-gradient(90deg,#b71c1c,#ff5252)';
+  document.getElementById('combo-pct-display').textContent=pct+'%'; document.getElementById('combo-pct-display').style.color=color;
+  const fill=document.getElementById('combo-fill'); fill.style.background=grad; fill.style.width='0'; setTimeout(()=>fill.style.width=pct+'%',50);
+  document.getElementById('combo-verdict').innerHTML=pct>=70?`🔥 <strong>Alta probabilità!</strong> Combinata al ${pct}%`:pct>=50?`⚠️ <strong>Nella media.</strong> Probabilità del ${pct}%`:`❌ <strong>Rischio elevato.</strong> Solo ${pct}%`;
+  document.getElementById('combo-events-summary').innerHTML=events.map(e=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:.82rem"><span>${e.home} vs ${e.away}</span><span style="color:var(--muted)">${e.bet}</span><span style="color:${e.prob>=70?'var(--green)':e.prob>=50?'#ffd600':'#ff5252'};font-weight:600">${e.prob}%</span></div>`).join('');
+  if(currentUser) sb.from('analyses').insert({user_id:currentUser.id,events,result_pct:pct}).then(()=>sb.from('analyses').select('*').eq('user_id',currentUser.id).order('created_at',{ascending:false}).limit(20).then(r=>{renderAnalyses(r.data);renderStats(r.data);}));
 }
 
-function showComboResult(pct, events) {
-  document.getElementById('combo-result').style.display = 'block';
-  const pctEl = document.getElementById('combo-pct-display');
-  const fill  = document.getElementById('combo-fill');
-  const verdict = document.getElementById('combo-verdict');
-  const summary = document.getElementById('combo-events-summary');
-
-  let color, gradient, msg;
-  if (pct >= 70) {
-    color = 'var(--green)'; gradient = 'linear-gradient(90deg,#00b248,#00e676)';
-    msg = `🔥 <strong>Alta probabilità!</strong> Combinata al ${pct}% — condizioni favorevoli.`;
-  } else if (pct >= 50) {
-    color = '#ffd600'; gradient = 'linear-gradient(90deg,#f57f17,#ffd600)';
-    msg = `⚠️ <strong>Nella media.</strong> Probabilità del ${pct}% — valuta con cautela.`;
-  } else {
-    color = '#ff5252'; gradient = 'linear-gradient(90deg,#b71c1c,#ff5252)';
-    msg = `❌ <strong>Rischio elevato.</strong> Solo ${pct}% — considera scommesse più sicure.`;
-  }
-
-  pctEl.textContent = pct + '%'; pctEl.style.color = color;
-  fill.style.background = gradient; fill.style.width = '0';
-  setTimeout(() => { fill.style.width = pct + '%'; }, 50);
-  verdict.innerHTML = msg;
-  summary.innerHTML = events.map(e =>
-    `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:.82rem">
-      <span>${e.home} vs ${e.away}</span>
-      <span style="color:var(--muted)">${e.bet}</span>
-      <span style="color:${e.prob>=70?'var(--green)':e.prob>=50?'#ffd600':'#ff5252'};font-weight:600">${e.prob}%</span>
-    </div>`
-  ).join('');
-}
-
-// ============================================================
-// LOGOUT
-// ============================================================
-async function handleLogout() {
-  bsClearSession();
-  try { await sb.auth.signOut(); } catch(_) {}
-  window.location.href = '/';
-}
-
-// ============================================================
-// STRIPE
-// ============================================================
-async function startCheckout(plan) {
+// LOGOUT / DELETE
+async function handleLogout() { bsClear(); try{await sb.auth.signOut();}catch(_){} window.location.href='/'; }
+async function confirmDelete() {
+  if(!confirm('Eliminare il tuo account? Questa azione è irreversibile.')) return;
   try {
-    const res = await fetch('/api/create-checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ plan, userId: currentUser?.id, email: currentUser?.email })
-    });
-    const { url, error } = await res.json();
-    if (error) { showToast('Errore: ' + error, 'error'); return; }
-    window.location.href = url;
-  } catch(e) {
-    showToast('Errore di rete', 'error');
-  }
+    await sb.from('profiles').delete().eq('id',currentUser.id);
+    await sb.from('analyses').delete().eq('user_id',currentUser.id);
+    bsClear(); try{await sb.auth.signOut();}catch(_){}
+    showToast('Account eliminato.','success');
+    setTimeout(()=>window.location.href='/',1500);
+  } catch(_){ showToast('Errore durante eliminazione.','error'); }
 }
 
-// ============================================================
 // TOAST
-// ============================================================
-function showToast(msg, type = 'success') {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.className = `toast ${type} show`;
-  setTimeout(() => t.classList.remove('show'), 3500);
-}
+function showToast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className=`toast ${type} show`;setTimeout(()=>t.classList.remove('show'),3500);}
 
-// ============================================================
-// START
-// ============================================================
 init();
-
-
 </script>
 </body>
 </html>
