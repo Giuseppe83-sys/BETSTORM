@@ -12,6 +12,7 @@
 <style>
 
 
+
 :root{--bg:#070a0f;--bg2:#0d1117;--bg3:#111820;--green:#00e676;--green2:#00c853;--gold:#ffd700;--gold2:#ffab00;--red:#ff5252;--text:#e8edf5;--muted:#6b7a8d;--border:rgba(255,255,255,.07);--glass:rgba(255,255,255,.04)}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
@@ -207,6 +208,7 @@ nav{position:sticky;top:0;z-index:100;padding:16px 32px;display:flex;align-items
 .combo-event-row .btn-remove{background:rgba(255,82,82,.1);border:1px solid rgba(255,82,82,.3);color:#ff5252;border-radius:8px;padding:8px 12px;cursor:pointer;transition:all .2s}
 @media(max-width:700px){.combo-event-row{grid-template-columns:1fr 1fr}.combo-event-row>div:first-child,.combo-event-row>div:nth-child(4){grid-column:1/-1}}
 @media(max-width:480px){.combo-event-row{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -398,177 +400,7 @@ nav{position:sticky;top:0;z-index:100;padding:16px 32px;display:flex;align-items
 </nav>
 
 <!-- LOADING STATE -->
-<div class="loading" id="loading-state">
-  <div class="loading-spinner"></div>
-  <p>Caricamento dashboard...</p>
-</div>
-
-<!-- DASHBOARD -->
-<div class="dashboard" id="dashboard" style="display:none">
-
-  <!-- HEADER -->
-  <div class="dashboard-header">
-    <h1 class="greeting">Ciao, <span id="user-name">utente</span>! 👋</h1>
-    <p class="greeting-sub">Ecco il riepilogo del tuo account BetStorm.</p>
-  </div>
-
-  <!-- STATS -->
-  <div class="stats-row">
-    <div class="stat-card">
-      <div class="stat-icon green"><i class="fas fa-chart-line" style="color:var(--green)"></i></div>
-      <div>
-        <div class="stat-value" id="stat-analyses">0</div>
-        <div class="stat-label">Analisi totali</div>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon gold"><i class="fas fa-bolt" style="color:var(--gold)"></i></div>
-      <div>
-        <div class="stat-value" id="stat-today">0</div>
-        <div class="stat-label">Analisi oggi</div>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon purple"><i class="fas fa-calendar" style="color:#7c4dff"></i></div>
-      <div>
-        <div class="stat-value" id="stat-member">—</div>
-        <div class="stat-label">Membro dal</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- PLAN -->
-  <div class="plan-card" id="plan-card">
-    <div class="plan-info">
-      <div class="plan-avatar" id="plan-avatar">⚡</div>
-      <div>
-        <div class="plan-name" id="plan-name">Piano Free</div>
-        <div class="plan-status" id="plan-status">Attivo</div>
-      </div>
-    </div>
-    <div class="plan-actions" id="plan-actions">
-      <a href="/#piani" class="btn btn-primary"><i class="fas fa-bolt"></i> Upgrade a Pro</a>
-    </div>
-  </div>
-
-  <!-- ANALISI COMBINATA -->
-  <div class="section-card" style="margin-bottom:32px">
-    <div class="section-title"><i class="fas fa-layer-group"></i> Analisi Combinata AI
-      <span style="margin-left:auto;font-size:.75rem;color:var(--muted);font-weight:400">Fino a 5 eventi</span>
-    </div>
-
-    <div id="combo-events" style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px"></div>
-
-    <button onclick="addComboEvent()" class="btn btn-outline" style="width:100%;justify-content:center;margin-bottom:20px">
-      <i class="fas fa-plus"></i> Aggiungi evento
-    </button>
-
-    <button onclick="runComboAnalysis()" class="btn btn-primary" id="combo-btn" style="width:100%;justify-content:center;padding:14px;font-size:1rem">
-      <i class="fas fa-bolt"></i> Analizza Combinata
-    </button>
-
-    <div id="combo-result" style="display:none;margin-top:20px;background:rgba(0,230,118,.05);border:1px solid rgba(0,230,118,.15);border-radius:14px;padding:24px;text-align:center">
-      <div style="font-family:'Syne',sans-serif;font-size:3rem;font-weight:800" id="combo-pct-display">—</div>
-      <div style="font-size:.85rem;color:var(--muted);margin-bottom:16px">Probabilità combinata stimata</div>
-      <div class="progress-track" style="height:8px;margin-bottom:16px">
-        <div class="progress-fill" id="combo-fill" style="background:linear-gradient(90deg,var(--green2),var(--green));width:0;transition:width 1.2s ease"></div>
-      </div>
-      <div style="font-size:.9rem;font-weight:500" id="combo-verdict"></div>
-      <div style="font-size:.78rem;color:var(--muted);margin-top:8px" id="combo-events-summary"></div>
-    </div>
-  </div>
-
-  <!-- GRID -->
-  <div class="grid-2">
-
-    <!-- ANALISI RECENTI -->
-    <div class="section-card">
-      <div class="section-title"><i class="fas fa-history"></i> Analisi recenti</div>
-      <div class="analyses-list" id="analyses-list">
-        <div class="empty-state"><i class="fas fa-chart-bar"></i>Nessuna analisi ancora.<br>Usa l'analisi combinata!</div>
-      </div>
-    </div>
-
-    <!-- STATS ACCOUNT -->
-    <div class="section-card">
-      <div class="section-title"><i class="fas fa-chart-pie"></i> Le tue statistiche</div>
-      <div style="display:flex;flex-direction:column;gap:16px" id="user-stats">
-        <div>
-          <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:6px">
-            <span style="color:var(--muted)">Tasso successo stimato</span>
-            <span style="color:var(--green);font-weight:600" id="success-rate">—</span>
-          </div>
-          <div class="progress-track"><div class="progress-fill" id="success-fill" style="background:var(--green)"></div></div>
-        </div>
-        <div>
-          <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:6px">
-            <span style="color:var(--muted)">Analisi questo mese</span>
-            <span style="font-weight:600" id="monthly-count">0</span>
-          </div>
-          <div class="progress-track"><div class="progress-fill" id="monthly-fill" style="background:var(--gold)"></div></div>
-        </div>
-        <div>
-          <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:6px">
-            <span style="color:var(--muted)">Probabilità media</span>
-            <span style="font-weight:600" id="avg-pct">—</span>
-          </div>
-          <div class="progress-track"><div class="progress-fill" id="avg-fill" style="background:#7c4dff"></div></div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- ACCOUNT INFO -->
-  <div class="section-card">
-    <div class="section-title"><i class="fas fa-user"></i> Il tuo account</div>
-    <div class="account-info">
-      <div class="account-row">
-        <span class="account-label">Email</span>
-        <span class="account-value" id="acc-email">—</span>
-      </div>
-      <div class="account-row">
-        <span class="account-label">Piano attivo</span>
-        <span class="account-value" id="acc-plan">—</span>
-      </div>
-      <div class="account-row">
-        <span class="account-label">Stato abbonamento</span>
-        <span class="account-value" id="acc-status">—</span>
-      </div>
-      <div class="account-row">
-        <span class="account-label">Membro dal</span>
-        <span class="account-value" id="acc-since">—</span>
-      </div>
-      <div class="account-row" style="border-bottom:none;padding-top:20px">
-        <span></span>
-        <div style="display:flex;gap:10px;flex-wrap:wrap">
-          <button class="btn btn-outline" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Disconnetti</button>
-          <button class="btn btn-red" onclick="confirmDelete()"><i class="fas fa-trash"></i> Elimina account</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-</div>
-
-<!-- NOT LOGGED -->
-<div style="display:none;text-align:center;padding:80px 24px" id="not-logged">
-  <div style="font-size:3rem;margin-bottom:20px">🔒</div>
-  <h2 style="font-family:'Syne',sans-serif;margin-bottom:12px">Accesso richiesto</h2>
-  <p style="color:var(--muted);margin-bottom:28px">Devi essere loggato per vedere la dashboard.</p>
-  <a href="/" class="btn btn-primary"><i class="fas fa-home"></i> Torna alla home</a>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<!-- Scripts: caricati una sola volta, in fondo al body -->
-
-
-<!-- Scripts in ordine corretto: prima le dipendenze, poi il codice -->
-
-
-
-</body>
+<div class="loading"
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="teams.js"></script>
 <script>
