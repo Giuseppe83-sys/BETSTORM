@@ -355,9 +355,9 @@ async function loadDashboard() {
 
 function renderPlan(plan) {
   const av = document.getElementById('plan-avatar'), nm = document.getElementById('plan-name'), st = document.getElementById('plan-status'), ac = document.getElementById('plan-actions');
-  if (plan === 'pro') { av.textContent='⚡'; av.className='plan-avatar pro'; nm.textContent='Piano Pro'; st.textContent='✅ Abbonamento attivo'; st.className='plan-status active'; ac.innerHTML=`<a href="/#piani" class="btn btn-outline"><i class="fas fa-arrow-up"></i> Upgrade a Elite</a>`; }
+  if (plan === 'pro') { av.textContent='⚡'; av.className='plan-avatar pro'; nm.textContent='Piano Pro'; st.textContent='✅ Abbonamento attivo'; st.className='plan-status active'; ac.innerHTML=`<button onclick="startCheckout('elite')" class="btn btn-outline"><i class="fas fa-crown"></i> Upgrade a Elite — €19.99/mese</button>`; }
   else if (plan === 'elite') { av.textContent='👑'; av.className='plan-avatar elite'; nm.textContent='Piano Elite'; st.textContent='✅ Abbonamento attivo'; st.className='plan-status active'; ac.innerHTML=`<span style="font-size:.8rem;color:var(--muted)">Hai il piano più completo 🎉</span>`; }
-  else { av.textContent='⚡'; av.className='plan-avatar free'; nm.textContent='Piano Free'; st.textContent='3 analisi/giorno'; ac.innerHTML=`<a href="/#piani" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px"><i class="fas fa-bolt"></i> Upgrade a Pro — €9.99/mese</a>`; }
+  else { av.textContent='⚡'; av.className='plan-avatar free'; nm.textContent='Piano Free'; st.textContent='3 analisi/giorno'; ac.innerHTML=`<button onclick="startCheckout('pro')" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px"><i class="fas fa-bolt"></i> Upgrade a Pro — €9.99/mese</button><button onclick="startCheckout('elite')" class="btn btn-outline" style="width:100%;justify-content:center;margin-top:8px"><i class="fas fa-crown"></i> Upgrade a Elite — €19.99/mese</button>`; }
 }
 
 function renderAnalyses(analyses) {
@@ -447,13 +447,16 @@ function addComboEvent() {
   c.appendChild(row);
 }
 
-function calcProb(h,a,v) {
-  const bt=BET_TYPES.find(b=>b.value===v);
-  if(!h||!a) return bt?.base||0.55;
-  const hO=h.goals_scored_avg||1.5,hD=h.goals_conceded_avg||1.2,aO=a.goals_scored_avg||1.3,aD=a.goals_conceded_avg||1.4;
-  const hW=h.home_win_pct||0.50,aW=a.away_win_pct||0.35,exp=(hO+aD+aO+hD)/2;
-  const cl=v=>Math.min(0.88,Math.max(0.20,v));
-  switch(v){case 'gg':return cl(0.4+hO*aO*0.15);case 'over25':return cl(exp>2.5?0.65:0.42);case 'under25':return cl(exp<2.5?0.62:0.40);case 'over15':return cl(exp>1.5?0.75:0.52);case 'under35':return cl(exp<3.5?0.78:0.52);case '1':return cl(hW+0.05);case '2':return cl(aW);case '1x':return cl(hW+0.25);case 'x2':return cl(aW+0.28);case 'x':return cl(0.28);case 'ng':return cl(0.55-hO*aO*0.12);case 'hc':return cl(hW-0.10);default:return bt?.base||0.55;}
+function calcProb(h, a, v) {
+  const bt = BET_TYPES.find(b => b.value === v);
+  if (!bt) return 0.55;
+  // Usa dati reali se disponibili, altrimenti valori medi
+  const home = h || { goals_scored_avg:1.5, goals_conceded_avg:1.2, home_win_pct:0.48, away_win_pct:0.35 };
+  const away = a || { goals_scored_avg:1.3, goals_conceded_avg:1.4, home_win_pct:0.48, away_win_pct:0.33 };
+  try {
+    const raw = bt.factor(home, away);
+    return Math.min(0.92, Math.max(0.18, raw));
+  } catch(_) { return 0.55; }
 }
 
 async function runComboAnalysis() {
@@ -480,6 +483,20 @@ async function runComboAnalysis() {
   document.getElementById('combo-verdict').innerHTML=pct>=70?`🔥 <strong>Alta probabilità!</strong> Combinata al ${pct}%`:pct>=50?`⚠️ <strong>Nella media.</strong> Probabilità del ${pct}%`:`❌ <strong>Rischio elevato.</strong> Solo ${pct}%`;
   document.getElementById('combo-events-summary').innerHTML=events.map(e=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:.82rem"><span>${e.home} vs ${e.away}</span><span style="color:var(--muted)">${e.bet}</span><span style="color:${e.prob>=70?'var(--green)':e.prob>=50?'#ffd600':'#ff5252'};font-weight:600">${e.prob}%</span></div>`).join('');
   if(currentUser) sb.from('analyses').insert({user_id:currentUser.id,events,result_pct:pct}).then(()=>sb.from('analyses').select('*').eq('user_id',currentUser.id).order('created_at',{ascending:false}).limit(20).then(r=>{renderAnalyses(r.data);renderStats(r.data);}));
+}
+
+// STRIPE
+async function startCheckout(plan) {
+  try {
+    const res = await fetch('/api/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ plan, userId: currentUser?.id, email: currentUser?.email })
+    });
+    const { url, error } = await res.json();
+    if (error) { showToast('Errore: ' + error, 'error'); return; }
+    window.location.href = url;
+  } catch(_) { showToast('Errore di rete', 'error'); }
 }
 
 // LOGOUT / DELETE
