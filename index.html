@@ -370,8 +370,7 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:60px 24px
 
   /* ANALYZER */
   .analyzer-card{padding:20px}
-  .event-row{grid-template-columns:1fr 1fr;grid-template-rows:auto auto auto}
-  .event-row>*:nth-child(1){grid-column:1/-1}
+  .event-row{grid-template-columns:1fr 1fr}
   .btn-remove{grid-column:2;justify-self:end}
   .analyzer-actions{flex-direction:column;gap:10px}
   .analyzer-actions .btn{width:100%;justify-content:center}
@@ -1220,15 +1219,9 @@ function addEvent() {
 
   row.innerHTML = `
     <div>
-      <span class="event-row-label">Campionato</span>
-      <select class="league-select" onchange="updateTeamDropdowns(${id})">
-        <option value="">— Seleziona —</option>${leagueOpts}
-      </select>
-    </div>
-    <div>
       <span class="event-row-label">Squadra Casa</span>
       <div class="team-autocomplete">
-        <input type="text" class="team-input home-input" placeholder="Cerca squadra..." autocomplete="off"
+        <input type="text" class="team-input home-input" placeholder="Cerca in tutti i campionati..." autocomplete="off"
           oninput="filterTeams(${id},'home')" onfocus="showDropdown(${id},'home')" onblur="hideDropdown(${id},'home',300)">
         <input type="hidden" class="home-team-id">
         <div class="autocomplete-dropdown home-dropdown" id="home-drop-${id}"></div>
@@ -1237,7 +1230,7 @@ function addEvent() {
     <div>
       <span class="event-row-label">Squadra Ospite</span>
       <div class="team-autocomplete">
-        <input type="text" class="team-input away-input" placeholder="Cerca squadra..." autocomplete="off"
+        <input type="text" class="team-input away-input" placeholder="Cerca in tutti i campionati..." autocomplete="off"
           oninput="filterTeams(${id},'away')" onfocus="showDropdown(${id},'away')" onblur="hideDropdown(${id},'away',300)">
         <input type="hidden" class="away-team-id">
         <div class="autocomplete-dropdown away-dropdown" id="away-drop-${id}"></div>
@@ -1278,19 +1271,24 @@ function updateTeamDropdowns(id) {
 function renderDropdown(eventId, side, teams) {
   const dropId = `${side}-drop-${eventId}`;
   const drop = document.getElementById(dropId);
+  if (!teams.length) { drop.innerHTML = '<div style="padding:12px;color:var(--muted);font-size:.8rem">Nessuna squadra trovata</div>'; return; }
   drop.innerHTML = teams.slice(0, 20).map(t => `
     <div class="autocomplete-item" onmousedown="selectTeam(${eventId},'${side}','${t.id}','${t.name}')">
       <span class="team-short">${t.short}</span>
-      <span>${t.name}</span>
+      <span style="flex:1">${t.name}</span>
+      <span style="font-size:.68rem;color:var(--muted);margin-right:6px">${t.league||''}</span>
       <span class="form-dots">${t.form.map(f => `<span class="form-dot ${f?'w':'l'}"></span>`).join('')}</span>
     </div>`).join('') || '<div style="padding:12px;color:var(--muted);font-size:.8rem">Nessuna squadra trovata</div>';
 }
 
+function _allTeams() {
+  return Object.entries(BETSTORM_TEAMS).flatMap(([league, teams]) => teams.map(t => ({ ...t, league })));
+}
+
 function filterTeams(eventId, side) {
   const row = document.querySelector(`.event-row[data-id="${eventId}"]`);
-  const league = row.querySelector('.league-select').value;
-  const query = row.querySelector(`.${side}-input`).value.toLowerCase();
-  const teams = getTeamsByLeague(league).filter(t => t.name.toLowerCase().includes(query));
+  const query = row.querySelector(`.${side}-input`).value.toLowerCase().trim();
+  const teams = query.length < 1 ? [] : _allTeams().filter(t => t.name.toLowerCase().includes(query));
   renderDropdown(eventId, side, teams);
   showDropdown(eventId, side);
 }
@@ -1299,10 +1297,10 @@ function showDropdown(eventId, side, delay = 0) {
   setTimeout(() => {
     const row = document.querySelector(`.event-row[data-id="${eventId}"]`);
     if (!row) return;
-    const league = row.querySelector('.league-select').value;
-    if (!league) return;
-    const query = row.querySelector(`.${side}-input`).value.toLowerCase();
-    const teams = getTeamsByLeague(league).filter(t => !query || t.name.toLowerCase().includes(query));
+    const query = row.querySelector(`.${side}-input`).value.toLowerCase().trim();
+    const teams = query.length >= 1
+      ? _allTeams().filter(t => t.name.toLowerCase().includes(query))
+      : _allTeams().slice(0, 8);
     renderDropdown(eventId, side, teams);
     document.getElementById(`${side}-drop-${eventId}`).classList.add('open');
   }, delay);
@@ -1520,16 +1518,16 @@ async function loadLiveTicker() {
 
   // Partite reali 27a giornata Serie A — fallback statico
   const staticMatches = [
-    { home:'Parma', away:'Cagliari', bet:'Over 1.5', pct:71, league:'Serie A 🇮🇹', when:'Ven 27/2 · 20:45' },
-    { home:'Como', away:'Lecce', bet:'1X', pct:68, league:'Serie A 🇮🇹', when:'Sab 28/2 · 15:00' },
-    { home:'Verona', away:'Napoli', bet:'Vittoria Napoli', pct:79, league:'Serie A 🇮🇹', when:'Sab 28/2 · 18:00' },
-    { home:'Inter', away:'Genoa', bet:'Vittoria Inter', pct:86, league:'Serie A 🇮🇹', when:'Sab 28/2 · 20:45' },
-    { home:'Cremonese', away:'Milan', bet:'Vittoria Milan', pct:74, league:'Serie A 🇮🇹', when:'Dom 1/3 · 12:30' },
-    { home:'Sassuolo', away:'Atalanta', bet:'Vittoria Atalanta', pct:81, league:'Serie A 🇮🇹', when:'Dom 1/3 · 15:00' },
-    { home:'Torino', away:'Lazio', bet:'Goal/Goal', pct:72, league:'Serie A 🇮🇹', when:'Dom 1/3 · 18:00' },
-    { home:'Roma', away:'Juventus', bet:'Goal/Goal', pct:76, league:'Serie A 🇮🇹', when:'Dom 1/3 · 20:45' },
-    { home:'Pisa', away:'Bologna', bet:'Over 2.5', pct:67, league:'Serie A 🇮🇹', when:'Lun 2/3 · 18:30' },
-    { home:'Udinese', away:'Fiorentina', bet:'Under 3.5', pct:73, league:'Serie A 🇮🇹', when:'Lun 2/3 · 20:45' },
+    { home:'Napoli', away:'Torino', bet:'Vittoria Napoli', pct:81, league:'Serie A 🇮🇹', when:'Ven 6/3 · 20:45' },
+    { home:'Cagliari', away:'Como', bet:'1X', pct:67, league:'Serie A 🇮🇹', when:'Sab 7/3 · 15:00' },
+    { home:'Atalanta', away:'Udinese', bet:'Vittoria Atalanta', pct:84, league:'Serie A 🇮🇹', when:'Sab 7/3 · 18:00' },
+    { home:'Juventus', away:'Pisa', bet:'Vittoria Juventus', pct:79, league:'Serie A 🇮🇹', when:'Sab 7/3 · 20:45' },
+    { home:'Lecce', away:'Cremonese', bet:'Under 2.5', pct:68, league:'Serie A 🇮🇹', when:'Dom 8/3 · 12:30' },
+    { home:'Fiorentina', away:'Parma', bet:'Vittoria Fiorentina', pct:72, league:'Serie A 🇮🇹', when:'Dom 8/3 · 15:00' },
+    { home:'Bologna', away:'Verona', bet:'Vittoria Bologna', pct:77, league:'Serie A 🇮🇹', when:'Dom 8/3 · 15:00' },
+    { home:'Genoa', away:'Roma', bet:'Goal/Goal', pct:73, league:'Serie A 🇮🇹', when:'Dom 8/3 · 18:00' },
+    { home:'Milan', away:'Inter', bet:'Goal/Goal', pct:78, league:'Serie A 🇮🇹', when:'Dom 8/3 · 20:45' },
+    { home:'Lazio', away:'Sassuolo', bet:'Vittoria Lazio', pct:82, league:'Serie A 🇮🇹', when:'Lun 9/3 · 20:45' },
   ];
 
   try {
