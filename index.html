@@ -514,7 +514,7 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:60px 24px
     <h1>La <span class="gradient-text">tempesta di dati</span><br>che trasforma le tue scommesse</h1>
     <p>BetStorm scatena la potenza di milioni di statistiche su Serie A, Premier League, La Liga e Champions League. Combinazioni ad alta probabilità. Nessuna fortuna — solo strategia.</p>
     <div class="hero-buttons">
-      <button class="btn btn-primary" style="font-size:1rem;padding:14px 32px" onclick="openModal('register')"><i class="fas fa-bolt"></i> Inizia Gratis</button>
+      <button id="hero-cta" class="btn btn-primary" style="font-size:1rem;padding:14px 32px" onclick="openModal('register')"><i class="fas fa-bolt"></i> Inizia Gratis</button>
       <a href="#piani" class="btn btn-outline" style="font-size:1rem;padding:14px 32px">Scopri i Piani <i class="fas fa-arrow-right" style="font-size:.8rem"></i></a>
     </div>
     <div class="hero-stats">
@@ -948,6 +948,12 @@ async function loadProfile() {
 }
 
 function updateNavForUser() {
+  // Nascondi "Inizia Gratis" nell'hero se loggato
+  const heroCta = document.getElementById('hero-cta');
+  if (heroCta) {
+    heroCta.innerHTML = '<i class="fas fa-chart-pie"></i> Vai alla Dashboard';
+    heroCta.onclick = () => { window.location.href = '/dashboard.html'; };
+  }
   const cta = document.getElementById('nav-cta');
   const plan = currentProfile?.plan || 'free';
   cta.innerHTML = `
@@ -972,6 +978,11 @@ function updateNavForUser() {
 }
 
 function updateNavForGuest() {
+  const heroCta = document.getElementById('hero-cta');
+  if (heroCta) {
+    heroCta.innerHTML = '<i class="fas fa-bolt"></i> Inizia Gratis';
+    heroCta.onclick = () => openModal('register');
+  }
   const cta = document.getElementById('nav-cta');
   cta.innerHTML = `
     <button class="btn btn-outline" onclick="openModal('login')">Accedi</button>
