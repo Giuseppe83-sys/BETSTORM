@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — BetStorm</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:#070a0f;color:#e8edf5;font-family:'DM Sans',sans-serif;min-height:100vh;padding:32px 24px}
+h1{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;margin-bottom:8px}
+.subtitle{color:#6b7a8d;margin-bottom:32px;font-size:.9rem}
+.card{background:#0d1117;border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:28px;max-width:600px;margin-bottom:24px}
+.card h2{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:20px;color:#00e676}
+label{display:block;font-size:.78rem;color:#6b7a8d;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+input,select{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:10px 14px;color:#e8edf5;font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;margin-bottom:16px;transition:border-color .2s}
+input:focus,select:focus{border-color:rgba(0,230,118,.4)}
+select option{background:#0d1117}
+.btn{padding:12px 24px;border-radius:8px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.9rem;cursor:pointer;border:none;transition:all .2s}
+.btn-primary{background:linear-gradient(135deg,#00e676,#00c853);color:#070a0f;width:100%}
+.btn-primary:hover{transform:translateY(-1px)}
+.btn-danger{background:rgba(255,82,82,.1);border:1px solid rgba(255,82,82,.3);color:#ff5252;width:100%}
+.result{margin-top:16px;padding:14px;border-radius:10px;font-size:.85rem;display:none}
+.result.success{background:rgba(0,230,118,.08);border:1px solid rgba(0,230,118,.2);color:#00e676}
+.result.error{background:rgba(255,82,82,.08);border:1px solid rgba(255,82,82,.2);color:#ff5252}
+.users-table{width:100%;border-collapse:collapse;font-size:.82rem}
+.users-table th{text-align:left;padding:8px 12px;color:#6b7a8d;text-transform:uppercase;font-size:.7rem;letter-spacing:.06em;border-bottom:1px solid rgba(255,255,255,.07)}
+.users-table td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.04)}
+.chip{display:inline-block;padding:2px 10px;border-radius:99px;font-size:.72rem;font-weight:700}
+.chip.free{background:rgba(255,255,255,.06);color:#6b7a8d}
+.chip.pro{background:rgba(0,230,118,.1);color:#00e676}
+.chip.elite{background:rgba(255,215,0,.1);color:#ffd700}
+#login-screen{max-width:360px;margin:80px auto;text-align:center}
+#login-screen input{text-align:left}
+#admin-content{display:none}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(0,0,0,.2);border-top-color:#000;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN ADMIN -->
+<div id="login-screen">
+  <h1 style="margin-bottom:8px">🔒 Admin</h1>
+  <p style="color:#6b7a8d;margin-bottom:24px;font-size:.9rem">Accesso riservato</p>
+  <input type="password" id="admin-pwd" placeholder="Password admin" onkeydown="if(event.key==='Enter')checkAdmin()">
+  <button class="btn btn-primary" onclick="checkAdmin()">Accedi</button>
+  <div id="login-error" style="color:#ff5252;font-size:.82rem;margin-top:12px;display:none">Password errata</div>
+</div>
+
+<!-- ADMIN CONTENT -->
+<div id="admin-content">
+  <h1>⚡ BetStorm Admin</h1>
+  <p class="subtitle">Gestione manuale piani — pagamenti PayPal</p>
+
+  <!-- ATTIVA PIANO -->
+  <div class="card">
+    <h2>✅ Attiva / Cambia Piano Utente</h2>
+    <label>Email utente</label>
+    <input type="email" id="user-email" placeholder="utente@email.com">
+    <label>Piano da attivare</label>
+    <select id="user-plan">
+      <option value="free">Free</option>
+      <option value="pro" selected>Pro — €9.99/mese</option>
+      <option value="elite">Elite — €24.99/mese</option>
+    </select>
+    <button class="btn btn-primary" id="activate-btn" onclick="activatePlan()">
+      Attiva Piano
+    </button>
+    <div class="result" id="activate-result"></div>
+  </div>
+
+  <!-- LISTA UTENTI -->
+  <div class="card">
+    <h2>👥 Utenti recenti</h2>
+    <button class="btn" onclick="loadUsers()" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);color:#e8edf5;margin-bottom:16px;width:auto;padding:8px 16px">
+      🔄 Aggiorna lista
+    </button>
+    <div id="users-container">
+      <p style="color:#6b7a8d;font-size:.85rem">Clicca "Aggiorna lista" per caricare</p>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL      = 'https://zvftggieqlxujjtotvwg.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp2ZnRnZ2llcWx4dWpqdG90dndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE0OTQ3NjIsImV4cCI6MjA4NzA3MDc2Mn0.ZatmSARBUZpibKPTBNhpXj0c07Thzu8RvT4NjMR6lxg';
+const { createClient } = window.supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// Password admin semplice — CAMBIA QUESTA
+const ADMIN_PASSWORD = 'betstorm2026';
+
+function checkAdmin() {
+  const pwd = document.getElementById('admin-pwd').value;
+  if (pwd === ADMIN_PASSWORD) {
+    document.getElementById('login-screen').style.display  = 'none';
+    document.getElementById('admin-content').style.display = 'block';
+    loadUsers();
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+  }
+}
+
+async function activatePlan() {
+  const email = document.getElementById('user-email').value.trim().toLowerCase();
+  const plan  = document.getElementById('user-plan').value;
+  const btn   = document.getElementById('activate-btn');
+  const res   = document.getElementById('activate-result');
+
+  if (!email) { showResult('activate-result', 'Inserisci una email', false); return; }
+
+  btn.innerHTML = '<span class="spinner"></span>Attivazione...';
+  btn.disabled  = true;
+
+  try {
+    // Cerca utente per email nella tabella profiles
+    const { data, error } = await sb
+      .from('profiles')
+      .update({
+        plan,
+        subscription_status: plan === 'free' ? 'free' : 'active',
+        updated_at: new Date().toISOString()
+      })
+      .eq('email', email)
+      .select();
+
+    if (error) throw error;
+    if (!data || data.length === 0) {
+      showResult('activate-result', `❌ Nessun utente trovato con email: ${email}`, false);
+    } else {
+      showResult('activate-result', `✅ Piano "${plan.toUpperCase()}" attivato per ${email}`, true);
+      document.getElementById('user-email').value = '';
+      loadUsers();
+    }
+  } catch(e) {
+    showResult('activate-result', '❌ Errore: ' + e.message, false);
+  }
+
+  btn.innerHTML = 'Attiva Piano';
+  btn.disabled  = false;
+}
+
+async function loadUsers() {
+  const container = document.getElementById('users-container');
+  container.innerHTML = '<p style="color:#6b7a8d;font-size:.85rem">Caricamento...</p>';
+
+  try {
+    const { data, error } = await sb
+      .from('profiles')
+      .select('email, full_name, plan, subscription_status, created_at')
+      .order('created_at', { ascending: false })
+      .limit(50);
+
+    if (error) throw error;
+    if (!data?.length) { container.innerHTML = '<p style="color:#6b7a8d;font-size:.85rem">Nessun utente</p>'; return; }
+
+    container.innerHTML = `
+      <table class="users-table">
+        <thead>
+          <tr>
+            <th>Email</th>
+            <th>Nome</th>
+            <th>Piano</th>
+            <th>Stato</th>
+            <th>Registrato</th>
+            <th>Azione</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${data.map(u => `
+            <tr>
+              <td>${u.email}</td>
+              <td style="color:#6b7a8d">${u.full_name || '—'}</td>
+              <td><span class="chip ${u.plan}">${u.plan}</span></td>
+              <td style="color:#6b7a8d;font-size:.78rem">${u.subscription_status || '—'}</td>
+              <td style="color:#6b7a8d;font-size:.78rem">${new Date(u.created_at).toLocaleDateString('it-IT')}</td>
+              <td>
+                <select onchange="quickActivate('${u.email}', this.value)" style="padding:4px 8px;font-size:.75rem;width:auto;margin:0;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:6px;color:#e8edf5">
+                  <option value="" disabled selected>Cambia</option>
+                  <option value="free">Free</option>
+                  <option value="pro">Pro</option>
+                  <option value="elite">Elite</option>
+                </select>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+      <p style="margin-top:12px;font-size:.75rem;color:#6b7a8d">Totale: ${data.length} utenti</p>
+    `;
+  } catch(e) {
+    container.innerHTML = `<p style="color:#ff5252;font-size:.85rem">Errore: ${e.message}</p>`;
+  }
+}
+
+async function quickActivate(email, plan) {
+  if (!plan) return;
+  try {
+    const { error } = await sb.from('profiles').update({
+      plan,
+      subscription_status: plan === 'free' ? 'free' : 'active',
+      updated_at: new Date().toISOString()
+    }).eq('email', email);
+    if (error) throw error;
+    alert(`✅ Piano "${plan}" attivato per ${email}`);
+    loadUsers();
+  } catch(e) {
+    alert('❌ Errore: ' + e.message);
+  }
+}
+
+function showResult(id, msg, ok) {
+  const el = document.getElementById(id);
+  el.textContent   = msg;
+  el.className     = `result ${ok ? 'success' : 'error'}`;
+  el.style.display = 'block';
+}
+</script>
+</body>
+</html>
