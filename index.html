@@ -1148,25 +1148,80 @@ async function handleLogout() {
 // ============================================================
 // STRIPE CHECKOUT
 // ============================================================
-async function startCheckout(plan) {
-  if (!currentUser) { openModal('register'); return; }
-  const billing = isAnnual ? 'annual' : 'monthly';
-  const loaderId = `stripe-loading-${plan}`;
-  document.getElementById(loaderId).classList.add('show');
+// ============================================================
+// PAYPAL CHECKOUT
+// ============================================================
+const PAYPAL_PRICES = {
+  pro:   { monthly: 9.99,  annual: 83.88  }, // annual = 9.99*12*0.70
+  elite: { monthly: 24.99, annual: 209.90 }, // annual = 24.99*12*0.70
+};
+// ⬇️ CAMBIA CON IL TUO LINK PAYPAL.ME
+const PAYPAL_ME = 'https://paypal.me/peppecapitano';
 
-  try {
-    const res = await fetch('/api/create-checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ plan, billing, email: currentUser.email, userId: currentUser.id })
-    });
-    const data = await res.json();
-    if (data.url) window.location.href = data.url;
-    else throw new Error(data.error || 'Errore sconosciuto');
-  } catch (err) {
-    showToast('❌ Errore pagamento: ' + err.message, 'error');
-    document.getElementById(loaderId).classList.remove('show');
-  }
+function startCheckout(plan) {
+  if (!currentUser) { openModal('register'); return; }
+  const billing  = isAnnual ? 'annual' : 'monthly';
+  const amount   = PAYPAL_PRICES[plan][billing];
+  const planName = plan === 'pro' ? 'Pro' : 'Elite';
+  const period   = isAnnual ? 'annuale' : 'mensile';
+
+  // Mostra modal di istruzioni PayPal
+  showPayPalModal(plan, planName, period, amount);
+}
+
+function showPayPalModal(plan, planName, period, amount) {
+  // Rimuovi eventuale modal esistente
+  const existing = document.getElementById('paypal-modal');
+  if (existing) existing.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'paypal-modal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.7);backdrop-filter:blur(8px)';
+  modal.innerHTML = `
+    <div style="background:#0d1117;border:1px solid rgba(0,230,118,.3);border-radius:20px;padding:36px;max-width:460px;width:100%;position:relative">
+      <button onclick="document.getElementById('paypal-modal').remove()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:#6b7a8d;font-size:1.4rem;cursor:pointer">×</button>
+      
+      <div style="text-align:center;margin-bottom:24px">
+        <div style="font-size:2.5rem;margin-bottom:8px">💳</div>
+        <h2 style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:6px">Upgrade a ${planName}</h2>
+        <div style="color:#00e676;font-size:1.8rem;font-weight:800">€${amount.toFixed(2)}<span style="font-size:.9rem;color:#6b7a8d;font-weight:400"> /${period}</span></div>
+      </div>
+
+      <div style="background:rgba(255,255,255,.03);border-radius:12px;padding:20px;margin-bottom:24px">
+        <p style="font-weight:600;margin-bottom:12px;font-size:.9rem">Come procedere:</p>
+        <div style="display:flex;gap:12px;margin-bottom:10px;font-size:.85rem">
+          <span style="background:#00e676;color:#000;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0">1</span>
+          <span>Clicca <strong>Paga con PayPal</strong> qui sotto</span>
+        </div>
+        <div style="display:flex;gap:12px;margin-bottom:10px;font-size:.85rem">
+          <span style="background:#00e676;color:#000;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0">2</span>
+          <span>Invia <strong>€${amount.toFixed(2)}</strong> e nella nota scrivi la tua email: <strong style="color:#00e676">${currentUser.email}</strong></span>
+        </div>
+        <div style="display:flex;gap:12px;font-size:.85rem">
+          <span style="background:#00e676;color:#000;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0">3</span>
+          <span>Il tuo piano viene attivato entro <strong>pochi minuti</strong> ⚡</span>
+        </div>
+      </div>
+
+      <button onclick="goPayPal('${plan}',${amount})" style="width:100%;padding:14px;background:#0070ba;border:none;border-radius:10px;color:#fff;font-family:'DM Sans',sans-serif;font-weight:700;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px;transition:all .2s" onmouseover="this.style.background='#005ea6'" onmouseout="this.style.background='#0070ba'">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-.013.076-.026.175-.041.254-.93 4.778-4.005 7.201-9.138 7.201h-2.19a.563.563 0 0 0-.556.479l-1.187 7.527h-.506l-.24 1.516a.56.56 0 0 0 .554.647h3.882c.46 0 .85-.334.922-.788.06-.26.76-4.852.816-5.09a.932.932 0 0 1 .923-.788h.58c3.76 0 6.705-1.528 7.565-5.946.36-1.847.174-3.388-.777-4.471z"/></svg>
+        Paga con PayPal
+      </button>
+      <p style="text-align:center;font-size:.75rem;color:#6b7a8d">Hai già pagato? <a href="mailto:support@betstorm.it" style="color:#00e676">Contattaci</a></p>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  // Chiudi cliccando fuori
+  modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+}
+
+function goPayPal(plan, amount) {
+  // Copia email negli appunti per comodità
+  try { navigator.clipboard.writeText(currentUser.email); } catch(_) {}
+  showToast('📋 Email copiata! Incollala nella nota PayPal', 'success');
+  setTimeout(() => {
+    window.open(`${PAYPAL_ME}/${amount.toFixed(2)}EUR`, '_blank');
+  }, 800);
 }
 
 // ============================================================
