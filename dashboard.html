@@ -109,7 +109,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 
 /* EVENTO ROW */
 .event-row{background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:12px;align-items:end}
-.event-row>div:first-child{grid-column:1/-1}
+/* no full-width first child */
 .btn-remove{background:rgba(255,82,82,.1);border:1px solid rgba(255,82,82,.3);color:var(--red);border-radius:8px;padding:10px 12px;cursor:pointer;transition:all .2s;height:40px}
 .btn-remove:hover{background:rgba(255,82,82,.2)}
 
@@ -386,23 +386,38 @@ function renderStats(analyses) {
 // AUTOCOMPLETE
 function _teams(l) { return (typeof BETSTORM_TEAMS!=='undefined'?BETSTORM_TEAMS[l]:null)||[]; }
 function _teamById(id) { if(typeof BETSTORM_TEAMS==='undefined') return null; for(const a of Object.values(BETSTORM_TEAMS)){const t=a.find(t=>t.id===id);if(t)return t;} return null; }
-function filterTeams(eid,side) {
-  const row=document.querySelector(`.event-row[data-id="${eid}"]`); if(!row) return;
-  const q=row.querySelector(`.${side}-input`).value.toLowerCase();
-  const teams=_teams(row.querySelector('.league-select').value).filter(t=>t.name.toLowerCase().includes(q));
-  _renderDrop(eid,side,teams); document.getElementById(`${side}-drop-${eid}`).classList.add('open');
+// Cerca su TUTTI i campionati insieme
+function _allTeams() {
+  if (typeof BETSTORM_TEAMS === 'undefined') return [];
+  return Object.entries(BETSTORM_TEAMS).flatMap(([league, teams]) =>
+    teams.map(t => ({ ...t, league }))
+  );
 }
-function showDropdown(eid,side) {
-  const row=document.querySelector(`.event-row[data-id="${eid}"]`); if(!row) return;
-  const l=row.querySelector('.league-select').value; if(!l) return;
-  const q=row.querySelector(`.${side}-input`).value.toLowerCase();
-  _renderDrop(eid,side,_teams(l).filter(t=>!q||t.name.toLowerCase().includes(q)));
+function filterTeams(eid, side) {
+  const row = document.querySelector(`.event-row[data-id="${eid}"]`); if (!row) return;
+  const q = row.querySelector(`.${side}-input`).value.toLowerCase().trim();
+  const teams = q.length < 1 ? [] : _allTeams().filter(t => t.name.toLowerCase().includes(q));
+  _renderDrop(eid, side, teams);
+  document.getElementById(`${side}-drop-${eid}`).classList.add('open');
+}
+function showDropdown(eid, side) {
+  const row = document.querySelector(`.event-row[data-id="${eid}"]`); if (!row) return;
+  const q = row.querySelector(`.${side}-input`).value.toLowerCase().trim();
+  const teams = q.length >= 1 ? _allTeams().filter(t => t.name.toLowerCase().includes(q)) : _allTeams().slice(0, 8);
+  _renderDrop(eid, side, teams);
   document.getElementById(`${side}-drop-${eid}`).classList.add('open');
 }
 function hideDropdown(eid,side,delay=0) { setTimeout(()=>{const el=document.getElementById(`${side}-drop-${eid}`);if(el)el.classList.remove('open');},delay); }
-function _renderDrop(eid,side,teams) {
-  const el=document.getElementById(`${side}-drop-${eid}`); if(!el) return;
-  el.innerHTML=teams.slice(0,20).map(t=>`<div class="autocomplete-item" onmousedown="selectTeam(${eid},'${side}','${t.id}','${t.name}')"><span class="team-short">${t.short}</span><span>${t.name}</span><span class="form-dots">${t.form.map(f=>`<span class="form-dot ${f?'w':'l'}"></span>`).join('')}</span></div>`).join('')||'<div style="padding:12px;color:var(--muted);font-size:.8rem">Nessuna squadra trovata</div>';
+function _renderDrop(eid, side, teams) {
+  const el = document.getElementById(`${side}-drop-${eid}`); if (!el) return;
+  if (!teams.length) { el.innerHTML = '<div style="padding:12px;color:var(--muted);font-size:.8rem">Nessuna squadra trovata</div>'; return; }
+  el.innerHTML = teams.slice(0, 20).map(t => `
+    <div class="autocomplete-item" onmousedown="selectTeam(${eid},'${side}','${t.id}','${t.name}')">
+      <span class="team-short">${t.short}</span>
+      <span style="flex:1">${t.name}</span>
+      <span style="font-size:.68rem;color:var(--muted);margin-right:6px">${t.league || ''}</span>
+      <span class="form-dots">${t.form.map(f => `<span class="form-dot ${f?'w':'l'}"></span>`).join('')}</span>
+    </div>`).join('');
 }
 function selectTeam(eid,side,id,name) {
   const row=document.querySelector(`.event-row[data-id="${eid}"]`); if(!row) return;
@@ -425,9 +440,8 @@ function addComboEvent() {
   const row=document.createElement('div');
   row.className='event-row'; row.dataset.id=id;
   row.innerHTML=`
-    <div><span class="event-row-label">Campionato</span><select class="league-select" onchange="updateLeague(${id})" style="width:100%"><option value="">— Seleziona —</option>${leagues}</select></div>
-    <div><span class="event-row-label">Squadra Casa</span><div class="team-autocomplete"><input type="text" class="team-input home-input" placeholder="Cerca squadra..." autocomplete="off" oninput="filterTeams(${id},'home')" onfocus="showDropdown(${id},'home')" onblur="hideDropdown(${id},'home',300)"><input type="hidden" class="home-team-id"><div class="autocomplete-dropdown" id="home-drop-${id}"></div></div></div>
-    <div><span class="event-row-label">Squadra Ospite</span><div class="team-autocomplete"><input type="text" class="team-input away-input" placeholder="Cerca squadra..." autocomplete="off" oninput="filterTeams(${id},'away')" onfocus="showDropdown(${id},'away')" onblur="hideDropdown(${id},'away',300)"><input type="hidden" class="away-team-id"><div class="autocomplete-dropdown" id="away-drop-${id}"></div></div></div>
+    <div><span class="event-row-label">Squadra Casa</span><div class="team-autocomplete"><input type="text" class="team-input home-input" placeholder="Cerca in tutti i campionati..." autocomplete="off" oninput="filterTeams(${id},'home')" onfocus="showDropdown(${id},'home')" onblur="hideDropdown(${id},'home',300)"><input type="hidden" class="home-team-id"><div class="autocomplete-dropdown" id="home-drop-${id}"></div></div></div>
+    <div><span class="event-row-label">Squadra Ospite</span><div class="team-autocomplete"><input type="text" class="team-input away-input" placeholder="Cerca in tutti i campionati..." autocomplete="off" oninput="filterTeams(${id},'away')" onfocus="showDropdown(${id},'away')" onblur="hideDropdown(${id},'away',300)"><input type="hidden" class="away-team-id"><div class="autocomplete-dropdown" id="away-drop-${id}"></div></div></div>
     <div><span class="event-row-label">Scommessa</span><select class="bet-select" style="width:100%">${bets}</select></div>
     <div><button class="btn-remove" onclick="this.closest('.event-row').remove()" title="Rimuovi"><i class="fas fa-times"></i></button></div>`;
   c.appendChild(row);
