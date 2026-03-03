@@ -10,120 +10,124 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{background:#070a0f;color:#e8edf5;font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;overflow:hidden}
-body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(0,230,118,.15) 0%,transparent 70%);pointer-events:none}
-
-.card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:24px;padding:56px 48px;max-width:520px;width:100%;text-align:center;position:relative;animation:scaleIn .5s cubic-bezier(.34,1.56,.64,1)}
-
-@keyframes scaleIn{from{opacity:0;transform:scale(.9) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
-
-.icon-wrap{width:80px;height:80px;background:linear-gradient(135deg,#00e676,#00c853);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 28px;font-size:2.2rem;box-shadow:0 0 40px rgba(0,230,118,.4);animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{box-shadow:0 0 40px rgba(0,230,118,.4)}50%{box-shadow:0 0 60px rgba(0,230,118,.7)}}
-
-h1{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;margin-bottom:12px;letter-spacing:-.02em}
-h1 span{background:linear-gradient(135deg,#00e676,#ffd700);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-
-.subtitle{color:#6b7a8d;font-size:1rem;line-height:1.6;margin-bottom:36px}
-
-.plan-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,230,118,.1);border:1px solid rgba(0,230,118,.25);border-radius:50px;padding:8px 20px;font-size:.875rem;color:#00e676;font-weight:600;margin-bottom:36px}
-
-.features{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:24px;margin-bottom:36px;text-align:left}
-.features h3{font-family:'Syne',sans-serif;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#6b7a8d;margin-bottom:16px}
-.feature-item{display:flex;align-items:center;gap:12px;font-size:.875rem;color:#e8edf5;margin-bottom:12px}
-.feature-item:last-child{margin-bottom:0}
-.feature-item .check{color:#00e676;font-size:.9rem;flex-shrink:0}
-
-.btn-home{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#00e676,#00c853);color:#070a0f;font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;padding:14px 32px;border-radius:10px;text-decoration:none;transition:all .25s;box-shadow:0 0 25px rgba(0,230,118,.3);margin-bottom:16px;width:100%;justify-content:center}
-.btn-home:hover{transform:translateY(-2px);box-shadow:0 0 40px rgba(0,230,118,.5)}
-
-.btn-secondary{display:inline-flex;align-items:center;gap:8px;background:transparent;border:1px solid rgba(255,255,255,.1);color:#6b7a8d;font-family:'DM Sans',sans-serif;font-size:.875rem;padding:12px 24px;border-radius:10px;text-decoration:none;transition:all .2s;width:100%;justify-content:center}
-.btn-secondary:hover{border-color:rgba(255,255,255,.2);color:#e8edf5}
-
-.confetti{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}
+body{background:#070a0f;color:#e8edf5;font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(0,230,118,.12) 0%,transparent 70%);pointer-events:none}
+.card{background:#0d1117;border:1px solid rgba(255,255,255,.07);border-radius:24px;padding:48px 40px;max-width:480px;width:100%;text-align:center;position:relative}
+.icon{font-size:4rem;margin-bottom:16px}
+h1{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;margin-bottom:12px}
+.subtitle{color:#6b7a8d;margin-bottom:32px;line-height:1.6}
+.plan-badge{display:inline-block;padding:8px 20px;border-radius:99px;font-weight:700;font-size:.9rem;margin-bottom:28px;background:rgba(0,230,118,.1);border:1px solid rgba(0,230,118,.3);color:#00e676}
+.plan-badge.elite{background:rgba(255,215,0,.1);border-color:rgba(255,215,0,.3);color:#ffd700}
+.features{text-align:left;background:rgba(255,255,255,.03);border-radius:14px;padding:20px 24px;margin-bottom:32px}
+.feature-item{display:flex;align-items:center;gap:10px;padding:7px 0;font-size:.9rem;border-bottom:1px solid rgba(255,255,255,.05)}
+.feature-item:last-child{border-bottom:none}
+.check{color:#00e676;font-weight:700;font-size:1rem;flex-shrink:0}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border-radius:10px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:1rem;cursor:pointer;border:none;text-decoration:none;transition:all .2s}
+.btn-primary{background:linear-gradient(135deg,#00e676,#00c853);color:#070a0f;width:100%;justify-content:center}
+.btn-primary:hover{transform:translateY(-2px)}
+.loading-dots{display:flex;gap:6px;justify-content:center;margin:20px 0}
+.dot{width:8px;height:8px;border-radius:50%;background:#00e676;animation:bounce .8s infinite}
+.dot:nth-child(2){animation-delay:.15s}
+.dot:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,80%,100%{transform:scale(.6)}40%{transform:scale(1)}}
+.status-msg{font-size:.85rem;color:#6b7a8d;margin-bottom:16px;min-height:20px}
 </style>
 </head>
 <body>
-
-<canvas class="confetti" id="confetti"></canvas>
-
 <div class="card">
-  <div class="icon-wrap">🎉</div>
-  <h1>Benvenuto su <span>BetStorm</span>!</h1>
-  <p class="subtitle">Il tuo pagamento è andato a buon fine. Il tuo account è stato aggiornato e hai accesso immediato a tutte le funzionalità premium.</p>
-
+  <div class="icon">🎉</div>
+  <h1>Pagamento completato!</h1>
+  <p class="subtitle">Il tuo piano è stato attivato.<br>Benvenuto nella famiglia BetStorm.</p>
   <div class="plan-badge" id="plan-badge">⚡ Piano Pro attivato</div>
-
-  <div class="features">
-    <h3>Cosa hai sbloccato</h3>
-    <div class="feature-item"><span class="check">✓</span> Analisi illimitate ogni giorno</div>
-    <div class="feature-item"><span class="check">✓</span> Combinazioni AI avanzate</div>
-    <div class="feature-item"><span class="check">✓</span> Notifiche push in tempo reale</div>
-    <div class="feature-item"><span class="check">✓</span> Statistiche premium per ogni squadra</div>
-    <div class="feature-item"><span class="check">✓</span> Storico analisi 5 anni</div>
+  <div class="loading-dots" id="loading-dots">
+    <div class="dot"></div><div class="dot"></div><div class="dot"></div>
   </div>
-
-  <a href="/" class="btn-home">🌪️ Vai a BetStorm</a>
-  <a href="mailto:info@betstorm.it" class="btn-secondary">✉️ Contatta il supporto</a>
+  <p class="status-msg" id="status-msg">Aggiornamento account in corso...</p>
+  <div class="features">
+    <div class="feature-item"><span class="check">✓</span> Analisi illimitate</div>
+    <div class="feature-item"><span class="check">✓</span> Segnali avanzati</div>
+    <div class="feature-item"><span class="check">✓</span> Statistiche complete</div>
+    <div class="feature-item" id="extra-features"></div>
+  </div>
+  <a href="/dashboard.html" class="btn btn-primary" id="dash-btn">
+    <span>Vai alla Dashboard</span> →
+  </a>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// Leggi piano dall'URL
-const params = new URLSearchParams(window.location.search);
-const plan = params.get('plan');
-const badge = document.getElementById('plan-badge');
-if (plan === 'elite') {
-  badge.textContent = '👑 Piano Elite attivato';
-  badge.style.background = 'rgba(255,215,0,.1)';
-  badge.style.borderColor = 'rgba(255,215,0,.3)';
-  badge.style.color = '#ffd700';
-  // Aggiungi feature Elite
-  document.querySelector('.features div:last-child').insertAdjacentHTML('afterend', `
-    <div class="feature-item"><span class="check">✓</span> Segnali live in-play</div>
-    <div class="feature-item"><span class="check">✓</span> Supporto prioritario 24/7</div>
-    <div class="feature-item"><span class="check">✓</span> API access completo</div>
-  `);
+const SUPABASE_URL      = 'https://zvftggieqlxujjtotvwg.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp2ZnRnZ2llcWx4dWpqdG90dndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE0OTQ3NjIsImV4cCI6MjA4NzA3MDc2Mn0.ZatmSARBUZpibKPTBNhpXj0c07Thzu8RvT4NjMR6lxg';
+const { createClient } = window.supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const BS_KEY = 'betstorm_session';
+
+function getSession() {
+  try {
+    const raw = localStorage.getItem(BS_KEY);
+    if (!raw) return null;
+    const s = JSON.parse(raw);
+    if (!s?.user || Date.now() > s.expires_at) return null;
+    return s;
+  } catch(_) { return null; }
 }
 
-// Confetti animation
-const canvas = document.getElementById('confetti');
-const ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+async function init() {
+  const params = new URLSearchParams(window.location.search);
+  const plan   = params.get('plan') || 'pro';
 
-const colors = ['#00e676','#ffd700','#7c4dff','#ff5252','#00b0ff'];
-const particles = Array.from({length: 120}, () => ({
-  x: Math.random() * canvas.width,
-  y: Math.random() * canvas.height - canvas.height,
-  r: Math.random() * 6 + 2,
-  color: colors[Math.floor(Math.random() * colors.length)],
-  speed: Math.random() * 3 + 1,
-  spin: Math.random() * 0.2 - 0.1,
-  angle: Math.random() * Math.PI * 2,
-  opacity: Math.random() * 0.8 + 0.2
-}));
+  // Update badge UI
+  const badge = document.getElementById('plan-badge');
+  const extra  = document.getElementById('extra-features');
+  if (plan === 'elite') {
+    badge.textContent = '👑 Piano Elite attivato';
+    badge.className   = 'plan-badge elite';
+    extra.innerHTML   = '<span class="check">✓</span> Segnali live in-play<br><span class="check" style="margin-left:0">✓</span> Supporto prioritario 24/7';
+  } else {
+    badge.textContent = '⚡ Piano Pro attivato';
+    extra.innerHTML   = '<span class="check">✓</span> Combinata fino a 5 eventi';
+  }
 
-function drawConfetti() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  particles.forEach(p => {
-    p.y += p.speed;
-    p.angle += p.spin;
-    if (p.y > canvas.height) { p.y = -10; p.x = Math.random() * canvas.width; }
-    ctx.save();
-    ctx.translate(p.x, p.y);
-    ctx.rotate(p.angle);
-    ctx.globalAlpha = p.opacity;
-    ctx.fillStyle = p.color;
-    ctx.fillRect(-p.r, -p.r/2, p.r*2, p.r);
-    ctx.restore();
-  });
-  requestAnimationFrame(drawConfetti);
+  // Try to update plan in Supabase
+  const session = getSession();
+  let userId = session?.user?.id;
+
+  if (!userId) {
+    try {
+      const { data: { session: s } } = await sb.auth.getSession();
+      userId = s?.user?.id;
+    } catch(_) {}
+  }
+
+  if (userId) {
+    try {
+      await sb.from('profiles')
+        .update({ plan, subscription_status: 'active', updated_at: new Date().toISOString() })
+        .eq('id', userId);
+
+      // Aggiorna anche la sessione locale
+      if (session) {
+        session.user.plan = plan;
+        localStorage.setItem(BS_KEY, JSON.stringify(session));
+      }
+
+      document.getElementById('status-msg').textContent  = '✅ Account aggiornato con successo!';
+      document.getElementById('loading-dots').style.display = 'none';
+    } catch(e) {
+      document.getElementById('status-msg').textContent = 'Piano attivato — aggiornamento automatico entro pochi minuti.';
+      document.getElementById('loading-dots').style.display = 'none';
+    }
+  } else {
+    document.getElementById('status-msg').textContent = 'Piano attivato — accedi per vedere le modifiche.';
+    document.getElementById('loading-dots').style.display = 'none';
+  }
+
+  // Auto redirect after 4 seconds
+  setTimeout(() => { window.location.href = '/dashboard.html'; }, 4000);
 }
-drawConfetti();
 
-window.addEventListener('resize', () => {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-});
+init();
 </script>
 </body>
 </html>
