@@ -1256,17 +1256,7 @@ function removeEvent(btn) {
   btn.closest('.event-row').remove(); eventCount--; updateAddBtn();
 }
 
-function updateTeamDropdowns(id) {
-  const row = document.querySelector(`.event-row[data-id="${id}"]`);
-  const league = row.querySelector('.league-select').value;
-  row.querySelector('.home-input').value = '';
-  row.querySelector('.away-input').value = '';
-  row.querySelector('.home-team-id').value = '';
-  row.querySelector('.away-team-id').value = '';
-  // Pre-fill dropdown with all teams for this league
-  renderDropdown(id, 'home', getTeamsByLeague(league));
-  renderDropdown(id, 'away', getTeamsByLeague(league));
-}
+// updateTeamDropdowns rimossa (non più necessaria)
 
 function renderDropdown(eventId, side, teams) {
   const dropId = `${side}-drop-${eventId}`;
