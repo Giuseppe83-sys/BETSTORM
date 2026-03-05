@@ -487,11 +487,11 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:60px 24px
 <div class="mobile-nav" id="mobile-nav">
   <button class="mobile-nav-close" onclick="closeMobileMenu()"><i class="fas fa-times"></i></button>
   <a href="#analizza" onclick="closeMobileMenu()">Analizza</a>
-  <a href="#combinazioni" onclick="closeMobileMenu()">Segnali</a>
+  <a href="#combinazioni" onclick="closeMobileMenu()">Combinazioni</a>
   <a href="#piani" onclick="closeMobileMenu()">Piani</a>
   <a href="#faq" onclick="closeMobileMenu()">FAQ</a>
   <div id="mobile-nav-cta" style="width:100%;padding:0 24px;margin-top:8px">
-    <button class="btn btn-primary" onclick="openModal();closeMobileMenu()" style="width:100%;justify-content:center">
+    <button class="btn btn-primary" onclick="openModal('register');closeMobileMenu()" style="width:100%;justify-content:center">
       <i class="fas fa-bolt"></i> Inizia gratis
     </button>
   </div>
@@ -969,9 +969,9 @@ function updateNavForUser() {
   if (mobileCta && currentUser) {
     const plan = currentProfile?.plan || 'free';
     mobileCta.innerHTML = `<div style="width:100%;padding:0 24px;display:flex;flex-direction:column;gap:10px">
-      <div style="text-align:center;font-size:.85rem;color:var(--muted)">${currentUser.email}</div>
-      <a href="/dashboard.html" onclick="closeMobileMenu()" class="btn btn-primary" style="width:100%;justify-content:center;text-decoration:none"><i class="fas fa-chart-line"></i> Dashboard</a>
-      <button onclick="handleLogout();closeMobileMenu()" class="btn btn-outline" style="width:100%;justify-content:center"><i class="fas fa-sign-out-alt"></i> Esci</button>
+      <div style="text-align:center;font-size:.8rem;color:var(--muted);padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06);margin-bottom:4px">${currentUser.email}</div>
+      <a href="/dashboard.html" onclick="closeMobileMenu()" class="btn btn-primary" style="width:100%;justify-content:center;text-decoration:none"><i class="fas fa-chart-line"></i> Vai alla Dashboard</a>
+      <button onclick="handleLogout();closeMobileMenu()" class="btn btn-outline" style="width:100%;justify-content:center;color:#ff5252;border-color:rgba(255,82,82,.3)"><i class="fas fa-sign-out-alt"></i> Esci</button>
     </div>`;
   }
 }
