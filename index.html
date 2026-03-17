@@ -333,7 +333,7 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:60px 24px
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* REVEAL */
-.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease}
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease}.reveal.visible{opacity:1;transform:translateY(0)}
 .reveal.visible{opacity:1;transform:translateY(0)}
 
 /* STRIPE LOADING */
@@ -1641,12 +1641,24 @@ function renderMatchCards(matches) {
     </div>`;
   }).join('');
 
-  // Anima barre con dato reale
+  // Osserva le nuove card con l'IntersectionObserver
+  // (le card iniettate dinamicamente non vengono viste dal observer iniziale)
   setTimeout(() => {
-    document.querySelectorAll('.progress-fill[data-pct]').forEach(el => {
-      setTimeout(() => { el.style.transition = 'width 1s ease'; el.style.width = el.dataset.pct + '%'; }, 100);
+    const newCards = document.querySelectorAll('#signals-grid .reveal');
+    newCards.forEach(el => {
+      // Se già visibile nel viewport, mostra subito
+      const rect = el.getBoundingClientRect();
+      const inViewport = rect.top < window.innerHeight && rect.bottom > 0;
+      if (inViewport) {
+        el.classList.add('visible');
+        el.querySelectorAll('.progress-fill[data-pct]').forEach(f => {
+          setTimeout(() => { f.style.width = f.dataset.pct + '%'; }, 400);
+        });
+      } else if (typeof observer !== 'undefined') {
+        observer.observe(el);
+      }
     });
-  }, 150);
+  }, 100);
 }
 
 function loadSignalCards() {
