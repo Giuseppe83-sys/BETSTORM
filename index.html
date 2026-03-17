@@ -577,11 +577,7 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:60px 24px
       <p class="section-sub">Partite in programma questa settimana — analisi aggiornata al <span id="today-date"></span></p>
     </div>
     <div class="combos-grid" id="signals-grid">
-      <!-- Caricamento dinamico -->
-      <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted)">
-        <div class="spinner" style="margin:0 auto 12px"></div>
-        <p style="font-size:.85rem">Caricamento partite...</p>
-      </div>
+      <!-- Le card vengono iniettate da renderMatchCards() -->
     </div>
   </div>
 </section>
@@ -1590,8 +1586,7 @@ setInterval(loadLiveTicker, 5 * 60 * 1000);
   }
 })();
 
-// Aggiorna card segnali con partite reali dall'API
-async // Fallback locale — dichiarato PRIMA di loadSignalCards che lo usa
+// Fallback locale — dichiarato PRIMA di loadSignalCards che lo usa
 const FALLBACK_MATCHES = [
   { home:'Inter',        away:'Juventus',        league:'Serie A 🇮🇹',         when:'Domani · 20:45', bet:'Doppia Chance 1X', pct:71 },
   { home:'Arsenal',      away:'Real Madrid',     league:'Champions League ⭐',  when:'Dom · 21:00',    bet:'Goal / Goal',      pct:74 },
@@ -1600,26 +1595,6 @@ const FALLBACK_MATCHES = [
   { home:'Barcellona',   away:'Atletico Madrid', league:'La Liga 🇪🇸',          when:'Sab · 21:00',    bet:'Over 1.5 Gol',     pct:80 },
   { home:'Bayern',       away:'PSG',             league:'Champions League ⭐',  when:'Mar · 21:00',    bet:'Goal / Goal',      pct:72 },
 ];
-
-function loadSignalCards() {
-  const grid    = document.getElementById('signals-grid');
-  const todayEl = document.getElementById('today-date');
-  if (todayEl) todayEl.textContent = new Date().toLocaleDateString('it-IT', { day:'numeric', month:'long', year:'numeric' });
-  if (!grid) return;
-
-  // Mostra subito il fallback — nessuno spinner infinito
-  renderMatchCards(FALLBACK_MATCHES);
-
-  // Tenta l'API in background: se risponde aggiorna le card
-  fetch('/api/matches', { signal: AbortSignal.timeout(5000) })
-    .then(r => { if (!r.ok) throw new Error('no api'); return r.json(); })
-    .then(data => {
-      if (data.matches && data.matches.length > 0) {
-        renderMatchCards(data.matches);
-      }
-    })
-    .catch(() => { /* fallback già mostrato */ });
-}
 
 function renderMatchCards(matches) {
   const grid = document.getElementById('signals-grid');
@@ -1674,10 +1649,31 @@ function renderMatchCards(matches) {
   }, 150);
 }
 
-loadSignalCards();
+function loadSignalCards() {
+  const grid    = document.getElementById('signals-grid');
+  const todayEl = document.getElementById('today-date');
+  if (todayEl) todayEl.textContent = new Date().toLocaleDateString('it-IT', { day:'numeric', month:'long', year:'numeric' });
+  if (!grid) return;
 
-// Init 2 eventi
-addEvent(); addEvent();
+  // Mostra subito il fallback — nessuno spinner infinito
+  renderMatchCards(FALLBACK_MATCHES);
+
+  // Tenta l'API in background: se risponde aggiorna le card
+  fetch('/api/matches', { signal: AbortSignal.timeout(5000) })
+    .then(r => { if (!r.ok) throw new Error('no api'); return r.json(); })
+    .then(data => {
+      if (data.matches && data.matches.length > 0) {
+        renderMatchCards(data.matches);
+      }
+    })
+    .catch(() => { /* fallback già mostrato */ });
+}
+
+
+// Avvia subito — non aspettare DOMContentLoaded
+loadSignalCards();
+addEvent();
+addEvent();
 </script>
 <!-- Cookie Banner GDPR -->
 <script src="cookie-banner.js"></script>
