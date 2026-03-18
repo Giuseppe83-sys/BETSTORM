@@ -1646,51 +1646,44 @@ function renderTicker(matches) {
 
 // Fallback locale — dichiarato PRIMA di loadSignalCards che lo usa
 const FALLBACK_MATCHES = [
-  { home:'Inter',        away:'Juventus',        league:'Serie A 🇮🇹',         when:'Domani · 20:45', bet:'Doppia Chance 1X', pct:71 },
-  { home:'Arsenal',      away:'Real Madrid',     league:'Champions League ⭐',  when:'Dom · 21:00',    bet:'Goal / Goal',      pct:74 },
-  { home:'Liverpool',    away:'Man City',        league:'Premier League 🏴󠁧󠁢󠁥󠁮󠁧󠁿', when:'Sab · 16:30',    bet:'Over 2.5 Gol',     pct:78 },
-  { home:'Napoli',       away:'Milan',           league:'Serie A 🇮🇹',         when:'Dom · 18:00',    bet:'Goal / Goal',      pct:68 },
-  { home:'Barcellona',   away:'Atletico Madrid', league:'La Liga 🇪🇸',          when:'Sab · 21:00',    bet:'Over 1.5 Gol',     pct:80 },
-  { home:'Bayern',       away:'PSG',             league:'Champions League ⭐',  when:'Mar · 21:00',    bet:'Goal / Goal',      pct:72 },
+  { home:'Bayern',       away:'Atalanta',        league:'Champions ⭐',        when:'Oggi · 21:00',    bet:'Vittoria Bayern',     pct:88 },
+  { home:'Liverpool',    away:'Galatasaray',     league:'Champions ⭐',        when:'Oggi · 21:00',    bet:'Vittoria Liverpool',  pct:79 },
+  { home:'Barcellona',   away:'Newcastle',       league:'Champions ⭐',        when:'Oggi · 18:45',    bet:'Vittoria Barcellona', pct:78 },
+  { home:'Juventus',     away:'Sassuolo',        league:'Serie A 🇮🇹',         when:'Sab 21/3 · 20:45', bet:'Vittoria Juventus', pct:85 },
+  { home:'Atalanta',     away:'Verona',          league:'Serie A 🇮🇹',         when:'Dom 22/3 · 15:00', bet:'Vittoria Atalanta', pct:83 },
+  { home:'Milan',        away:'Torino',          league:'Serie A 🇮🇹',         when:'Sab 21/3 · 18:00', bet:'Vittoria Milan',    pct:81 },
 ];
 
 async function loadLiveTicker() {
   const ticker = document.getElementById('live-ticker');
   if (!ticker) return;
 
-  // Partite reali — aggiornato 16/3/2026
+  // Partite reali — aggiornato 18/3/2026
   const staticMatches = [
-    // Serie A — Oggi 16/3
-    { home:'Cremonese', away:'Fiorentina', bet:'Vittoria Fiorentina', pct:72, league:'Serie A 🇮🇹', when:'Oggi · 20:45' },
-    // Champions League — Ritorno ottavi — Domani 17/3
-    { home:'Man City',   away:'Real Madrid',   bet:'Vittoria Man City',   pct:58, league:'Champions ⭐', when:'Dom 17/3 · 21:00' },
-    { home:'Chelsea',    away:'PSG',            bet:'Vittoria PSG',         pct:71, league:'Champions ⭐', when:'Dom 17/3 · 21:00' },
-    { home:'Arsenal',    away:'Leverkusen',     bet:'1X Arsenal',           pct:74, league:'Champions ⭐', when:'Dom 17/3 · 21:00' },
-    { home:'Sp. Lisbona',away:'Bodø/Glimt',    bet:'Vittoria Bodø/Glimt',  pct:66, league:'Champions ⭐', when:'Dom 17/3 · 18:45' },
-    // Champions League — Ritorno ottavi — 18/3
-    { home:'Bayern',     away:'Atalanta',       bet:'Vittoria Bayern',      pct:88, league:'Champions ⭐', when:'Mer 18/3 · 21:00' },
-    { home:'Liverpool',  away:'Galatasaray',    bet:'Vittoria Liverpool',   pct:79, league:'Champions ⭐', when:'Mer 18/3 · 21:00' },
-    { home:'Tottenham',  away:'Atletico Madrid',bet:'Vittoria Atletico',    pct:73, league:'Champions ⭐', when:'Mer 18/3 · 21:00' },
-    { home:'Newcastle',  away:'Barcellona',     bet:'Vittoria Barcellona',  pct:68, league:'Champions ⭐', when:'Mer 18/3 · 21:00' },
+    // Champions League — Ritorno ottavi — Oggi 18/3
+    { home:'Barcellona',  away:'Newcastle',       bet:'Vittoria Barcellona',  pct:78, league:'Champions ⭐', when:'Oggi · 18:45' },
+    { home:'Bayern',      away:'Atalanta',        bet:'Vittoria Bayern',      pct:88, league:'Champions ⭐', when:'Oggi · 21:00' },
+    { home:'Liverpool',   away:'Galatasaray',     bet:'Vittoria Liverpool',   pct:79, league:'Champions ⭐', when:'Oggi · 21:00' },
+    { home:'Tottenham',   away:'Atletico Madrid', bet:'Vittoria Atletico',    pct:73, league:'Champions ⭐', when:'Oggi · 21:00' },
     // Serie A — 30ª giornata (20-22 Mar)
-    { home:'Cagliari',   away:'Napoli',         bet:'Vittoria Napoli',      pct:76, league:'Serie A 🇮🇹', when:'Ven 20/3 · 18:30' },
-    { home:'Genoa',      away:'Udinese',        bet:'1X',                   pct:64, league:'Serie A 🇮🇹', when:'Ven 20/3 · 20:45' },
-    { home:'Parma',      away:'Cremonese',      bet:'Vittoria Parma',       pct:68, league:'Serie A 🇮🇹', when:'Sab 21/3 · 15:00' },
-    { home:'Milan',      away:'Torino',         bet:'Vittoria Milan',       pct:81, league:'Serie A 🇮🇹', when:'Sab 21/3 · 18:00' },
-    { home:'Juventus',   away:'Sassuolo',       bet:'Vittoria Juventus',    pct:85, league:'Serie A 🇮🇹', when:'Sab 21/3 · 20:45' },
-    { home:'Como',       away:'Pisa',           bet:'Vittoria Como',        pct:62, league:'Serie A 🇮🇹', when:'Dom 22/3 · 12:30' },
-    { home:'Atalanta',   away:'Verona',         bet:'Vittoria Atalanta',    pct:83, league:'Serie A 🇮🇹', when:'Dom 22/3 · 15:00' },
-    { home:'Bologna',    away:'Lazio',          bet:'Goal/Goal',            pct:69, league:'Serie A 🇮🇹', when:'Dom 22/3 · 15:00' },
-    { home:'Roma',       away:'Lecce',          bet:'Vittoria Roma',        pct:80, league:'Serie A 🇮🇹', when:'Dom 22/3 · 18:00' },
-    { home:'Fiorentina', away:'Inter',          bet:'Vittoria Inter',       pct:74, league:'Serie A 🇮🇹', when:'Dom 22/3 · 20:45' },
+    { home:'Cagliari',    away:'Napoli',          bet:'Vittoria Napoli',      pct:76, league:'Serie A 🇮🇹', when:'Ven 20/3 · 18:30' },
+    { home:'Genoa',       away:'Udinese',         bet:'1X',                   pct:64, league:'Serie A 🇮🇹', when:'Ven 20/3 · 20:45' },
+    { home:'Parma',       away:'Cremonese',       bet:'Vittoria Parma',       pct:68, league:'Serie A 🇮🇹', when:'Sab 21/3 · 15:00' },
+    { home:'Milan',       away:'Torino',          bet:'Vittoria Milan',       pct:81, league:'Serie A 🇮🇹', when:'Sab 21/3 · 18:00' },
+    { home:'Juventus',    away:'Sassuolo',        bet:'Vittoria Juventus',    pct:85, league:'Serie A 🇮🇹', when:'Sab 21/3 · 20:45' },
+    { home:'Como',        away:'Pisa',            bet:'Vittoria Como',        pct:62, league:'Serie A 🇮🇹', when:'Dom 22/3 · 12:30' },
+    { home:'Atalanta',    away:'Verona',          bet:'Vittoria Atalanta',    pct:83, league:'Serie A 🇮🇹', when:'Dom 22/3 · 15:00' },
+    { home:'Bologna',     away:'Lazio',           bet:'Goal/Goal',            pct:69, league:'Serie A 🇮🇹', when:'Dom 22/3 · 15:00' },
+    { home:'Roma',        away:'Lecce',           bet:'Vittoria Roma',        pct:80, league:'Serie A 🇮🇹', when:'Dom 22/3 · 18:00' },
+    { home:'Fiorentina',  away:'Inter',           bet:'Vittoria Inter',       pct:74, league:'Serie A 🇮🇹', when:'Dom 22/3 · 20:45' },
   ];
 
   // Mostra SUBITO i dati statici — garantito
   renderTicker(staticMatches);
 
-  // Poi prova a aggiornare dall'API (opzionale)
+  // Aggiorna dal Supabase Storage (automatico)
   try {
-    fetch('/api/matches')
+    fetch('https://zvftggieqlxujjtotvwg.supabase.co/storage/v1/object/public/betstorm-data/matches.json')
       .then(r => r.ok ? r.json() : Promise.reject())
       .then(data => { if (data.matches && data.matches.length > 0) renderTicker(data.matches); })
       .catch(() => {});
@@ -1759,15 +1752,15 @@ function loadSignalCards() {
   // Mostra SUBITO il fallback — garantito, nessuna dipendenza da API
   renderMatchCards(FALLBACK_MATCHES);
 
-  // Tenta API in background (opzionale — se fallisce, fallback già visibile)
+  // Carica partite da Supabase Storage (automatico)
   try {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), 5000);
-    fetch('/api/matches', { signal: ctrl.signal })
+    fetch('https://zvftggieqlxujjtotvwg.supabase.co/storage/v1/object/public/betstorm-data/matches.json', { signal: ctrl.signal })
       .then(r => { clearTimeout(timer); if (!r.ok) throw new Error('no api'); return r.json(); })
       .then(data => { if (data.matches && data.matches.length > 0) renderMatchCards(data.matches); })
       .catch(() => { clearTimeout(timer); });
-  } catch(_) { /* API non disponibile, fallback già mostrato */ }
+  } catch(_) {}
 }
 
 
