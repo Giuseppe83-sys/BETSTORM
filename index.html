@@ -3,64 +3,33 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<!-- ===== SEO ===== -->
-<title>BetStorm — Analisi Statistica AI per Scommesse Sportive | Serie A, Premier League, La Liga</title>
-<meta name="description" content="BetStorm analizza milioni di statistiche su Serie A, Premier League, La Liga e Champions League per fornirti combinazioni con la massima probabilità di riuscita. Prova gratis.">
-<meta name="keywords" content="scommesse sportive, analisi statistica, pronostici calcio, serie a pronostici, premier league analisi, betiq, betstorm, combinazioni vincenti">
-<meta name="author" content="BetStorm">
+<title>BetStorm — Analisi AI per Scommesse Calcio</title>
+<meta name="description" content="BetStorm: analisi AI per scommesse calcio. Probabilità combinate su Serie A, Premier League, La Liga e Champions League.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://betstorm.it/">
-
-<!-- Open Graph -->
+<link rel="icon" href="logo.jpg" type="image/jpeg">
+<link rel="apple-touch-icon" href="logo.jpg">
+<meta name="theme-color" content="#070a0f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="BetStorm">
+<link rel="manifest" href="/manifest.json">
+<meta property="og:title" content="BetStorm — Analisi AI Scommesse Calcio">
+<meta property="og:description" content="Analisi combinate con AI su Serie A, Premier League, La Liga e Champions League.">
+<meta property="og:image" content="https://betstorm.it/logo.jpg">
+<meta property="og:url" content="https://betstorm.it">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://betstorm.it/">
-<meta property="og:title" content="BetStorm — La tempesta di dati che trasforma le tue scommesse">
-<meta property="og:description" content="Analisi AI su Serie A, Premier League, La Liga e Champions League. Combinazioni con percentuale di riuscita calcolata su 400+ indicatori statistici.">
-<meta property="og:image" content="https://betstorm.it/og-image.jpg">
 <meta property="og:locale" content="it_IT">
-
-<!-- Twitter Card -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="BetStorm — Analisi AI per Scommesse Sportive">
-<meta name="twitter:description" content="Combinazioni vincenti basate su milioni di dati statistici. Prova gratis oggi.">
-
-<!-- Schema.org JSON-LD -->
 <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  "name": "BetStorm",
-  "applicationCategory": "SportsApplication",
-  "description": "Piattaforma di analisi statistica AI per scommesse sportive su Serie A, Premier League, La Liga e Champions League.",
-  "url": "https://betstorm.it",
-  "offers": [
-    { "@type": "Offer", "name": "Piano Free", "price": "0", "priceCurrency": "EUR" },
-    { "@type": "Offer", "name": "Piano Pro", "price": "9.99", "priceCurrency": "EUR" },
-    { "@type": "Offer", "name": "Piano Elite", "price": "24.99", "priceCurrency": "EUR" }
-  ],
-  "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.9", "reviewCount": "3280" }
-}
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"BetStorm","applicationCategory":"SportsApplication","offers":[{"@type":"Offer","name":"Piano Free","price":"0","priceCurrency":"EUR"},{"@type":"Offer","name":"Piano Pro","price":"9.99","priceCurrency":"EUR"},{"@type":"Offer","name":"Piano Elite","price":"24.99","priceCurrency":"EUR"}],"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.9","reviewCount":"3280"}}
 </script>
-
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZD36ZG3X5N"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-ZD36ZG3X5N');
-</script>
-
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌪️</text></svg>">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-<!-- Supabase CDN -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-ZD36ZG3X5N');</script>
 <style>
+
 :root {
   --bg: #070a0f;
   --bg2: #0d1117;
@@ -460,21 +429,14 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:60px 24px
   /* TOAST */
   .toast{left:16px;right:16px;bottom:16px;max-width:none}
 }
+
 </style>
-  <!-- PWA -->
-  <meta name="theme-color" content="#070a0f">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="BetStorm">
-  <link rel="manifest" href="/manifest.json">
-  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23070a0f'/><text y='.9em' font-size='80'>🌪️</text></svg>">
 </head>
 <body>
 
-<!-- NAV -->
 <nav id="navbar">
   <a href="#" class="logo">
-    <div class="logo-icon">🌪️</div>
+    <div class="logo-icon"><img src="logo.jpg" alt="BetStorm" style="width:32px;height:32px;border-radius:8px;object-fit:cover;display:block"></div>
     Bet<span>Storm</span>
   </a>
   <ul class="nav-links">
@@ -490,7 +452,6 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:60px 24px
   <button class="hamburger" onclick="toggleMobileMenu()"><i class="fas fa-bars"></i></button>
 </nav>
 
-<!-- MOBILE NAV OVERLAY -->
 <div class="mobile-nav" id="mobile-nav">
   <button class="mobile-nav-close" onclick="closeMobileMenu()"><i class="fas fa-times"></i></button>
   <a href="#analizza" onclick="closeMobileMenu()">Analizza</a>
@@ -502,7 +463,9 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:60px 24px
       <i class="fas fa-bolt"></i> Inizia gratis
     </button>
   </div>
-</div>
+
+
+<div class="toast" id="toast"></div>
 
 <!-- TICKER -->
 <div class="ticker-wrap">
@@ -511,7 +474,6 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:60px 24px
   </div>
 </div>
 
-<!-- HERO -->
 <section class="hero">
   <div class="hero-bg"></div>
   <div class="hero-grid"></div>
@@ -535,8 +497,8 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:60px 24px
   </div>
 </section>
 
-<!-- COMBINAZIONI -->
-<!-- ANALYZER -->
+<div class="divider"></div>
+
 <section class="analyzer-section" id="analizza">
   <div class="container">
     <div class="reveal" style="text-align:center;margin-bottom:40px">
@@ -596,7 +558,6 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:60px 24px
 
 <div class="divider"></div>
 
-<!-- PRICING -->
 <section class="pricing-section" id="piani">
   <div class="container">
     <div class="reveal">
@@ -665,7 +626,52 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:60px 24px
 
 <div class="divider"></div>
 
-<!-- SOCIAL PROOF -->
+<section class="faq-section" id="faq">
+  <div class="container" style="text-align:center">
+    <div class="reveal">
+      <div class="section-label" style="justify-content:center">FAQ</div>
+      <h2 class="section-title">Domande frequenti</h2>
+      <p class="section-sub" style="margin:0 auto 50px">Tutto quello che devi sapere su BetStorm.</p>
+    </div>
+    <div class="faq-list reveal">
+      <div class="faq-item open"><div class="faq-q" onclick="toggleFaq(this)">Come vengono calcolate le percentuali di riuscita?<i class="fas fa-chevron-down arrow"></i></div><div class="faq-a">I nostri algoritmi analizzano oltre 400 variabili statistiche per ogni partita: forma recente, scontri diretti, statistiche difensive e offensive, infortuni, fattore campo e molto altro. Il tutto viene elaborato su milioni di partite storiche di Serie A, Premier League, La Liga e Champions League.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Posso disdire l'abbonamento in qualsiasi momento?<i class="fas fa-chevron-down arrow"></i></div><div class="faq-a">Sì, assolutamente. Puoi disdire dal tuo account in qualsiasi momento senza penali. Continuerai ad avere accesso fino alla fine del periodo già pagato. I pagamenti sono gestiti in modo sicuro da Stripe.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Le analisi garantiscono vincite sicure?<i class="fas fa-chevron-down arrow"></i></div><div class="faq-a">No. BetStorm fornisce analisi statistiche basate su dati storici. Le percentuali rappresentano probabilità calcolate, non certezze. Le scommesse sportive comportano sempre un rischio. Scommetti sempre in modo responsabile.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Quali campionati sono coperti?<i class="fas fa-chevron-down arrow"></i></div><div class="faq-a">BetStorm copre Serie A, Premier League, La Liga e Champions League con statistiche complete. Stiamo lavorando per aggiungere Bundesliga, Ligue 1 e altri campionati nei prossimi mesi.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Come funziona il pagamento con Stripe?<i class="fas fa-chevron-down arrow"></i></div><div class="faq-a">I pagamenti sono gestiti interamente da Stripe, il sistema di pagamento più sicuro al mondo usato da Amazon e Google. BetStorm non vede mai i dati della tua carta. Accettiamo tutte le carte di credito/debito e PayPal.</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="social-section" id="recensioni">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Trustpilot 4.9/5 ★</div>
+      <h2 class="section-title">Cosa dicono i nostri <span style="color:var(--green)">utenti</span></h2>
+      <p class="section-sub">Oltre 50.000 scommettitori usano BetStorm ogni giorno per massimizzare le proprie probabilità.</p>
+    </div>
+    <div class="media-logos reveal">
+      <div class="media-logo">GAZZETTA DELLO SPORT</div>
+      <div style="width:1px;height:20px;background:var(--border)"></div>
+      <div class="media-logo">SPORT WEEK</div>
+      <div style="width:1px;height:20px;background:var(--border)"></div>
+      <div class="media-logo">CORRIERE</div>
+      <div style="width:1px;height:20px;background:var(--border)"></div>
+      <div class="media-logo">TUTTOSPORT</div>
+      <div style="width:1px;height:20px;background:var(--border)"></div>
+      <div class="media-logo">SKY SPORT</div>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testimonial-card reveal"><div class="stars">★★★★★</div><p class="testimonial-text">"Ho usato BetStorm per tre mesi e i risultati sono sorprendenti. Le analisi sono precise, le combinazioni suggerite hanno una percentuale di riuscita davvero alta."</p><div class="testimonial-author"><div class="author-avatar">ML</div><div><div class="author-name">Marco L.</div><div class="author-meta">Piano Pro · Milano</div></div></div></div>
+      <div class="testimonial-card reveal" style="transition-delay:.1s"><div class="stars">★★★★★</div><p class="testimonial-text">"Le statistiche sono incredibilmente dettagliate. Il ticker in tempo reale è utilissimo e le notifiche push mi avvisano prima che le quote cambino."</p><div class="testimonial-author"><div class="author-avatar">FR</div><div><div class="author-name">Federica R.</div><div class="author-meta">Piano Elite · Roma</div></div></div></div>
+      <div class="testimonial-card reveal" style="transition-delay:.2s"><div class="stars">★★★★☆</div><p class="testimonial-text">"Il tool di analisi combinazioni è il mio preferito: inserisco la schedina e in pochi secondi so se vale la pena. Ha cambiato il mio approccio alle scommesse."</p><div class="testimonial-author"><div class="author-avatar">AS</div><div><div class="author-name">Andrea S.</div><div class="author-meta">Piano Pro · Napoli</div></div></div></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
 
 <!-- TRACK RECORD -->
 <section style="background:var(--bg2);padding:80px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
@@ -704,55 +710,9 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:60px 24px
     </div>
   </div>
 </section>
-<div class="divider"></div>
-
-<section class="social-section" id="recensioni">
-  <div class="container">
-    <div class="reveal">
-      <div class="section-label">Trustpilot 4.9/5 ★</div>
-      <h2 class="section-title">Cosa dicono i nostri <span style="color:var(--green)">utenti</span></h2>
-      <p class="section-sub">Oltre 50.000 scommettitori usano BetStorm ogni giorno per massimizzare le proprie probabilità.</p>
-    </div>
-    <div class="media-logos reveal">
-      <div class="media-logo">GAZZETTA DELLO SPORT</div>
-      <div style="width:1px;height:20px;background:var(--border)"></div>
-      <div class="media-logo">SPORT WEEK</div>
-      <div style="width:1px;height:20px;background:var(--border)"></div>
-      <div class="media-logo">CORRIERE</div>
-      <div style="width:1px;height:20px;background:var(--border)"></div>
-      <div class="media-logo">TUTTOSPORT</div>
-      <div style="width:1px;height:20px;background:var(--border)"></div>
-      <div class="media-logo">SKY SPORT</div>
-    </div>
-    <div class="testimonials-grid">
-      <div class="testimonial-card reveal"><div class="stars">★★★★★</div><p class="testimonial-text">"Ho usato BetStorm per tre mesi e i risultati sono sorprendenti. Le analisi sono precise, le combinazioni suggerite hanno una percentuale di riuscita davvero alta."</p><div class="testimonial-author"><div class="author-avatar">ML</div><div><div class="author-name">Marco L.</div><div class="author-meta">Piano Pro · Milano</div></div></div></div>
-      <div class="testimonial-card reveal" style="transition-delay:.1s"><div class="stars">★★★★★</div><p class="testimonial-text">"Le statistiche sono incredibilmente dettagliate. Il ticker in tempo reale è utilissimo e le notifiche push mi avvisano prima che le quote cambino."</p><div class="testimonial-author"><div class="author-avatar">FR</div><div><div class="author-name">Federica R.</div><div class="author-meta">Piano Elite · Roma</div></div></div></div>
-      <div class="testimonial-card reveal" style="transition-delay:.2s"><div class="stars">★★★★☆</div><p class="testimonial-text">"Il tool di analisi combinazioni è il mio preferito: inserisco la schedina e in pochi secondi so se vale la pena. Ha cambiato il mio approccio alle scommesse."</p><div class="testimonial-author"><div class="author-avatar">AS</div><div><div class="author-name">Andrea S.</div><div class="author-meta">Piano Pro · Napoli</div></div></div></div>
-    </div>
-  </div>
-</section>
 
 <div class="divider"></div>
 
-<!-- FAQ -->
-<section class="faq-section" id="faq">
-  <div class="container" style="text-align:center">
-    <div class="reveal">
-      <div class="section-label" style="justify-content:center">FAQ</div>
-      <h2 class="section-title">Domande frequenti</h2>
-      <p class="section-sub" style="margin:0 auto 50px">Tutto quello che devi sapere su BetStorm.</p>
-    </div>
-    <div class="faq-list reveal">
-      <div class="faq-item open"><div class="faq-q" onclick="toggleFaq(this)">Come vengono calcolate le percentuali di riuscita?<i class="fas fa-chevron-down arrow"></i></div><div class="faq-a">I nostri algoritmi analizzano oltre 400 variabili statistiche per ogni partita: forma recente, scontri diretti, statistiche difensive e offensive, infortuni, fattore campo e molto altro. Il tutto viene elaborato su milioni di partite storiche di Serie A, Premier League, La Liga e Champions League.</div></div>
-      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Posso disdire l'abbonamento in qualsiasi momento?<i class="fas fa-chevron-down arrow"></i></div><div class="faq-a">Sì, assolutamente. Puoi disdire dal tuo account in qualsiasi momento senza penali. Continuerai ad avere accesso fino alla fine del periodo già pagato. I pagamenti sono gestiti in modo sicuro da Stripe.</div></div>
-      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Le analisi garantiscono vincite sicure?<i class="fas fa-chevron-down arrow"></i></div><div class="faq-a">No. BetStorm fornisce analisi statistiche basate su dati storici. Le percentuali rappresentano probabilità calcolate, non certezze. Le scommesse sportive comportano sempre un rischio. Scommetti sempre in modo responsabile.</div></div>
-      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Quali campionati sono coperti?<i class="fas fa-chevron-down arrow"></i></div><div class="faq-a">BetStorm copre Serie A, Premier League, La Liga e Champions League con statistiche complete. Stiamo lavorando per aggiungere Bundesliga, Ligue 1 e altri campionati nei prossimi mesi.</div></div>
-      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Come funziona il pagamento con Stripe?<i class="fas fa-chevron-down arrow"></i></div><div class="faq-a">I pagamenti sono gestiti interamente da Stripe, il sistema di pagamento più sicuro al mondo usato da Amazon e Google. BetStorm non vede mai i dati della tua carta. Accettiamo tutte le carte di credito/debito e PayPal.</div></div>
-    </div>
-  </div>
-</section>
-
-<!-- FOOTER -->
 <!-- NEWSLETTER / NOTIFICHE -->
 <section style="background:linear-gradient(135deg,rgba(0,230,118,.06),rgba(124,77,255,.06));border-top:1px solid var(--border);padding:70px 0">
   <div class="container">
@@ -775,10 +735,11 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:60px 24px
   </div>
 </section>
 
+
 <footer>
   <div class="footer-grid">
     <div class="footer-brand">
-      <a href="#" class="logo" style="font-size:1.3rem"><div class="logo-icon" style="width:30px;height:30px;font-size:.85rem">🌪️</div>Bet<span>Storm</span></a>
+      <a href="#" class="logo" style="font-size:1.3rem"><div class="logo-icon" style="width:30px;height:30px;font-size:.85rem"><img src="logo.jpg" alt="BetStorm" style="width:32px;height:32px;border-radius:8px;object-fit:cover"></div>Bet<span>Storm</span></a>
       <p>La piattaforma di analisi statistica AI più avanzata per scommesse sportive su Serie A, Premier League, La Liga e Champions League.</p>
     </div>
     <div class="footer-col"><h4>Prodotto</h4><ul><li><a href="#">Combinazioni oggi</a></li><li><a href="#">Analisi live</a></li><li><a href="#">Statistiche squadre</a></li><li><a href="#">API</a></li></ul></div>
@@ -796,9 +757,7 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:60px 24px
   </div>
 </footer>
 
-<!-- MODAL -->
-<div class="modal-overlay" id="modal-overlay" onclick="closeModalOutside(event)">
-  <div class="modal">
+<div class="modal">
     <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
     <h3>Benvenuto su <span style="color:var(--green)">Bet</span>Storm</h3>
     <p class="modal-desc">Accedi o registrati per sbloccare tutte le analisi premium.</p>
@@ -824,15 +783,16 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:60px 24px
       <p class="modal-footer-text">Hai già un account? <a onclick="switchTab('login')">Accedi →</a></p>
     </div>
   </div>
-</div>
 
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <!-- Teams DB -->
 <script src="teams.js"></script>
 
+<!-- Main JS -->
 <script>
+
 // ============================================================
 // CONFIG — sostituisci con le tue credenziali reali
 // ============================================================
@@ -1827,9 +1787,12 @@ loadSignalCards();
 // 4. Analyzer: 2 righe iniziali
 addEvent();
 addEvent();
+
 </script>
-<!-- Newsletter JS -->
+
+<!-- Newsletter -->
 <script>
+
 async function subscribeNewsletter() {
   const email = document.getElementById('newsletter-email')?.value?.trim();
   const res   = document.getElementById('newsletter-result');
@@ -1848,10 +1811,12 @@ async function subscribeNewsletter() {
   const form = document.getElementById('newsletter-form');
   if (form) form.innerHTML = '<div style="color:var(--green);font-weight:600;font-size:.95rem">✅ Iscritto! Domani mattina ricevi il tuo primo segnale.</div>';
 }
+
 </script>
 
-<!-- PWA Install Prompt -->
+<!-- PWA -->
 <script>
+
 let deferredPrompt = null;
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
@@ -1868,7 +1833,7 @@ function showInstallBanner() {
   banner.id = 'pwa-banner';
   banner.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#0d1117;border:1px solid rgba(0,230,118,.3);border-radius:14px;padding:14px 20px;display:flex;align-items:center;gap:14px;z-index:9999;box-shadow:0 8px 32px rgba(0,0,0,.4);max-width:340px;width:calc(100% - 40px)';
   banner.innerHTML = `
-    <span style="font-size:1.8rem">🌪️</span>
+    <span style="font-size:1.8rem"><img src="logo.jpg" alt="BetStorm" style="width:32px;height:32px;border-radius:8px;object-fit:cover"></span>
     <div style="flex:1">
       <div style="font-weight:700;font-size:.9rem">Installa BetStorm</div>
       <div style="font-size:.75rem;color:#6b7a8d">Accesso rapido dal telefono</div>
@@ -1887,9 +1852,11 @@ async function installPWA() {
   const banner = document.getElementById('pwa-banner');
   if (banner) banner.remove();
 }
+
 </script>
 
-<!-- Cookie Banner GDPR -->
+<!-- Cookie Banner -->
 <script src="cookie-banner.js"></script>
+
 </body>
 </html>
