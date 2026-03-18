@@ -302,7 +302,7 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:60px 24px
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* REVEAL */
-.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease}.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease;animation:reveal-fallback 0s 4s forwards}.reveal.visible{animation:none}@keyframes reveal-fallback{to{opacity:1;transform:translateY(0)}}.reveal.visible{opacity:1;transform:translateY(0)}
 .reveal.visible{opacity:1;transform:translateY(0)}
 
 /* STRIPE LOADING */
@@ -794,15 +794,29 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:60px 24px
 <script>
 
 // ============================================================
+// SAFETY NET — forza visibilità sezioni anche se JS fallisce
+// ============================================================
+setTimeout(function() {
+  document.querySelectorAll('.reveal').forEach(function(el) {
+    if (!el.classList.contains('visible')) el.classList.add('visible');
+  });
+}, 3000);
+
+// ============================================================
 // CONFIG — sostituisci con le tue credenziali reali
 // ============================================================
 const SUPABASE_URL = 'https://zvftggieqlxujjtotvwg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp2ZnRnZ2llcWx4dWpqdG90dndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE0OTQ3NjIsImV4cCI6MjA4NzA3MDc2Mn0.ZatmSARBUZpibKPTBNhpXj0c07Thzu8RvT4NjMR6lxg';
 const SITE_URL = 'https://betstorm.it';
 
-// Init Supabase
-const { createClient } = window.supabase;
-const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Init Supabase (protetto da try/catch)
+let sb = null;
+try {
+  const { createClient } = window.supabase;
+  sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+} catch(e) {
+  console.warn('Supabase init failed:', e.message);
+}
 
 // ============================================================
 // AUTH STATE
@@ -1008,6 +1022,7 @@ async function handleLogin() {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 10000);
 
+    if (!sb) { showToast('Servizio temporaneamente non disponibile', 'error'); resetBtn(); return; }
     const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
       method: 'POST',
       headers: {
