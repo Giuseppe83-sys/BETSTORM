@@ -757,7 +757,7 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:60px 24px
   </div>
 </footer>
 
-<div class="modal-overlay" id="modal-overlay" onclick="closeModalOutside(event)">
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalOutside(event)" style="display:none">
 <div class="modal">
     <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
     <h3>Benvenuto su <span style="color:var(--green)">Bet</span>Storm</h3>
@@ -971,12 +971,26 @@ function updateNavForGuest() {
 // MODAL AUTH
 // ============================================================
 function openModal(tab = 'login') {
-  document.getElementById('modal-overlay').classList.add('open');
+  const overlay = document.getElementById('modal-overlay');
+  if (!overlay) return;
+  overlay.style.display = 'flex';
+  overlay.style.position = 'fixed';
+  overlay.style.inset = '0';
+  overlay.style.zIndex = '9999';
+  overlay.style.alignItems = 'center';
+  overlay.style.justifyContent = 'center';
+  overlay.style.padding = '24px';
+  overlay.style.background = 'rgba(0,0,0,0.75)';
+  overlay.style.backdropFilter = 'blur(10px)';
+  overlay.classList.add('open');
   switchTab(tab);
   document.body.style.overflow = 'hidden';
 }
 function closeModal() {
-  document.getElementById('modal-overlay').classList.remove('open');
+  const overlay = document.getElementById('modal-overlay');
+  if (!overlay) return;
+  overlay.style.display = 'none';
+  overlay.classList.remove('open');
   document.body.style.overflow = '';
 }
 function closeModalOutside(e) { if (e.target.id === 'modal-overlay') closeModal(); }
