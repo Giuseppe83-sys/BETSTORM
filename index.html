@@ -801,8 +801,8 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const SITE_URL = 'https://betstorm.it';
 
 // Init Supabase
-let sb = null;
-try { const { createClient } = window.supabase; sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY); } catch(e) { console.warn('Supabase init:', e.message); }
+const { createClient } = window.supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ============================================================
 // AUTH STATE
