@@ -1654,6 +1654,37 @@ function renderPublicResults() {
     </div>`).join('');
 }
 
+
+
+
+function renderTicker(matches) {
+  const ticker = document.getElementById('live-ticker');
+  if (!ticker || !matches.length) return;
+  const items = [...matches, ...matches].map(m => {
+    const pctClass = m.pct >= 75 ? 'pct' : 'pct warn';
+    const dot = m.pct >= 75 ? '🔥' : '●';
+    return `<span class="ticker-item">
+      <span class="dot">${dot}</span>
+      <span style="color:#8892a4;font-size:.72rem">${m.league}</span>
+      <span style="color:#8892a4;font-size:.72rem">${m.when || ''}</span>
+      ${m.home} vs ${m.away} — ${m.bet}
+      <span class="${pctClass}">${m.pct}%</span>
+    </span>`;
+  }).join('');
+  ticker.innerHTML = items;
+  ticker.style.animationDuration = (matches.length * 6) + 's';
+}
+
+// Fallback locale — dichiarato PRIMA di loadSignalCards che lo usa
+const FALLBACK_MATCHES = [
+  { home:'Inter',        away:'Juventus',        league:'Serie A 🇮🇹',         when:'Domani · 20:45', bet:'Doppia Chance 1X', pct:71 },
+  { home:'Arsenal',      away:'Real Madrid',     league:'Champions League ⭐',  when:'Dom · 21:00',    bet:'Goal / Goal',      pct:74 },
+  { home:'Liverpool',    away:'Man City',        league:'Premier League 🏴󠁧󠁢󠁥󠁮󠁧󠁿', when:'Sab · 16:30',    bet:'Over 2.5 Gol',     pct:78 },
+  { home:'Napoli',       away:'Milan',           league:'Serie A 🇮🇹',         when:'Dom · 18:00',    bet:'Goal / Goal',      pct:68 },
+  { home:'Barcellona',   away:'Atletico Madrid', league:'La Liga 🇪🇸',          when:'Sab · 21:00',    bet:'Over 1.5 Gol',     pct:80 },
+  { home:'Bayern',       away:'PSG',             league:'Champions League ⭐',  when:'Mar · 21:00',    bet:'Goal / Goal',      pct:72 },
+];
+
 async function loadLiveTicker() {
   const ticker = document.getElementById('live-ticker');
   if (!ticker) return;
@@ -1703,53 +1734,6 @@ async function loadLiveTicker() {
   }
 }
 
-function renderTicker(matches) {
-  const ticker = document.getElementById('live-ticker');
-  if (!ticker || !matches.length) return;
-
-  // Crea item per ogni partita (duplicati per loop infinito)
-  const items = [...matches, ...matches].map(m => {
-    const pctClass = m.pct >= 75 ? 'pct' : 'pct warn';
-    const dot = m.pct >= 75 ? '🔥' : '●';
-    return `<span class="ticker-item">
-      <span class="dot">${dot}</span>
-      <span style="color:#8892a4;font-size:.72rem">${m.league}</span>
-      <span style="color:#8892a4;font-size:.72rem">${m.when || ''}</span>
-      ${m.home} vs ${m.away} — ${m.bet}
-      <span class="${pctClass}">${m.pct}%</span>
-    </span>`;
-  }).join('');
-
-  ticker.innerHTML = items;
-
-  // Aggiusta velocità animazione in base al numero di item
-  const duration = matches.length * 6;
-  ticker.style.animationDuration = duration + 's';
-}
-
-// Aggiorna ticker ogni 5 minuti
-loadLiveTicker();
-setInterval(loadLiveTicker, 5 * 60 * 1000);
-
-// Data corrente nel titolo segnali
-(function() {
-  const el = document.getElementById('today-date');
-  if (el) {
-    const d = new Date();
-    el.textContent = d.getDate() + '/' + (d.getMonth()+1) + '/' + d.getFullYear();
-  }
-})();
-
-// Fallback locale — dichiarato PRIMA di loadSignalCards che lo usa
-const FALLBACK_MATCHES = [
-  { home:'Inter',        away:'Juventus',        league:'Serie A 🇮🇹',         when:'Domani · 20:45', bet:'Doppia Chance 1X', pct:71 },
-  { home:'Arsenal',      away:'Real Madrid',     league:'Champions League ⭐',  when:'Dom · 21:00',    bet:'Goal / Goal',      pct:74 },
-  { home:'Liverpool',    away:'Man City',        league:'Premier League 🏴󠁧󠁢󠁥󠁮󠁧󠁿', when:'Sab · 16:30',    bet:'Over 2.5 Gol',     pct:78 },
-  { home:'Napoli',       away:'Milan',           league:'Serie A 🇮🇹',         when:'Dom · 18:00',    bet:'Goal / Goal',      pct:68 },
-  { home:'Barcellona',   away:'Atletico Madrid', league:'La Liga 🇪🇸',          when:'Sab · 21:00',    bet:'Over 1.5 Gol',     pct:80 },
-  { home:'Bayern',       away:'PSG',             league:'Champions League ⭐',  when:'Mar · 21:00',    bet:'Goal / Goal',      pct:72 },
-];
-
 function renderMatchCards(matches) {
   const grid = document.getElementById('signals-grid');
   if (!grid) return;
@@ -1774,7 +1758,7 @@ function renderMatchCards(matches) {
     const color = m.pct >= 75 ? 'var(--green)' : m.pct >= 62 ? 'var(--yellow)' : '#ff7043';
     const bar   = m.pct >= 75 ? 'linear-gradient(90deg,var(--green2),var(--green))' : 'linear-gradient(90deg,#f57f17,var(--yellow))';
     const quota = (1 / (m.pct / 100) * 0.92).toFixed(2);
-    return `<div class="combo-card reveal">
+    return `<div class="combo-card" style="opacity:1;transform:none">
       <div class="combo-header">
         <span class="badge ${badge.cls}"><i class="fas ${badge.icon}"></i> ${badge.label}</span>
         <span class="combo-league">${m.league} · ${m.when}</span>
@@ -1795,24 +1779,13 @@ function renderMatchCards(matches) {
     </div>`;
   }).join('');
 
-  // Osserva le nuove card con l'IntersectionObserver
-  // (le card iniettate dinamicamente non vengono viste dal observer iniziale)
+  // Anima le barre progresso dopo render
   setTimeout(() => {
-    const newCards = document.querySelectorAll('#signals-grid .reveal');
-    newCards.forEach(el => {
-      // Se già visibile nel viewport, mostra subito
-      const rect = el.getBoundingClientRect();
-      const inViewport = rect.top < window.innerHeight && rect.bottom > 0;
-      if (inViewport) {
-        el.classList.add('visible');
-        el.querySelectorAll('.progress-fill[data-pct]').forEach(f => {
-          setTimeout(() => { f.style.width = f.dataset.pct + '%'; }, 400);
-        });
-      } else if (typeof observer !== 'undefined') {
-        observer.observe(el);
-      }
+    document.querySelectorAll('#signals-grid .progress-fill[data-pct]').forEach(f => {
+      f.style.transition = 'width 1s ease';
+      f.style.width = f.dataset.pct + '%';
     });
-  }, 100);
+  }, 150);
 }
 
 function loadSignalCards() {
@@ -1836,9 +1809,20 @@ function loadSignalCards() {
 }
 
 
-// Avvia subito — non aspettare DOMContentLoaded
+// ============================================================
+// INIT — ordine corretto
+// ============================================================
+// 1. Ticker: renderTicker è definita sopra, ora possiamo chiamare
+loadLiveTicker();
+setInterval(loadLiveTicker, 5 * 60 * 1000);
+
+// 2. Track record contatori
 loadTrackRecord();
+
+// 3. Combinazioni analizzate (fallback immediato)
 loadSignalCards();
+
+// 4. Analyzer: 2 righe iniziali
 addEvent();
 addEvent();
 </script>
