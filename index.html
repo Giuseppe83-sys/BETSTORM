@@ -302,7 +302,7 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:60px 24px
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* REVEAL */
-.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease;animation:revealFB 0s 4s forwards}.reveal.visible{animation:none}@keyframes revealFB{to{opacity:1;transform:translateY(0)}}.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal{opacity:1;transform:translateY(0);transition:opacity .7s ease,transform .7s ease}.reveal.visible{opacity:1;transform:translateY(0)}
 .reveal.visible{opacity:1;transform:translateY(0)}
 
 /* STRIPE LOADING */
@@ -792,15 +792,6 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:60px 24px
 
 <!-- Main JS -->
 <script>
-
-// ============================================================
-// SAFETY NET — forza visibilità sezioni anche se JS fallisce
-// ============================================================
-setTimeout(function() {
-  document.querySelectorAll('.reveal').forEach(function(el) {
-    if (!el.classList.contains('visible')) el.classList.add('visible');
-  });
-}, 3500);
 
 // ============================================================
 // CONFIG — sostituisci con le tue credenziali reali
@@ -1670,7 +1661,7 @@ async function loadLiveTicker() {
   const ticker = document.getElementById('live-ticker');
   if (!ticker) return;
 
-  // Partite reali — aggiornato 18/3/2026
+  // Partite reali — aggiornato 16/3/2026
   const staticMatches = [
     // Serie A — Oggi 16/3
     { home:'Cremonese', away:'Fiorentina', bet:'Vittoria Fiorentina', pct:72, league:'Serie A 🇮🇹', when:'Oggi · 20:45' },
@@ -1786,19 +1777,17 @@ function loadSignalCards() {
 // ============================================================
 // INIT — ordine corretto
 // ============================================================
-// 1. Ticker: renderTicker è definita sopra, ora possiamo chiamare
-loadLiveTicker();
-setInterval(loadLiveTicker, 5 * 60 * 1000);
+// 1. Ticker
+try { loadLiveTicker(); setInterval(loadLiveTicker, 5 * 60 * 1000); } catch(e) { console.warn('Ticker error:', e.message); }
 
 // 2. Track record contatori
-loadTrackRecord();
+try { loadTrackRecord(); } catch(e) { console.warn('TrackRecord error:', e.message); }
 
-// 3. Combinazioni analizzate (fallback immediato)
-loadSignalCards();
+// 3. Combinazioni analizzate
+try { loadSignalCards(); } catch(e) { console.warn('SignalCards error:', e.message); }
 
 // 4. Analyzer: 2 righe iniziali
-addEvent();
-addEvent();
+try { addEvent(); addEvent(); } catch(e) { console.warn('addEvent error:', e.message); }
 
 </script>
 
