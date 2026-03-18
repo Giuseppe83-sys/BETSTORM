@@ -757,6 +757,7 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:60px 24px
   </div>
 </footer>
 
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalOutside(event)">
 <div class="modal">
     <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
     <h3>Benvenuto su <span style="color:var(--green)">Bet</span>Storm</h3>
@@ -783,6 +784,7 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:60px 24px
       <p class="modal-footer-text">Hai già un account? <a onclick="switchTab('login')">Accedi →</a></p>
     </div>
   </div>
+</div><!-- /modal-overlay -->
 
 <!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1121,6 +1123,30 @@ async function handleLogout() {
   try { await sb.auth.signOut(); } catch(_) {}
   showToast('👋 Disconnesso correttamente.', 'success');
 }
+
+async function handleForgotPassword() {
+  const email = document.getElementById('login-email').value.trim();
+  if (!email) {
+    showError('login-error', 'Inserisci la tua email per recuperare la password.');
+    return;
+  }
+  try {
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/recover`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY },
+      body: JSON.stringify({ email })
+    });
+    if (res.ok) {
+      showError('login-error', '📧 Email di recupero inviata! Controlla la tua casella.');
+      document.getElementById('login-error').style.color = 'var(--green)';
+    } else {
+      showError('login-error', "Errore nell'invio. Riprova.");
+    }
+  } catch(_) {
+    showError('login-error', 'Errore di rete. Riprova.');
+  }
+}
+
 
 // ============================================================
 // STRIPE CHECKOUT
@@ -1690,7 +1716,7 @@ async function loadLiveTicker() {
 
   // Poi prova a aggiornare dall'API (opzionale)
   try {
-    fetch('https://zvftggieqlxujjtotvwg.supabase.co/storage/v1/object/public/betstorm-data/matches.json')
+    fetch('/api/matches')
       .then(r => r.ok ? r.json() : Promise.reject())
       .then(data => { if (data.matches && data.matches.length > 0) renderTicker(data.matches); })
       .catch(() => {});
@@ -1763,7 +1789,7 @@ function loadSignalCards() {
   try {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), 5000);
-    fetch('https://zvftggieqlxujjtotvwg.supabase.co/storage/v1/object/public/betstorm-data/matches.json', { signal: ctrl.signal })
+    fetch('/api/matches', { signal: ctrl.signal })
       .then(r => { clearTimeout(timer); if (!r.ok) throw new Error('no api'); return r.json(); })
       .then(data => { if (data.matches && data.matches.length > 0) renderMatchCards(data.matches); })
       .catch(() => { clearTimeout(timer); });
