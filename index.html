@@ -1606,11 +1606,9 @@ function closeMobileMenu() {
 // TRACK RECORD — contatori animati + ultimi risultati
 // ============================================================
 function loadTrackRecord() {
-  // Data aggiornamento
   const trackDate = document.getElementById('track-date');
   if (trackDate) trackDate.textContent = new Date().toLocaleDateString('it-IT', { day:'numeric', month:'long', year:'numeric' });
 
-  // Contatori animati
   function animateCounterById(id, target, suffix='', duration=1800) {
     const el = document.getElementById(id);
     if (!el) return;
@@ -1623,22 +1621,38 @@ function loadTrackRecord() {
     }, 16);
   }
 
-  // Osserva quando la sezione entra nel viewport
-  const section = document.getElementById('tr-success')?.closest('section');
-  if (!section) return;
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        animateCounterById('tr-success',  68, '%');
-        animateCounterById('tr-analyses', 12847);
-        animateCounterById('tr-avg',      71, '%');
-        animateCounterById('tr-users',    3241);
-        renderPublicResults();
-        obs.disconnect();
-      }
+  // Fetch real stats from Supabase history
+  fetch('https://zvftggieqlxujjtotvwg.supabase.co/storage/v1/object/public/betstorm-data/predictions_history.json')
+    .then(r => r.ok ? r.json() : null)
+    .then(hist => {
+      const stats = hist?.stats || {};
+      const days = hist?.days || [];
+      const total = stats.total || days.reduce((s,d) => s + d.predictions.length, 0);
+      const checked = days.filter(d => d.checked).reduce((s,d) => s + d.predictions.length, 0);
+      const correct = stats.correct || days.filter(d => d.checked).reduce((s,d) => s + d.predictions.filter(p => p.result === 'correct').length, 0);
+      const rate = checked > 0 ? Math.round(correct / checked * 100) : 68;
+      const avgPct = total > 0 ? Math.round(days.reduce((s,d) => s + d.predictions.reduce((ss,p) => ss + p.pct, 0), 0) / total) : 71;
+      window._trackStats = { rate, total, avgPct };
+    })
+    .catch(() => { window._trackStats = { rate: 68, total: 12847, avgPct: 71 }; })
+    .finally(() => {
+      const st = window._trackStats || { rate: 68, total: 12847, avgPct: 71 };
+      const section = document.getElementById('tr-success')?.closest('section');
+      if (!section) return;
+      const obs = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            animateCounterById('tr-success',  st.rate, '%');
+            animateCounterById('tr-analyses', st.total);
+            animateCounterById('tr-avg',      st.avgPct, '%');
+            animateCounterById('tr-users',    3241);
+            renderPublicResults();
+            obs.disconnect();
+          }
+        });
+      }, { threshold: 0.2 });
+      obs.observe(section);
     });
-  }, { threshold: 0.2 });
-  obs.observe(section);
 }
 
 function renderPublicResults() {
@@ -1855,7 +1869,15 @@ async function subscribeNewsletter() {
 
 </script>
 
-<!-- PWA -->
+<!-- PWA + Service Worker -->
+<script>
+// Register Service Worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').then(reg => {
+    console.log('SW registered:', reg.scope);
+  }).catch(err => console.warn('SW registration failed:', err));
+}
+</script>
 <script>
 
 let deferredPrompt = null;
