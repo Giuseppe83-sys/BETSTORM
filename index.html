@@ -718,7 +718,7 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:60px 24px
   <div class="container">
     <div style="max-width:560px;margin:0 auto;text-align:center" class="reveal">
       <div style="font-size:2rem;margin-bottom:12px">📬</div>
-      <h2 style="font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;margin-bottom:10px">Ricevi i segnali del giorno</h2>
+      <h2 style="font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;margin-bottom:10px">Ricevi i pronostici del giorno</h2>
       <p style="color:var(--muted);margin-bottom:28px;font-size:.9rem">3 analisi selezionate ogni mattina alle 9:00 — direttamente nella tua inbox. Gratis per sempre.</p>
       <div style="display:flex;gap:10px;max-width:420px;margin:0 auto" id="newsletter-form">
         <input type="email" id="newsletter-email" placeholder="La tua email..." 
@@ -1793,7 +1793,7 @@ function renderMatchCards(matches) {
       </div>
       <div class="combo-footer">
         <div class="combo-quota"><span>Quota consigliata</span><strong>${quota}</strong></div>
-        <button class="btn-unlock" onclick="openModal('register')"><i class="fas fa-lock"></i> Sblocca analisi</button>
+        ${currentUser ? '<button class="btn-unlock" style="background:var(--green);color:#070a0f;border-color:var(--green)" onclick="window.location.href=\'/dashboard.html\'"><i class="fas fa-chart-line"></i> Vedi analisi</button>' : '<button class="btn-unlock" onclick="openModal(\'register\')"><i class="fas fa-lock"></i> Sblocca analisi</button>'}
       </div>
     </div>`;
   }).join('');
@@ -1865,7 +1865,7 @@ async function subscribeNewsletter() {
   } catch(_) {}
   // Mostra successo sempre (anche se Supabase fallisce)
   const form = document.getElementById('newsletter-form');
-  if (form) form.innerHTML = '<div style="color:var(--green);font-weight:600;font-size:.95rem">✅ Iscritto! Domani mattina ricevi il tuo primo segnale.</div>';
+  if (form) form.innerHTML = '<div style="color:var(--green);font-weight:600;font-size:.95rem">✅ Iscritto! Domani mattina ricevi il tuo primo pronostico.</div>';
 }
 
 </script>
