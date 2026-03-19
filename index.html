@@ -1768,6 +1768,7 @@ function renderMatchCards(matches) {
       </div>
       <div class="combo-teams">${m.home} <span class="vs">VS</span> ${m.away}</div>
       <div class="combo-type">Tipo: <strong>${m.bet}</strong> · Quota: <span style="color:var(--gold);font-weight:600">${quota}</span></div>
+      ${m.why ? `<div style="padding:8px 0 4px;font-size:.82rem;color:var(--muted);line-height:1.4;border-top:1px solid rgba(255,255,255,.06);margin-top:8px"><i class="fas fa-brain" style="color:var(--green);margin-right:6px"></i>${m.why}</div>` : ""}
       <div class="progress-container">
         <div class="progress-label">
           <span style="color:var(--muted);font-size:.78rem">Probabilità riuscita</span>
