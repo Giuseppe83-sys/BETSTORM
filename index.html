@@ -543,6 +543,64 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:60px 24px
 
 <div class="divider"></div>
 
+
+<!-- SCHEDINA DEL GIORNO -->
+<section style="padding:60px 24px 20px">
+  <div class="container">
+    <div class="reveal" id="schedina-section">
+      <div class="section-label"><span>⚡ Schedina del Giorno</span></div>
+      <div id="schedina-card" style="background:linear-gradient(135deg,rgba(0,230,118,.08),rgba(124,77,255,.06));border:2px solid rgba(0,230,118,.25);border-radius:20px;padding:28px;max-width:700px;margin:0 auto">
+        <div style="text-align:center;margin-bottom:20px">
+          <div style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;color:var(--green)">🎰 Schedina AI del Giorno</div>
+          <div style="color:var(--muted);font-size:.85rem;margin-top:4px">Combinata generata dall'intelligenza artificiale</div>
+        </div>
+        <div id="schedina-picks" style="margin-bottom:20px">
+          <div style="color:var(--muted);text-align:center;padding:20px">Caricamento schedina...</div>
+        </div>
+        <div id="schedina-footer" style="display:none;text-align:center;padding-top:16px;border-top:1px solid rgba(255,255,255,.08)">
+          <div style="display:inline-flex;gap:24px;align-items:center;flex-wrap:wrap;justify-content:center">
+            <div><span style="color:var(--muted);font-size:.75rem;display:block">QUOTA TOTALE</span><span id="schedina-quota" style="font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:var(--gold)">—</span></div>
+            <div><span style="color:var(--muted);font-size:.75rem;display:block">PROBABILITA</span><span id="schedina-pct" style="font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:var(--green)">—</span></div>
+            <div><span style="color:var(--muted);font-size:.75rem;display:block">STAKE</span><span id="schedina-stake" style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:600;color:var(--text)">—</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+// Load schedina del giorno
+fetch( + SUPABASE_DATA_URL + )
+  .then(r => r.ok ? r.json() : null)
+  .then(data => {
+    if (!data || !data.schedina || !data.schedina.picks) return;
+    const s = data.schedina;
+    const picksEl = document.getElementById('schedina-picks');
+    const footerEl = document.getElementById('schedina-footer');
+    
+    picksEl.innerHTML = s.picks.map((p, i) => `
+      <div style="display:flex;align-items:center;gap:12px;padding:12px;background:rgba(255,255,255,.03);border-radius:10px;margin-bottom:8px">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--green);color:#070a0f;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.85rem;flex-shrink:0">${i+1}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:600;font-size:.92rem">${p.home} vs ${p.away}</div>
+          <div style="color:var(--green);font-size:.82rem;font-weight:600">${p.bet}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-family:'Syne',sans-serif;font-weight:800;color:var(--gold)">${p.quota.toFixed(2)}</div>
+          <div style="font-size:.72rem;color:var(--muted)">${p.pct}%</div>
+        </div>
+      </div>
+    `).join('');
+    
+    document.getElementById('schedina-quota').textContent = s.total_quota.toFixed(2);
+    document.getElementById('schedina-pct').textContent = s.combined_pct + '%';
+    document.getElementById('schedina-stake').textContent = s.stake_suggestion;
+    footerEl.style.display = 'block';
+  })
+  .catch(() => {});
+</script>
+
 <section class="combos-section" id="combinazioni">
   <div class="container">
     <div class="reveal">
