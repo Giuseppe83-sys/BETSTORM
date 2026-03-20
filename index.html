@@ -571,7 +571,7 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:60px 24px
 
 <script>
 // Load schedina del giorno
-fetch( + SUPABASE_DATA_URL + )
+fetch('https://zvftggieqlxujjtotvwg.supabase.co/storage/v1/object/public/betstorm-data/matches.json')
   .then(r => r.ok ? r.json() : null)
   .then(data => {
     if (!data || !data.schedina || !data.schedina.picks) return;
