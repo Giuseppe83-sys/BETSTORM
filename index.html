@@ -601,6 +601,80 @@ fetch('https://zvftggieqlxujjtotvwg.supabase.co/storage/v1/object/public/betstor
   .catch(() => {});
 </script>
 
+
+<!-- RISULTATI LIVE -->
+<section style="padding:40px 24px 20px">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label"><span>🔴 Risultati Live</span></div>
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:20px;max-width:700px;margin:0 auto">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700">⚽ Partite in corso</div>
+          <div id="live-count" style="background:rgba(255,82,82,.15);color:#ff5252;padding:4px 10px;border-radius:20px;font-size:.75rem;font-weight:600">● LIVE</div>
+        </div>
+        <div id="live-scores" style="min-height:60px">
+          <div style="text-align:center;color:var(--muted);padding:20px;font-size:.85rem">Caricamento partite live...</div>
+        </div>
+        <div style="text-align:center;margin-top:12px;font-size:.72rem;color:var(--muted)">Aggiornamento automatico ogni 60 secondi</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+// Live scores from RapidAPI via proxy
+const LIVE_API = 'https://free-api-live-football-data.p.rapidapi.com/football-current-live';
+const RAPID_KEY = '03d688c30emsh67f4aa370eab8c9p1ee389jsnfdcf22f07a4b';
+
+async function loadLiveScores() {
+  const el = document.getElementById('live-scores');
+  const countEl = document.getElementById('live-count');
+  try {
+    const resp = await fetch(LIVE_API, {
+      headers: { 'X-RapidAPI-Key': RAPID_KEY, 'X-RapidAPI-Host': 'free-api-live-football-data.p.rapidapi.com' }
+    });
+    if (!resp.ok) throw new Error('API error');
+    const data = await resp.json();
+    const matches = (data.response?.live || []).slice(0, 8);
+    
+    if (!matches.length) {
+      el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px;font-size:.88rem"><i class="fas fa-moon" style="margin-right:8px"></i>Nessuna partita in corso al momento</div>';
+      countEl.textContent = 'OFFLINE';
+      countEl.style.background = 'rgba(255,255,255,.06)';
+      countEl.style.color = 'var(--muted)';
+      return;
+    }
+    
+    countEl.textContent = '● ' + matches.length + ' LIVE';
+    countEl.style.background = 'rgba(255,82,82,.15)';
+    countEl.style.color = '#ff5252';
+    
+    el.innerHTML = matches.map(m => {
+      const home = m.home?.name || '?';
+      const away = m.away?.name || '?';
+      const hs = m.home?.score ?? '-';
+      const as = m.away?.score ?? '-';
+      const time = m.status?.liveTime?.short || m.status?.scoreStr || '';
+      const league = m.leagueId || '';
+      return '<div style="display:flex;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04)">' +
+        '<div style="flex:1;text-align:right;font-size:.88rem;font-weight:500">' + home + '</div>' +
+        '<div style="padding:0 16px;font-family:Syne,sans-serif;font-size:1.1rem;font-weight:800;color:var(--green);min-width:60px;text-align:center">' + hs + ' - ' + as + '</div>' +
+        '<div style="flex:1;font-size:.88rem;font-weight:500">' + away + '</div>' +
+        '<div style="font-size:.7rem;color:#ff5252;font-weight:600;min-width:36px;text-align:right">' + time + '</div>' +
+      '</div>';
+    }).join('');
+  } catch(e) {
+    el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px;font-size:.85rem"><i class="fas fa-clock" style="margin-right:8px"></i>Risultati live disponibili durante le partite</div>';
+    countEl.textContent = 'STANDBY';
+    countEl.style.background = 'rgba(255,255,255,.06)';
+    countEl.style.color = 'var(--muted)';
+  }
+}
+
+loadLiveScores();
+setInterval(loadLiveScores, 60000);
+</script>
+
 <section class="combos-section" id="combinazioni">
   <div class="container">
     <div class="reveal">
