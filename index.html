@@ -663,6 +663,7 @@ fetch('https://zvftggieqlxujjtotvwg.supabase.co/storage/v1/object/public/betstor
 // Live scores from RapidAPI via proxy
 const LIVE_API = 'https://free-api-live-football-data.p.rapidapi.com/football-current-live';
 const RAPID_KEY = '03d688c30emsh67f4aa370eab8c9p1ee389jsnfdcf22f07a4b';
+const MAJOR_LEAGUES = [42,47,54,87,130,135,140,39,2,73]; // Champions,Europa,Serie A,La Liga,PL,Bundesliga,Ligue1
 
 async function loadLiveScores() {
   const el = document.getElementById('live-scores');
@@ -673,7 +674,8 @@ async function loadLiveScores() {
     });
     if (!resp.ok) throw new Error('API error');
     const data = await resp.json();
-    const matches = (data.response?.live || []).slice(0, 8);
+    const allLive = data.response?.live || [];
+    const matches = allLive.filter(m => MAJOR_LEAGUES.includes(m.leagueId)).slice(0, 8);
     
     if (!matches.length) {
       el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px;font-size:.88rem"><i class="fas fa-moon" style="margin-right:8px"></i>Nessuna partita in corso al momento</div>';
@@ -702,7 +704,7 @@ async function loadLiveScores() {
       '</div>';
     }).join('');
   } catch(e) {
-    el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px;font-size:.85rem"><i class="fas fa-clock" style="margin-right:8px"></i>Risultati live disponibili durante le partite</div>';
+    el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px;font-size:.85rem"><i class="fas fa-clock" style="margin-right:8px"></i>Risultati live disponibili durante le partite dei campionati maggiori</div>';
     countEl.textContent = 'STANDBY';
     countEl.style.background = 'rgba(255,255,255,.06)';
     countEl.style.color = 'var(--muted)';
@@ -710,7 +712,7 @@ async function loadLiveScores() {
 }
 
 loadLiveScores();
-setInterval(loadLiveScores, 60000);
+setInterval(loadLiveScores, 180000);
 </script>
 
 <section class="combos-section" id="combinazioni">
