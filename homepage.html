@@ -107,6 +107,59 @@
       </div>
     </section>
 
+    
+    <!-- ======== 4B. SCHEDINE DEL GIORNO ======== -->
+    <section class="hp-section">
+      <div class="hp-container hp-center">
+        <p class="hp-label">Schedine del Giorno AI</p>
+        <h2 class="hp-title">3 schedine pronte — scegli il tuo livello</h2>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:24px 0">
+          <a href="https://betwin360.it/fwlink/account-registration?father=amboox18" target="_blank" rel="noopener" class="hp-btn hp-btn--gold hp-btn--sm" data-outbound="betwin360-schedine"><i class="fas fa-bolt"></i> Gioca su Betwin360</a>
+          <a href="https://track.padrinopartners.com/visit/?bta=35842&nci=5343&afp10=Network&utm_campaign=imperialdeal_20" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#7c4dff,#b388ff);color:#fff;padding:10px 20px;border-radius:12px;font-weight:700;font-size:.82rem;text-decoration:none" data-outbound="nfs-schedine"><i class="fas fa-gem"></i> Gioca su Need for Slots</a>
+        </div>
+        <div id="schedine-grid" class="hp-grid hp-grid--3 hp-reveal">
+          <div style="text-align:center;color:var(--muted);padding:40px;grid-column:1/-1">Caricamento schedine...</div>
+        </div>
+      </div>
+    </section>
+
+    <script>
+    fetch('https://zvftggieqlxujjtotvwg.supabase.co/storage/v1/object/public/betstorm-data/matches.json').then(r=>r.ok?r.json():null).then(data=>{
+      if(!data||!data.schedina)return;const s=data.schedina;const grid=document.getElementById('schedine-grid');if(!grid)return;
+      const levels=[
+        {key:'easy',label:'FACILE',emoji:'\ud83d\udfe2',color:'#00e676',desc:'2 pick sicure',gradient:'linear-gradient(135deg,rgba(0,230,118,.08),rgba(0,200,83,.04))'},
+        {key:'medium',label:'MEDIA',emoji:'\ud83d\udfe1',color:'#ffd600',desc:'4 pick bilanciate',gradient:'linear-gradient(135deg,rgba(255,214,0,.08),rgba(255,171,0,.04))'},
+        {key:'hard',label:'DIFFICILE',emoji:'\ud83d\udd34',color:'#ff5252',desc:'6 pick alta quota',gradient:'linear-gradient(135deg,rgba(255,82,82,.08),rgba(255,23,68,.04))'}
+      ];
+      grid.innerHTML=levels.map(lv=>{
+        const slip=s[lv.key];if(!slip||!slip.picks)return'';
+        const picks=slip.picks.map(p=>'<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.82rem"><span>'+p.home+' vs '+p.away+'</span><span style="color:'+lv.color+';font-weight:600">'+p.quota.toFixed(2)+'</span></div>').join('');
+        return'<div style="background:'+lv.gradient+';border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:20px;display:flex;flex-direction:column"><div style="text-align:center;margin-bottom:12px"><div style="font-size:1.3rem">'+lv.emoji+'</div><div style="font-family:Syne,sans-serif;font-weight:800;color:'+lv.color+'">'+lv.label+'</div><div style="font-size:.72rem;color:var(--muted)">'+lv.desc+'</div></div><div style="flex:1;margin-bottom:12px">'+picks+'</div><div style="background:rgba(0,0,0,.2);border-radius:10px;padding:12px;text-align:center"><div style="font-size:.7rem;color:var(--muted)">QUOTA TOTALE</div><div style="font-family:Syne,sans-serif;font-size:1.5rem;font-weight:800;color:var(--gold)">'+slip.total_quota.toFixed(2)+'</div><div style="font-size:.7rem;color:var(--muted);margin-top:4px">Vincita con \u20ac10</div><div style="font-family:Syne,sans-serif;font-size:1.1rem;font-weight:800;color:var(--green)">\u20ac'+slip.potential_win_10.toFixed(2)+'</div></div><a href="https://betwin360.it/fwlink/account-registration?father=amboox18" target="_blank" rel="noopener" style="display:block;text-align:center;background:linear-gradient(135deg,#00c853,#00e676);color:#070a0f;padding:10px;border-radius:8px;font-weight:700;font-size:.85rem;margin-top:12px;text-decoration:none">\u26a1 Gioca questa schedina</a></div>';
+      }).join('');
+    }).catch(()=>{});
+    </script>
+
+    <!-- ======== 4C. RISULTATI LIVE ======== -->
+    <section class="hp-section hp-section--alt">
+      <div class="hp-container hp-center">
+        <p class="hp-label">Risultati Live</p>
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:20px;max-width:650px;margin:0 auto">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+            <div style="font-family:var(--font-head);font-size:1rem;font-weight:700">\u26bd Partite in corso</div>
+            <div id="live-count" style="background:rgba(255,82,82,.12);color:#ff5252;padding:4px 10px;border-radius:20px;font-size:.72rem;font-weight:600">\u25cf LIVE</div>
+          </div>
+          <div id="live-scores" style="min-height:50px"><div style="text-align:center;color:var(--muted);padding:16px;font-size:.85rem">Caricamento...</div></div>
+          <div style="text-align:center;margin-top:10px;font-size:.7rem;color:var(--muted)">Aggiornamento ogni 3 minuti • Solo campionati maggiori</div>
+        </div>
+      </div>
+    </section>
+
+    <script>
+    const MAJOR=[42,47,54,87,130,135,140,39,2,73];
+    async function loadLive(){const el=document.getElementById('live-scores');const c=document.getElementById('live-count');try{const r=await fetch('https://free-api-live-football-data.p.rapidapi.com/football-current-live',{headers:{'X-RapidAPI-Key':'03d688c30emsh67f4aa370eab8c9p1ee389jsnfdcf22f07a4b','X-RapidAPI-Host':'free-api-live-football-data.p.rapidapi.com'}});if(!r.ok)throw 0;const d=await r.json();const m=(d.response?.live||[]).filter(m=>MAJOR.includes(m.leagueId)).slice(0,8);if(!m.length){el.innerHTML='<div style="text-align:center;color:var(--muted);padding:16px;font-size:.85rem"><i class="fas fa-moon" style="margin-right:6px"></i>Nessuna partita in corso</div>';c.textContent='STANDBY';c.style.background='rgba(255,255,255,.04)';c.style.color='var(--muted)';return;}c.textContent='\u25cf '+m.length+' LIVE';el.innerHTML=m.map(m=>'<div style="display:flex;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)"><div style="flex:1;text-align:right;font-size:.85rem">'+(m.home?.name||'?')+'</div><div style="padding:0 14px;font-family:Syne,sans-serif;font-size:1rem;font-weight:800;color:var(--green);min-width:55px;text-align:center">'+(m.home?.score??'-')+' - '+(m.away?.score??'-')+'</div><div style="flex:1;font-size:.85rem">'+(m.away?.name||'?')+'</div><div style="font-size:.68rem;color:#ff5252;font-weight:600;min-width:32px;text-align:right">'+(m.status?.liveTime?.short||'')+'</div></div>').join('');}catch(e){el.innerHTML='<div style="text-align:center;color:var(--muted);padding:16px;font-size:.85rem"><i class="fas fa-clock" style="margin-right:6px"></i>Disponibili durante le partite</div>';c.textContent='STANDBY';c.style.background='rgba(255,255,255,.04)';c.style.color='var(--muted)';}}
+    loadLive();setInterval(loadLive,180000);
+    </script>
+
     <!-- ======== 5. EDUCATIVA ======== -->
     <section class="hp-section">
       <div class="hp-container" style="max-width:660px">
