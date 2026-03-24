@@ -24,16 +24,16 @@
       "dest": "/api/$1"
     },
     {
-      "src": "/homepage.html",
-      "dest": "/homepage.html"
-    },
-    {
       "src": "/homepage.css",
       "dest": "/homepage.css"
     },
     {
       "src": "/homepage.js",
       "dest": "/homepage.js"
+    },
+    {
+      "src": "/old-home",
+      "dest": "/index.html"
     },
     {
       "src": "/dashboard.html",
@@ -61,11 +61,11 @@
     },
     {
       "src": "/",
-      "dest": "/index.html"
+      "dest": "/homepage.html"
     },
     {
       "src": "/(.*)",
-      "dest": "/index.html"
+      "dest": "/homepage.html"
     }
   ],
   "headers": [
