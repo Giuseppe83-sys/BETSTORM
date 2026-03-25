@@ -17,6 +17,33 @@
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="homepage.css">
+<style>
+@media(max-width:520px){
+  .hp-header__inner{padding:0 12px;gap:6px}
+  .hp-logo{font-size:.95rem;gap:6px;white-space:nowrap;flex-shrink:0}
+  .hp-logo img{width:28px!important;height:28px!important;flex-shrink:0}
+  .hp-nav__cta{gap:6px;flex-shrink:0}
+  .hp-nav__cta .hp-btn{padding:8px 12px;font-size:.76rem}
+  .hp-hero{padding:60px 0 50px}
+  .hp-hero h1{font-size:1.6rem}
+  .hp-hero__sub{font-size:.88rem}
+  .hp-hero__ctas{flex-direction:column;align-items:center;gap:8px}
+  .hp-hero__ctas .hp-btn{width:100%;justify-content:center;max-width:280px}
+  .hp-hero__trust{gap:10px;font-size:.68rem}
+  .hp-section{padding:50px 0}
+  .hp-grid--3{grid-template-columns:1fr!important}
+  .hp-bullets{grid-template-columns:1fr!important}
+  .hp-match__teams{font-size:1.1rem}
+  .hp-match__stats{grid-template-columns:repeat(3,1fr);gap:6px}
+  .hp-plan{padding:20px}
+  #schedine-grid{grid-template-columns:1fr!important}
+}
+@media(max-width:360px){
+  .hp-logo{font-size:.85rem}
+  .hp-logo img{width:24px!important;height:24px!important}
+  .hp-nav__cta .hp-btn--outline{display:none}
+}
+.hp-why-grid{grid-template-columns:1fr 1fr}@media(max-width:768px){.hp-why-grid{grid-template-columns:1fr!important}}</style>
 </head>
 <body>
 
@@ -73,7 +100,7 @@
     <!-- ======== 3. PERCHE BETSTORM ======== -->
     <section class="hp-section">
       <div class="hp-container">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center" class="hp-why-grid">
           <div><p class="hp-label">Perche BetStorm</p><h2 class="hp-title">Decisioni migliori, rischio ridotto</h2><p class="hp-sub">Non siamo un bookmaker. Siamo il tuo vantaggio competitivo basato sui dati.</p></div>
           <div class="hp-bullets">
             <div class="hp-bullet hp-reveal"><div class="hp-bullet__icon"><i class="fas fa-chart-bar"></i></div><div><div class="hp-bullet__title">Decisioni basate sui dati</div><div class="hp-bullet__text">Probabilita calcolate, non intuizioni.</div></div></div>
