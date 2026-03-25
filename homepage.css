@@ -135,3 +135,18 @@ img { max-width: 100%; display: block }
 /* --- Reveal animation --- */
 .hp-reveal { opacity: 0; transform: translateY(18px); transition: opacity .55s ease, transform .55s ease }
 .hp-reveal--visible { opacity: 1; transform: translateY(0) }
+
+
+/* --- Mobile header logo fix --- */
+@media (max-width:480px) {
+  .hp-header__inner { gap: 8px }
+  .hp-logo { font-size: .95rem; gap: 6px; flex-shrink: 0 }
+  .hp-logo img { width: 28px !important; height: 28px !important }
+  .hp-nav__cta { gap: 6px }
+  .hp-nav__cta .hp-btn { padding: 8px 12px; font-size: .78rem }
+}
+@media (max-width:360px) {
+  .hp-logo { font-size: .85rem }
+  .hp-logo img { width: 24px !important; height: 24px !important }
+  .hp-nav__cta .hp-btn--outline { display: none }
+}
