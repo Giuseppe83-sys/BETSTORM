@@ -43,7 +43,22 @@
   .hp-logo img{width:24px!important;height:24px!important}
   .hp-nav__cta .hp-btn--outline{display:none}
 }
-.hp-why-grid{grid-template-columns:1fr 1fr}@media(max-width:768px){.hp-why-grid{grid-template-columns:1fr!important}}</style>
+.hp-why-grid{grid-template-columns:1fr 1fr}@media(max-width:768px){.hp-why-grid{grid-template-columns:1fr!important}}
+/* Animated glow banners */
+@keyframes glowPulse{0%,100%{box-shadow:0 0 15px rgba(255,82,82,.3),0 0 30px rgba(255,82,82,.1)}50%{box-shadow:0 0 25px rgba(255,82,82,.5),0 0 50px rgba(255,82,82,.2)}}
+@keyframes glowPulseGold{0%,100%{box-shadow:0 0 15px rgba(255,214,0,.3),0 0 30px rgba(255,214,0,.1)}50%{box-shadow:0 0 25px rgba(255,214,0,.5),0 0 50px rgba(255,214,0,.2)}}
+@keyframes glowPulsePurple{0%,100%{box-shadow:0 0 15px rgba(124,77,255,.3),0 0 30px rgba(124,77,255,.1)}50%{box-shadow:0 0 25px rgba(124,77,255,.5),0 0 50px rgba(124,77,255,.2)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+.glow-banner{position:relative;border-radius:16px;padding:24px;text-align:center;text-decoration:none;display:block;transition:transform .3s;overflow:hidden}
+.glow-banner:hover{transform:scale(1.02);text-decoration:none}
+.glow-banner::before{content:'';position:absolute;inset:0;border-radius:16px;padding:2px;background:linear-gradient(135deg,transparent,rgba(255,255,255,.3),transparent);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask-composite:exclude;pointer-events:none;background-size:200% 100%;animation:shimmer 3s linear infinite}
+.glow-banner__tag{display:inline-block;padding:3px 10px;border-radius:6px;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+.glow-banner__title{font-family:var(--font-head);font-size:1.2rem;font-weight:800;margin-bottom:8px;color:#fff}
+.glow-banner__offer{font-size:.88rem;line-height:1.5;margin-bottom:14px;color:rgba(255,255,255,.85)}
+.glow-banner__cta{display:inline-block;padding:10px 24px;border-radius:10px;font-weight:700;font-size:.88rem;color:#070a0f;transition:transform .2s}
+.glow-banner__cta:hover{transform:scale(1.05)}
+@media(max-width:520px){.glow-banner__title{font-size:1rem}.glow-banner__offer{font-size:.8rem}}
+</style>
 </head>
 <body>
 
@@ -84,7 +99,32 @@
       </div>
     </section>
 
-    <!-- ======== 2. COME FUNZIONA ======== -->
+    
+    <!-- ======== OFFERTE BOOKMAKER ======== -->
+    <section style="padding:30px 0">
+      <div class="hp-container">
+        <p class="hp-label hp-center">&#127381; Offerte esclusive</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px" class="hp-grid--2">
+          
+          <a href="https://lp.bgame.it/slotscommesse?ID=imperialdeal_18" target="_blank" rel="noopener" class="glow-banner" style="background:linear-gradient(135deg,#1a0a0a,#2d0a0a);border:1px solid rgba(255,82,82,.3);animation:glowPulse 3s ease-in-out infinite" data-outbound="bgame-banner">
+            <div class="glow-banner__tag" style="background:rgba(255,82,82,.2);color:#ff5252">&#128293; BGAME</div>
+            <div class="glow-banner__title">Bonus 100% fino a &#8364;2.500</div>
+            <div class="glow-banner__offer">&#8364;2.500 sport + &#8364;1.000 slot senza deposito + 50% fino a &#8364;10 RealBonus sulla 2a ricarica</div>
+            <div class="glow-banner__cta" style="background:linear-gradient(135deg,#e53935,#ff5252)">Ottieni il bonus &#8594;</div>
+          </a>
+          
+          <a href="https://track.padrinopartners.com/visit/?bta=35842&nci=5343&afp10=Network&utm_campaign=imperialdeal_20" target="_blank" rel="noopener" class="glow-banner" style="background:linear-gradient(135deg,#0a0a1a,#0d0a2d);border:1px solid rgba(124,77,255,.3);animation:glowPulsePurple 3s ease-in-out infinite .5s" data-outbound="nfs-banner">
+            <div class="glow-banner__tag" style="background:rgba(124,77,255,.2);color:#b388ff">&#128142; NEED FOR SLOTS</div>
+            <div class="glow-banner__title">Fino a &#8364;1.500 + 250 giri</div>
+            <div class="glow-banner__offer">Bonus benvenuto &#8364;1.500 + 250 giri gratuiti per i nuovi iscritti</div>
+            <div class="glow-banner__cta" style="background:linear-gradient(135deg,#7c4dff,#b388ff)">Registrati ora &#8594;</div>
+          </a>
+          
+        </div>
+      </div>
+    </section>
+
+<!-- ======== 2. COME FUNZIONA ======== -->
     <section class="hp-section hp-section--alt" id="come-funziona">
       <div class="hp-container hp-center">
         <p class="hp-label">Come funziona</p>
