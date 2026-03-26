@@ -16,6 +16,14 @@
     {
       "src": "*.css",
       "use": "@vercel/static"
+    },
+    {
+      "src": "*.jpg",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.json",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
@@ -24,12 +32,32 @@
       "dest": "/api/$1"
     },
     {
+      "src": "/logo.jpg",
+      "dest": "/logo.jpg"
+    },
+    {
+      "src": "/manifest.json",
+      "dest": "/manifest.json"
+    },
+    {
       "src": "/homepage.css",
       "dest": "/homepage.css"
     },
     {
       "src": "/homepage.js",
       "dest": "/homepage.js"
+    },
+    {
+      "src": "/teams.js",
+      "dest": "/teams.js"
+    },
+    {
+      "src": "/sw.js",
+      "dest": "/sw.js"
+    },
+    {
+      "src": "/cookie-banner.js",
+      "dest": "/cookie-banner.js"
     },
     {
       "src": "/old-home",
@@ -52,12 +80,8 @@
       "dest": "/bonus.html"
     },
     {
-      "src": "/teams.js",
-      "dest": "/teams.js"
-    },
-    {
-      "src": "/sw.js",
-      "dest": "/sw.js"
+      "src": "/admin.html",
+      "dest": "/admin.html"
     },
     {
       "src": "/",
