@@ -84,6 +84,14 @@
       "dest": "/admin.html"
     },
     {
+      "src": "/privacy.html",
+      "dest": "/privacy.html"
+    },
+    {
+      "src": "/termini.html",
+      "dest": "/termini.html"
+    },
+    {
       "src": "/",
       "dest": "/homepage.html"
     },
