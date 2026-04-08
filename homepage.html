@@ -34,7 +34,7 @@
   .hp-hero__sub{font-size:.88rem}
   .hp-hero__ctas{flex-direction:column;align-items:center;gap:8px}
   .hp-hero__ctas .hp-btn{width:100%;justify-content:center;max-width:280px}
-  .hp-hero__trust{gap:10px;font-size:.68rem}
+  .hp-hero__trust{gap:10px;font-size:.72rem}
   .hp-section{padding:50px 0}
   .hp-grid--3{grid-template-columns:1fr!important}
   .hp-bullets{grid-template-columns:1fr!important}
@@ -57,17 +57,20 @@
 .glow-banner{position:relative;border-radius:16px;padding:24px;text-align:center;text-decoration:none;display:block;transition:transform .3s;overflow:hidden}
 .glow-banner:hover{transform:scale(1.02);text-decoration:none}
 .glow-banner::before{content:'';position:absolute;inset:0;border-radius:16px;padding:2px;background:linear-gradient(135deg,transparent,rgba(255,255,255,.3),transparent);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask-composite:exclude;pointer-events:none;background-size:200% 100%;animation:shimmer 3s linear infinite}
-.glow-banner__tag{display:inline-block;padding:3px 10px;border-radius:6px;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+.glow-banner__tag{display:inline-block;padding:3px 10px;border-radius:6px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
 .glow-banner__title{font-family:var(--font-head);font-size:1.2rem;font-weight:800;margin-bottom:8px;color:#fff}
 .glow-banner__offer{font-size:.88rem;line-height:1.5;margin-bottom:14px;color:rgba(255,255,255,.85)}
 .glow-banner__cta{display:inline-block;padding:10px 24px;border-radius:10px;font-weight:700;font-size:.88rem;color:#070a0f;transition:transform .2s}
 .glow-banner__cta:hover{transform:scale(1.05)}
 @media(max-width:520px){.glow-banner__title{font-size:1rem}.glow-banner__offer{font-size:.8rem}}
+
+*:focus-visible{outline:2px solid var(--green);outline-offset:2px;border-radius:4px}
 </style>
 </head>
 <body>
 
   <!-- ======== HEADER ======== -->
+  <a href="#main-content" style="position:absolute;left:-9999px;top:0;z-index:999;background:var(--green);color:#070a0f;padding:8px 16px;font-weight:700" onfocus="this.style.left='0'">Vai al contenuto</a>
   <header class="hp-header">
     <div class="hp-container hp-header__inner">
       <a href="/" class="hp-logo"><img src="logo.jpg" alt="BetStorm" style="width:36px;height:36px;border-radius:8px;object-fit:cover">Bet<b>Storm</b></a>
@@ -85,7 +88,7 @@
     </div>
   </header>
 
-  <main>
+  <main id="main-content">
     <!-- ======== 1. HERO ======== -->
     <section class="hp-hero">
       <div class="hp-container">
@@ -239,7 +242,7 @@
 
     <script>
     const MAJOR=[2,3,4,5,42,47,48,54,73,78,87,130,135,140,39,45,61,66,143,529,530,531,532,533,848];
-    async function loadLive(){const el=document.getElementById('live-scores');const c=document.getElementById('live-count');try{const r=await fetch('https://free-api-live-football-data.p.rapidapi.com/football-current-live',{headers:{'X-RapidAPI-Key':'03d688c30emsh67f4aa370eab8c9p1ee389jsnfdcf22f07a4b','X-RapidAPI-Host':'free-api-live-football-data.p.rapidapi.com'}});if(!r.ok)throw 0;const d=await r.json();const m=(d.response?.live||[]).filter(m=>MAJOR.includes(m.leagueId)).slice(0,8);if(!m.length){el.innerHTML='<div style="text-align:center;color:var(--muted);padding:16px;font-size:.85rem"><i class="fas fa-moon" style="margin-right:6px"></i>Nessuna partita in corso</div>';c.textContent='STANDBY';c.style.background='rgba(255,255,255,.04)';c.style.color='var(--muted)';return;}c.textContent='\u25cf '+m.length+' LIVE';el.innerHTML=m.map(m=>'<div style="display:flex;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)"><div style="flex:1;text-align:right;font-size:.85rem">'+(m.home?.name||'?')+'</div><div style="padding:0 14px;font-family:Syne,sans-serif;font-size:1rem;font-weight:800;color:var(--green);min-width:55px;text-align:center">'+(m.home?.score??'-')+' - '+(m.away?.score??'-')+'</div><div style="flex:1;font-size:.85rem">'+(m.away?.name||'?')+'</div><div style="font-size:.68rem;color:#ff5252;font-weight:600;min-width:32px;text-align:right">'+(m.status?.liveTime?.short||'')+'</div></div>').join('');}catch(e){el.innerHTML='<div style="text-align:center;color:var(--muted);padding:16px;font-size:.85rem"><i class="fas fa-clock" style="margin-right:6px"></i>Disponibili durante le partite</div>';c.textContent='STANDBY';c.style.background='rgba(255,255,255,.04)';c.style.color='var(--muted)';}}
+    async function loadLive(){const el=document.getElementById('live-scores');const c=document.getElementById('live-count');try{const r=await fetch('https://free-api-live-football-data.p.rapidapi.com/football-current-live',{headers:{'X-RapidAPI-Key':'03d688c30emsh67f4aa370eab8c9p1ee389jsnfdcf22f07a4b','X-RapidAPI-Host':'free-api-live-football-data.p.rapidapi.com'}});if(!r.ok)throw 0;const d=await r.json();const m=(d.response?.live||[]).filter(m=>MAJOR.includes(m.leagueId)).slice(0,8);if(!m.length){el.innerHTML='<div style="text-align:center;color:var(--muted);padding:16px;font-size:.85rem"><i class="fas fa-moon" style="margin-right:6px"></i>Nessuna partita in corso</div>';c.textContent='STANDBY';c.style.background='rgba(255,255,255,.04)';c.style.color='var(--muted)';return;}c.textContent='\u25cf '+m.length+' LIVE';el.innerHTML=m.map(m=>'<div style="display:flex;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)"><div style="flex:1;text-align:right;font-size:.85rem">'+(m.home?.name||'?')+'</div><div style="padding:0 14px;font-family:Syne,sans-serif;font-size:1rem;font-weight:800;color:var(--green);min-width:55px;text-align:center">'+(m.home?.score??'-')+' - '+(m.away?.score??'-')+'</div><div style="flex:1;font-size:.85rem">'+(m.away?.name||'?')+'</div><div style="font-size:.72rem;color:#ff5252;font-weight:600;min-width:32px;text-align:right">'+(m.status?.liveTime?.short||'')+'</div></div>').join('');}catch(e){el.innerHTML='<div style="text-align:center;color:var(--muted);padding:16px;font-size:.85rem"><i class="fas fa-clock" style="margin-right:6px"></i>Disponibili durante le partite</div>';c.textContent='STANDBY';c.style.background='rgba(255,255,255,.04)';c.style.color='var(--muted)';}}
     loadLive();setInterval(loadLive,180000);
     </script>
 
@@ -309,10 +312,10 @@
           <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
             <a href="#piani" class="hp-btn hp-btn--green" data-auth-cta><i class="fas fa-bolt"></i> Inizia ora gratuitamente</a>
             <a href="https://betwin360.it/fwlink/account-registration?father=amboox18" target="_blank" class="hp-btn hp-btn--gold hp-btn--sm" data-outbound="betwin360-final"><i class="fas fa-external-link-alt"></i> Betwin360</a>
-            <a href="https://track.padrinopartners.com/visit/?bta=35842&nci=5343&afp10=Network&utm_campaign=imperialdeal_20" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#7c4dff,#b388ff);color:#fff;padding:10px 18px;border-radius:12px;font-weight:700;font-size:.82rem;text-decoration:none" data-outbound="nfs-final"><i class="fas fa-gem"></i> Need for Slots</a>
-            <a href="https://lp.bgame.it/slotscommesse?ID=imperialdeal_18" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#e53935,#ff5252);color:#fff;padding:10px 18px;border-radius:12px;font-weight:700;font-size:.82rem;text-decoration:none" data-outbound="bgame-final"><i class="fas fa-fire"></i> Bgame</a>
-            <a href="https://www.betpassion.it/imperialdeal?promoter=imperialdeal62" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#00c853,#00e676);color:#070a0f;padding:10px 18px;border-radius:12px;font-weight:700;font-size:.82rem;text-decoration:none" data-outbound="betpassion-final"><i class="fas fa-star"></i> Betpassion</a>
-            <a href="https://www.vincitu.it/signup?codAffiliato=wabrokerbet76" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#1565c0,#42a5f5);color:#fff;padding:10px 18px;border-radius:12px;font-weight:700;font-size:.82rem;text-decoration:none" data-outbound="vincitu-final"><i class="fas fa-futbol"></i> Vincitu</a>
+            <a href="https://track.padrinopartners.com/visit/?bta=35842&nci=5343&afp10=Network&utm_campaign=imperialdeal_20" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#7c4dff,#b388ff);color:#fff;padding:10px 18px;border-radius:12px;font-weight:700;font-size:.82rem;text-decoration:none" data-outbound="nfs-final"><i class="fas fa-gem"></i> Need for Slots</a>
+            <a href="https://lp.bgame.it/slotscommesse?ID=imperialdeal_18" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#e53935,#ff5252);color:#fff;padding:10px 18px;border-radius:12px;font-weight:700;font-size:.82rem;text-decoration:none" data-outbound="bgame-final"><i class="fas fa-fire"></i> Bgame</a>
+            <a href="https://www.betpassion.it/imperialdeal?promoter=imperialdeal62" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#00c853,#00e676);color:#070a0f;padding:10px 18px;border-radius:12px;font-weight:700;font-size:.82rem;text-decoration:none" data-outbound="betpassion-final"><i class="fas fa-star"></i> Betpassion</a>
+            <a href="https://www.vincitu.it/signup?codAffiliato=wabrokerbet76" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#1565c0,#42a5f5);color:#fff;padding:10px 18px;border-radius:12px;font-weight:700;font-size:.82rem;text-decoration:none" data-outbound="vincitu-final"><i class="fas fa-futbol"></i> Vincitu</a>
           </div>
         </div>
       </div>
