@@ -194,7 +194,49 @@
     </section>
 
     
-    <!-- ======== 4B. SCHEDINE DEL GIORNO ======== -->
+    
+    <!-- ======== COMPARATORE QUOTE ======== -->
+    <section class="hp-section hp-section--alt">
+      <div class="hp-container">
+        <p class="hp-label hp-center">Comparatore Quote</p>
+        <h2 class="hp-title hp-center">Quote migliori per le prossime partite</h2>
+        <p class="hp-sub hp-mx hp-center">Quote reali aggiornate — clicca per giocare sul bookmaker con la quota piu alta</p>
+        <div id="odds-table" style="max-width:900px;margin:20px auto">
+          <div style="text-align:center;color:var(--muted);padding:30px">Caricamento quote...</div>
+        </div>
+      </div>
+    </section>
+
+    <script>
+    fetch('https://zvftggieqlxujjtotvwg.supabase.co/storage/v1/object/public/betstorm-data/odds.json').then(r=>r.ok?r.json():null).then(data=>{
+      if(!data||!data.matches)return;
+      const el=document.getElementById('odds-table');
+      const byLeague={};
+      data.matches.forEach(m=>{
+        if(!byLeague[m.league])byLeague[m.league]=[];
+        byLeague[m.league].push(m);
+      });
+      let html='';
+      for(const[league,matches]of Object.entries(byLeague)){
+        html+='<div style="margin-bottom:24px"><div style="background:var(--bg3);padding:10px 16px;border-radius:10px 10px 0 0;font-family:Syne,sans-serif;font-weight:700;font-size:.92rem;border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center"><span>'+league+'</span><span style="display:flex;gap:40px;font-size:.72rem;color:var(--muted);font-weight:400"><span style="min-width:60px;text-align:center">1</span><span style="min-width:60px;text-align:center">X</span><span style="min-width:60px;text-align:center">2</span></span></div>';
+        matches.slice(0,8).forEach(m=>{
+          const d=new Date(m.start);
+          const day=d.toLocaleDateString('it-IT',{weekday:'short',day:'numeric',month:'short'});
+          const time=d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+          function oddBtn(o){
+            if(!o||!o.value)return'<span style="min-width:60px;text-align:center;color:var(--muted)">-</span>';
+            const a=o.affiliate||{};
+            return '<a href="'+(a.url||'#')+'" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;min-width:60px;justify-content:center;text-decoration:none" data-outbound="odds-'+m.home+'"><span style="width:20px;height:20px;border-radius:4px;background:'+(a.color||'#666')+';display:inline-flex;align-items:center;justify-content:center;font-size:.55rem;color:#fff;font-weight:800">'+(a.name?a.name[0]:'')+' </span><span style="font-weight:700;color:var(--text);font-size:.92rem">'+o.value.toFixed(2)+'</span></a>';
+          }
+          html+='<div style="display:flex;align-items:center;padding:10px 16px;border:1px solid var(--border);border-top:0;gap:12px;font-size:.85rem"><div style="min-width:50px;color:var(--muted);font-size:.75rem"><div>'+day+'</div><div>'+time+'</div></div><div style="flex:1"><div style="font-weight:600">'+m.home+'</div><div style="color:var(--muted);font-size:.8rem">'+m.away+'</div></div><div style="display:flex;gap:12px;align-items:center">'+oddBtn(m.odds['1'])+oddBtn(m.odds['X'])+oddBtn(m.odds['2'])+'</div></div>';
+        });
+        html+='</div>';
+      });
+      el.innerHTML=html;
+    }).catch(()=>{});
+    </script>
+
+<!-- ======== 4B. SCHEDINE DEL GIORNO ======== -->
     <section class="hp-section">
       <div class="hp-container hp-center">
         <p class="hp-label">Schedine del Giorno AI</p>
