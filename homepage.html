@@ -199,79 +199,24 @@
     <!-- ======== COMPARATORE QUOTE ======== -->
     <section class="hp-section hp-section--alt">
       <div class="hp-container">
-        <p class="hp-label hp-center">Comparatore Quote</p>
-        <h2 class="hp-title hp-center">Quote migliori per le prossime partite</h2>
-        <p class="hp-sub hp-mx hp-center">Quote reali aggiornate — clicca per giocare sul bookmaker con la quota piu alta</p>
+        <p class="hp-label hp-center">Comparatore Quote Multi-Sport</p>
+        <h2 class="hp-title hp-center">Quote migliori per tutte le prossime partite</h2>
+        <p class="hp-sub hp-mx hp-center">Calcio, Tennis e Basket — quote reali aggiornate dai tuoi bookmaker affiliati</p>
+
+<!-- Sport tabs -->
+<div class="sport-tabs">
+  <button class="sport-tab active" data-sport="calcio" onclick="window._bsSportSwitch('calcio')">⚽ Calcio</button>
+  <button class="sport-tab" data-sport="tennis" onclick="window._bsSportSwitch('tennis')">🎾 Tennis</button>
+  <button class="sport-tab" data-sport="basket" onclick="window._bsSportSwitch('basket')">🏀 Basket</button>
+</div>
+
         <div id="odds-table" style="max-width:900px;margin:20px auto">
           <div style="text-align:center;color:var(--muted);padding:30px">Caricamento quote...</div>
         </div>
       </div>
     </section>
 
-    <script>
-    (function() {
-      var ODDS_URL = 'https://zvftggieqlxujjtotvwg.supabase.co/storage/v1/object/public/betstorm-data/odds.json';
-      
-      function makeBtn(o) {
-        if (!o || !o.value) return '<span style="min-width:55px;text-align:center;color:var(--muted)">-</span>';
-        var a = o.affiliate || {};
-        var initial = a.name ? a.name.charAt(0) : '?';
-        var color = a.color || '#666';
-        var url = a.url || '#';
-        return '<a href="' + url + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;min-width:55px;justify-content:center;text-decoration:none">' +
-          '<span style="width:18px;height:18px;border-radius:4px;background:' + color + ';display:inline-flex;align-items:center;justify-content:center;font-size:.5rem;color:#fff;font-weight:800">' + initial + '</span>' +
-          '<span style="font-weight:700;color:var(--text);font-size:.9rem">' + o.value.toFixed(2) + '</span></a>';
-      }
-
-      fetch(ODDS_URL)
-        .then(function(r) { return r.ok ? r.json() : null; })
-        .then(function(data) {
-          if (!data || !data.matches) return;
-          var el = document.getElementById('odds-table');
-          if (!el) return;
-          
-          var byLeague = {};
-          data.matches.forEach(function(m) {
-            if (!byLeague[m.league]) byLeague[m.league] = [];
-            byLeague[m.league].push(m);
-          });
-          
-          var out = '';
-          var leagues = Object.keys(byLeague);
-          leagues.forEach(function(league) {
-            var matches = byLeague[league];
-            out += '<div style="margin-bottom:20px">';
-            out += '<div style="background:var(--bg3);padding:10px 16px;border-radius:10px 10px 0 0;font-family:Syne,sans-serif;font-weight:700;font-size:.9rem;border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">';
-            out += '<span>' + league + '</span>';
-            out += '<span style="display:flex;gap:30px;font-size:.7rem;color:var(--muted);font-weight:400"><span style="min-width:55px;text-align:center">1</span><span style="min-width:55px;text-align:center">X</span><span style="min-width:55px;text-align:center">2</span></span>';
-            out += '</div>';
-            
-            matches.slice(0, 8).forEach(function(m) {
-              var d = new Date(m.start);
-              var day = d.toLocaleDateString('it-IT', {weekday:'short', day:'numeric', month:'short'});
-              var time = d.toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'});
-              
-              out += '<div style="display:flex;align-items:center;padding:10px 16px;border:1px solid var(--border);border-top:0;gap:10px;font-size:.85rem">';
-              out += '<div style="min-width:45px;color:var(--muted);font-size:.72rem"><div>' + day + '</div><div>' + time + '</div></div>';
-              out += '<div style="flex:1"><div style="font-weight:600">' + m.home + '</div><div style="color:var(--muted);font-size:.78rem">' + m.away + '</div></div>';
-              out += '<div style="display:flex;gap:8px;align-items:center">';
-              out += makeBtn(m.odds['1']);
-              out += makeBtn(m.odds['X']);
-              out += makeBtn(m.odds['2']);
-              out += '</div></div>';
-            });
-            out += '</div>';
-          });
-          
-          el.innerHTML = out;
-        })
-        .catch(function(err) {
-          console.error('Odds fetch error:', err);
-          var el = document.getElementById('odds-table');
-          if (el) el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:30px">Quote non disponibili al momento</div>';
-        });
-    })();
-    </script>
+    
 
     <!-- ======== 4B. SCHEDINE DEL GIORNO ======== -->
     <section class="hp-section">
@@ -418,5 +363,101 @@
   <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="homepage.js"></script>
+
+<style>
+.sport-tabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:20px}
+.sport-tab{padding:10px 20px;border-radius:20px;border:1px solid var(--border);background:var(--bg3);color:var(--muted);cursor:pointer;font-size:.82rem;font-weight:600;transition:all .25s}
+.sport-tab:hover{border-color:rgba(0,230,118,.3);color:var(--text)}
+.sport-tab.active{background:var(--green);color:#070a0f;border-color:var(--green)}
+.sport-icon{margin-right:5px}
+</style>
+
+<script>
+(function() {
+  var ODDS_URL = 'https://zvftggieqlxujjtotvwg.supabase.co/storage/v1/object/public/betstorm-data/odds.json';
+  var currentSport = 'calcio';
+  var allData = null;
+
+  var sportConfig = {
+    'calcio': {label:'⚽ Calcio', headers:['1','X','2'], teams:true},
+    'tennis': {label:'🎾 Tennis', headers:['1','2'], teams:false},
+    'basket':  {label:'🏀 Basket', headers:['1','2'], teams:false}
+  };
+
+  function makeBtn(o) {
+    if (!o || !o.value || o.value === 0) return '<span style="min-width:55px;text-align:center;color:var(--muted)">-</span>';
+    var a = o.affiliate || {};
+    var initial = a.name ? a.name.charAt(0) : '?';
+    var color = a.color || '#666';
+    var url = a.url || '#';
+    return '<a href="' + url + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;min-width:55px;justify-content:center;text-decoration:none" data-outbound="odds-' + (a.name||'?') + '">' +
+      '<span style="width:18px;height:18px;border-radius:4px;background:' + color + ';display:inline-flex;align-items:center;justify-content:center;font-size:.5rem;color:#fff;font-weight:800">' + initial + '</span>' +
+      '<span style="font-weight:700;color:var(--text);font-size:.88rem">' + o.value.toFixed(2) + '</span></a>';
+  }
+
+  function renderTable(sport) {
+    var el = document.getElementById('odds-table');
+    if (!el || !allData) return;
+    var matches = allData.matches.filter(function(m){ return (m.sport || 'calcio') === sport; });
+    if (!matches.length) {
+      el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:40px;font-size:.88rem">Nessuna partita disponibile per questo sport</div>';
+      return;
+    }
+    var byLeague = {};
+    matches.forEach(function(m){
+      if (!byLeague[m.league]) byLeague[m.league] = [];
+      byLeague[m.league].push(m);
+    });
+    var cfg = sportConfig[sport] || sportConfig['calcio'];
+    var showX = cfg.headers.indexOf('X') > -1;
+    var out = '';
+    Object.keys(byLeague).forEach(function(league){
+      var ms = byLeague[league];
+      out += '<div style="margin-bottom:20px"><div style="background:var(--bg3);padding:10px 16px;border-radius:10px 10px 0 0;font-family:Syne,sans-serif;font-weight:700;font-size:.88rem;border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">';
+      out += '<span>' + league + '</span>';
+      out += '<span style="display:flex;gap:' + (showX?'30px':'50px') + ';font-size:.7rem;color:var(--muted);font-weight:400">';
+      out += '<span style="min-width:55px;text-align:center">1</span>';
+      if (showX) out += '<span style="min-width:55px;text-align:center">X</span>';
+      out += '<span style="min-width:55px;text-align:center">2</span></span></div>';
+      ms.slice(0,8).forEach(function(m){
+        var d = new Date(m.start);
+        var day = d.toLocaleDateString('it-IT',{weekday:'short',day:'numeric',month:'short'});
+        var time = d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+        out += '<div style="display:flex;align-items:center;padding:10px 16px;border:1px solid var(--border);border-top:0;gap:10px;font-size:.82rem">';
+        out += '<div style="min-width:45px;color:var(--muted);font-size:.7rem"><div>' + day + '</div><div>' + time + '</div></div>';
+        out += '<div style="flex:1"><div style="font-weight:600">' + m.home + '</div><div style="color:var(--muted);font-size:.75rem">' + m.away + '</div></div>';
+        out += '<div style="display:flex;gap:8px;align-items:center">';
+        out += makeBtn(m.odds['1']);
+        if (showX) out += makeBtn(m.odds['X']);
+        out += makeBtn(m.odds['2']);
+        out += '</div></div>';
+      });
+      out += '</div>';
+    });
+    el.innerHTML = out;
+  }
+
+  function switchTab(sport) {
+    currentSport = sport;
+    document.querySelectorAll('.sport-tab').forEach(function(t){ t.classList.remove('active'); });
+    var tab = document.querySelector('[data-sport="' + sport + '"]');
+    if (tab) tab.classList.add('active');
+    renderTable(sport);
+  }
+
+  fetch(ODDS_URL)
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(data){
+      if (!data) return;
+      allData = data;
+      renderTable(currentSport);
+    })
+    .catch(function(err){ console.error('Odds tabs error:', err); });
+
+  // Expose for onclick
+  window._bsSportSwitch = switchTab;
+})();
+</script>
+
 </body>
 </html>
