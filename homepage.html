@@ -83,6 +83,7 @@
         <a href="#analisi">Analisi</a>
         <a href="#piani">Piani</a>
         <a href="/blog.html">Blog</a>
+        <a href="/statistiche">📈 Statistiche</a>
         <a href="/bonus.html" style="color:var(--gold)">🎁 Bonus</a>
       </nav>
       <div class="hp-nav__cta">
@@ -178,19 +179,7 @@
         <p class="hp-label">Esempio pratico</p>
         <h2 class="hp-title">Ecco come appare un'analisi BetStorm</h2>
         <p class="hp-sub hp-mx">Dati reali, insight chiari, azione immediata.</p>
-        <div class="hp-match hp-reveal">
-          <div class="hp-match__head"><span class="hp-match__league">Serie A — Dom 30/3 · 20:45</span><span class="hp-match__badge">🔥 VALUE BET</span></div>
-          <div class="hp-match__body">
-            <div class="hp-match__teams">Inter <span class="hp-match__vs">vs</span> Milan</div>
-            <div class="hp-match__stats">
-              <div class="hp-match__stat"><div class="hp-match__stat-lbl">Prob. stimata</div><div class="hp-match__stat-val" style="color:var(--green)">62%</div></div>
-              <div class="hp-match__stat"><div class="hp-match__stat-lbl">Quota migliore</div><div class="hp-match__stat-val" style="color:var(--gold)">2.10</div></div>
-              <div class="hp-match__stat"><div class="hp-match__stat-lbl">Vincita con €10</div><div class="hp-match__stat-val">€21.00</div></div>
-            </div>
-            <div class="hp-match__insight"><i class="fas fa-lightbulb"></i><strong>Insight AI:</strong> Value su Over 2.5 — entrambe in forma offensiva, H2H media 2.8 gol</div>
-            <div style="text-align:center"><a href="https://betwin360.it/fwlink/account-registration?father=amboox18" target="_blank" rel="noopener" class="hp-btn hp-btn--gold" data-outbound="betwin360"><i class="fas fa-external-link-alt"></i> Vai alla migliore quota</a></div>
-          </div>
-        </div>
+        <div id="esempio-card" class="hp-match hp-reveal"><div style="text-align:center;color:var(--muted);padding:40px;font-size:.9rem">Caricamento analisi...</div></div>
       </div>
     </section>
 
@@ -579,6 +568,65 @@
 })();
 </script>
 
+
+
+<script>
+(function() {
+  var MATCHES_URL = 'https://zvftggieqlxujjtotvwg.supabase.co/storage/v1/object/public/betstorm-data/matches.json';
+  var card = document.getElementById('esempio-card');
+  if (!card) return;
+
+  fetch(MATCHES_URL)
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(data) {
+      if (!data || !data.matches || !data.matches.length) return;
+
+      // Pick match with highest confidence %
+      var sorted = data.matches.slice().sort(function(a, b) {
+        return ((b.pct || 0) - (a.pct || 0));
+      });
+      var m = sorted[0];
+
+      // Find best quota from schedina picks
+      var quota = null;
+      var schedina = data.schedina || {};
+      ['medium', 'hard', 'easy'].forEach(function(lv) {
+        ((schedina[lv] || {}).picks || []).forEach(function(p) {
+          if (p.home === m.home && p.away === m.away && p.quota) quota = p.quota;
+        });
+      });
+      if (!quota) quota = 1.80;
+
+      var vincita = (10 * quota).toFixed(2);
+      var pct = m.pct || 0;
+      var isValue = pct >= 70;
+      var badge = isValue ? '<span class="hp-match__badge">?? VALUE BET</span>' : '';
+
+      card.innerHTML =
+        '<div class="hp-match__head">' +
+        '<span class="hp-match__league">' + (m.league || 'Serie A') + (m.when ? ' — ' + m.when : '') + '</span>' +
+        badge +
+        '</div>' +
+        '<div class="hp-match__body">' +
+        '<div class="hp-match__teams">' + m.home + ' <span class="hp-match__vs">vs</span> ' + m.away + '</div>' +
+        '<div class="hp-match__stats">' +
+        '<div class="hp-match__stat"><div class="hp-match__stat-lbl">Prob. stimata</div>' +
+        '<div class="hp-match__stat-val" style="color:var(--green)">' + pct + '%</div></div>' +
+        '<div class="hp-match__stat"><div class="hp-match__stat-lbl">Quota migliore</div>' +
+        '<div class="hp-match__stat-val" style="color:var(--gold)">' + parseFloat(quota).toFixed(2) + '</div></div>' +
+        '<div class="hp-match__stat"><div class="hp-match__stat-lbl">Vincita con \u20ac10</div>' +
+        '<div class="hp-match__stat-val">\u20ac' + vincita + '</div></div>' +
+        '</div>' +
+        '<div class="hp-match__insight"><i class="fas fa-lightbulb"></i>' +
+        '<strong>Insight AI:</strong> ' + (m.why || m.h2h || 'Analisi AI disponibile') + '</div>' +
+        '<div style="text-align:center"><a href="https://betwin360.it/fwlink/account-registration?father=amboox18"' +
+        ' target="_blank" rel="noopener" class="hp-btn hp-btn--gold" data-outbound="betwin360">' +
+        '<i class="fas fa-external-link-alt"></i> Vai alla migliore quota</a></div>' +
+        '</div>';
+    })
+    .catch(function(e) { console.error('Esempio card:', e); });
+})();
+</script>
 
 </body>
 </html>
