@@ -1,98 +1,38 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "api/*.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "*.html",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "*.js",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "*.css",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "*.jpg",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "/statistiche", 
-      "dest": "/analytics.html" 
+  "functions": {
+    "api/*.js": {
+      "memory": 256,
+      "maxDuration": 120
     }
-    {
-      "src": "*.json",
-      "use": "@vercel/static"
-    }
-  ],
+  },
   "routes": [
     {
       "src": "/api/(.*)",
       "dest": "/api/$1"
     },
     {
-      "src": "/logo.jpg",
-      "dest": "/logo.jpg"
+      "src": "/statistiche",
+      "dest": "/analytics.html"
     },
     {
-      "src": "/manifest.json",
-      "dest": "/manifest.json"
-    },
-    {
-      "src": "/homepage.css",
-      "dest": "/homepage.css"
-    },
-    {
-      "src": "/homepage.js",
-      "dest": "/homepage.js"
-    },
-    {
-      "src": "/teams.js",
-      "dest": "/teams.js"
-    },
-    {
-      "src": "/sw.js",
-      "dest": "/sw.js"
-    },
-    {
-      "src": "/cookie-banner.js",
-      "dest": "/cookie-banner.js"
-    },
-    {
-      "src": "/old-home",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/dashboard.html",
-      "dest": "/dashboard.html"
-    },
-    {
-      "src": "/success.html",
-      "dest": "/success.html"
-    },
-    {
-      "src": "/blog.html",
+      "src": "/blog",
       "dest": "/blog.html"
     },
     {
-      "src": "/bonus.html",
+      "src": "/bonus",
       "dest": "/bonus.html"
     },
     {
-      "src": "/admin.html",
-      "dest": "/admin.html"
+      "src": "/dashboard",
+      "dest": "/dashboard.html"
     },
     {
-      "src": "/privacy.html",
+      "src": "/privacy",
       "dest": "/privacy.html"
     },
     {
-      "src": "/termini.html",
+      "src": "/termini",
       "dest": "/termini.html"
     },
     {
@@ -100,36 +40,12 @@
       "dest": "/homepage.html"
     },
     {
-      "src": "/(.*)",
-      "dest": "/homepage.html"
-    }
-  ],
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "X-Frame-Options",
-          "value": "DENY"
-        },
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "Referrer-Policy",
-          "value": "strict-origin-when-cross-origin"
-        }
-      ]
+      "src": "/(.*\\.html)$",
+      "dest": "/$1"
     },
     {
-      "source": "/api/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-store"
-        }
-      ]
+      "src": "/(.*)",
+      "dest": "/$1"
     }
   ]
 }
