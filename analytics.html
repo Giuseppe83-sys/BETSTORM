@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BetStorm — Statistiche e Performance Pronostici</title>
+<meta name="description" content="Statistiche verificate dei pronostici BetStorm: win rate, ROI, trend accuratezza. Analisi trasparente delle nostre previsioni sportive.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Barlow+Condensed:wght@400;600;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #070a0f;
+  --surface: #0e1219;
+  --surface2: #141921;
+  --border: rgba(255,255,255,.07);
+  --text: rgba(255,255,255,.88);
+  --muted: rgba(255,255,255,.42);
+  --gold: #ffd600;
+  --green: #00e676;
+  --red: #ff5252;
+  --blue: #448aff;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "DM Sans", sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  min-height: 100vh;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 20% 10%, rgba(255,214,0,.04) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(0,230,118,.03) 0%, transparent 60%);
+}
+
+/* NAV */
+.nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 32px; height: 60px;
+  background: rgba(7,10,15,.85); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 100;
+}
+.nav-brand {
+  font-family: "Syne", sans-serif; font-size: 1.25rem; font-weight: 800;
+  color: #fff; text-decoration: none;
+}
+.nav-brand span { color: var(--gold); }
+.nav-links { display: flex; gap: 24px; }
+.nav-links a {
+  color: var(--muted); font-size: .88rem; text-decoration: none;
+  transition: color .2s;
+}
+.nav-links a:hover { color: #fff; }
+
+/* HERO */
+.hero {
+  padding: 64px 32px 40px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+.hero-badge {
+  display: inline-block;
+  background: rgba(0,230,118,.1); border: 1px solid rgba(0,230,118,.2);
+  color: var(--green); font-size: .75rem; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase;
+  padding: 4px 14px; border-radius: 20px; margin-bottom: 20px;
+}
+.hero h1 {
+  font-family: "Syne", sans-serif; font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 800; color: #fff; line-height: 1.15; margin-bottom: 14px;
+}
+.hero h1 span { color: var(--gold); }
+.hero p {
+  color: var(--muted); font-size: .95rem; max-width: 540px; margin: 0 auto;
+}
+
+/* STATS GRID */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  padding: 40px 32px;
+  max-width: 1100px; margin: 0 auto;
+}
+@media (max-width: 768px) { .stats-grid { grid-template-columns: repeat(2,1fr); } }
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px 20px;
+  text-align: center;
+  position: relative; overflow: hidden;
+  transition: transform .2s, border-color .2s;
+}
+.stat-card::before {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,214,0,.04) 0%, transparent 70%);
+}
+.stat-card:hover { transform: translateY(-2px); border-color: rgba(255,214,0,.2); }
+.stat-num {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: clamp(2.2rem, 5vw, 3.5rem); font-weight: 900;
+  line-height: 1; color: var(--gold);
+}
+.stat-num.green { color: var(--green); }
+.stat-num.blue { color: var(--blue); }
+.stat-num.muted { color: var(--muted); }
+.stat-label {
+  font-size: .78rem; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .08em;
+  margin-top: 6px;
+}
+.stat-sub { font-size: .72rem; color: rgba(255,255,255,.25); margin-top: 4px; }
+
+/* CHARTS */
+.charts-section {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+  padding: 0 32px 40px;
+  max-width: 1100px; margin: 0 auto;
+}
+@media (max-width: 768px) { .charts-section { grid-template-columns: 1fr; } }
+.chart-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 24px;
+}
+.chart-title {
+  font-family: "Syne", sans-serif; font-size: 1rem; font-weight: 700;
+  color: #fff; margin-bottom: 6px;
+}
+.chart-sub { font-size: .78rem; color: var(--muted); margin-bottom: 20px; }
+
+/* TABLE */
+.table-section {
+  padding: 0 32px 60px;
+  max-width: 1100px; margin: 0 auto;
+}
+.table-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.table-title {
+  font-family: "Syne", sans-serif; font-size: 1rem; font-weight: 700; color: #fff;
+}
+.section-badge {
+  font-size: .72rem; letter-spacing: .08em; text-transform: uppercase;
+  background: rgba(255,214,0,.1); border: 1px solid rgba(255,214,0,.2);
+  color: var(--gold); padding: 3px 10px; border-radius: 20px;
+}
+.pred-table { width: 100%; border-collapse: collapse; }
+.pred-table th {
+  font-size: .72rem; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--muted); padding: 10px 14px; text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.pred-table td {
+  padding: 11px 14px; font-size: .85rem;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+}
+.pred-table tr:hover td { background: rgba(255,255,255,.02); }
+.result-badge {
+  display: inline-block; padding: 2px 10px; border-radius: 20px;
+  font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
+}
+.result-correct { background: rgba(0,230,118,.12); color: var(--green); }
+.result-incorrect { background: rgba(255,82,82,.12); color: var(--red); }
+.result-pending { background: rgba(255,255,255,.06); color: var(--muted); }
+
+/* DISCLAIMER */
+.disclaimer {
+  text-align: center; padding: 24px 32px;
+  font-size: .75rem; color: rgba(255,255,255,.25);
+  border-top: 1px solid var(--border); max-width: 800px; margin: 0 auto;
+}
+
+/* LOADING */
+.loading-state {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  color: var(--muted); font-size: .88rem; padding: 60px;
+}
+
+/* SKELETON */
+.skel {
+  background: linear-gradient(90deg, var(--surface) 25%, var(--surface2) 50%, var(--surface) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 6px; height: 1em;
+}
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="/" class="nav-brand"><span>Bet</span>Storm</a>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/blog.html">Blog</a>
+    <a href="/bonus.html">&#127873; Bonus</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">&#128200; Trasparenza totale</div>
+  <h1>Performance <span>verificata</span><br>dei nostri pronostici</h1>
+  <p>Dati reali, aggiornati ogni settimana. Verifichiamo ogni pronostico con fonti esterne.</p>
+</section>
+
+<!-- STATS CARDS -->
+<div class="stats-grid" id="stats-grid">
+  <div class="stat-card"><div class="stat-num skel" style="height:3rem;width:80%;margin:0 auto"></div><div class="stat-label skel" style="height:.7rem;width:60%;margin:8px auto 0"></div></div>
+  <div class="stat-card"><div class="stat-num skel" style="height:3rem;width:80%;margin:0 auto"></div><div class="stat-label skel" style="height:.7rem;width:60%;margin:8px auto 0"></div></div>
+  <div class="stat-card"><div class="stat-num skel" style="height:3rem;width:80%;margin:0 auto"></div><div class="stat-label skel" style="height:.7rem;width:60%;margin:8px auto 0"></div></div>
+  <div class="stat-card"><div class="stat-num skel" style="height:3rem;width:80%;margin:0 auto"></div><div class="stat-label skel" style="height:.7rem;width:60%;margin:8px auto 0"></div></div>
+</div>
+
+<!-- CHARTS -->
+<div class="charts-section">
+  <div class="chart-card">
+    <div class="chart-title">Accuratezza nel tempo</div>
+    <div class="chart-sub">Win rate % per giorno (ultimi 30 giorni verificati)</div>
+    <canvas id="trendChart" style="max-height:260px"></canvas>
+  </div>
+  <div class="chart-card">
+    <div class="chart-title">Distribuzione risultati</div>
+    <div class="chart-sub">Totale previsioni verificate</div>
+    <div style="max-width:220px;margin:0 auto">
+      <canvas id="donutChart"></canvas>
+    </div>
+    <div id="donut-legend" style="margin-top:16px;font-size:.82rem;display:flex;flex-direction:column;gap:6px"></div>
+  </div>
+</div>
+
+<!-- RECENT PREDICTIONS -->
+<div class="table-section">
+  <div class="table-header">
+    <div class="table-title">Ultimi pronostici verificati</div>
+    <span class="section-badge">Storico 90 giorni</span>
+  </div>
+  <div id="pred-table-wrap">
+    <div class="loading-state">&#9203; Caricamento...</div>
+  </div>
+</div>
+
+<div class="disclaimer">
+  BetStorm NON &egrave; un bookmaker. I pronostici sono a scopo informativo/analitico. Il gioco d&apos;azzardo pu&ograve; creare dipendenza. 18+. Gioca responsabilmente.
+  Win rate calcolato su previsioni verificate tramite fonti esterne.
+</div>
+
+<script>
+(function() {
+  var HISTORY_URL = 'https://zvftggieqlxujjtotvwg.supabase.co/storage/v1/object/public/betstorm-data/predictions_history.json';
+  var BETWIN = 'https://betwin360.it/fwlink/account-registration?father=amboox18';
+
+  var trendChart, donutChart;
+
+  function renderStats(stats, totalDays) {
+    var grid = document.getElementById('stats-grid');
+    var rate = stats.rate || 0;
+    var rateColor = rate >= 60 ? 'green' : (rate >= 50 ? '' : 'muted');
+    grid.innerHTML = [
+      {num: rate + '%', label: 'Win Rate', sub: 'su previsioni verificate', cls: rateColor},
+      {num: stats.checked || 0, label: 'Verificate', sub: 'di ' + (stats.total || 0) + ' totali', cls: 'blue'},
+      {num: stats.correct || 0, label: 'Corrette', sub: '&#10003; pronostici giusti', cls: 'green'},
+      {num: totalDays, label: 'Giorni tracciati', sub: 'storico attivo', cls: ''}
+    ].map(function(s) {
+      return '<div class="stat-card">' +
+        '<div class="stat-num ' + s.cls + '">' + s.num + '</div>' +
+        '<div class="stat-label">' + s.label + '</div>' +
+        '<div class="stat-sub">' + s.sub + '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  function renderTrend(days) {
+    // Filter days with verified predictions
+    var verified = days.filter(function(d) {
+      return d.predictions && d.predictions.some(function(p) { return p.result !== 'pending' && p.result !== ''; });
+    }).slice(-30);
+
+    var labels = verified.map(function(d) {
+      var parts = d.date.split('-');
+      return parts[2] + '/' + parts[1];
+    });
+    var data = verified.map(function(d) {
+      var c = d.predictions.filter(function(p) { return p.result === 'correct'; }).length;
+      var total = d.predictions.filter(function(p) { return p.result === 'correct' || p.result === 'incorrect'; }).length;
+      return total > 0 ? Math.round(c / total * 100) : null;
+    });
+
+    var ctx = document.getElementById('trendChart').getContext('2d');
+    if (trendChart) trendChart.destroy();
+    trendChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Win Rate %',
+          data: data,
+          borderColor: '#ffd600',
+          backgroundColor: 'rgba(255,214,0,.08)',
+          tension: 0.4,
+          pointBackgroundColor: '#ffd600',
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          fill: true,
+          spanGaps: true
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#0e1219',
+            borderColor: 'rgba(255,255,255,.1)',
+            borderWidth: 1,
+            titleColor: '#ffd600',
+            bodyColor: 'rgba(255,255,255,.7)',
+            callbacks: {
+              label: function(ctx) { return ' ' + (ctx.raw !== null ? ctx.raw + '%' : 'N/D'); }
+            }
+          }
+        },
+        scales: {
+          y: {
+            min: 0, max: 100,
+            grid: { color: 'rgba(255,255,255,.04)' },
+            ticks: { color: 'rgba(255,255,255,.4)', callback: function(v) { return v + '%'; } }
+          },
+          x: {
+            grid: { color: 'rgba(255,255,255,.04)' },
+            ticks: { color: 'rgba(255,255,255,.4)', maxTicksLimit: 10 }
+          }
+        }
+      }
+    });
+  }
+
+  function renderDonut(stats) {
+    var c = stats.correct || 0, i = stats.incorrect || 0, p = (stats.checked || 0) - c - i;
+    var ctx = document.getElementById('donutChart').getContext('2d');
+    if (donutChart) donutChart.destroy();
+    donutChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Corrette', 'Errate', 'Pending'],
+        datasets: [{
+          data: [c, i, Math.max(0, p)],
+          backgroundColor: ['rgba(0,230,118,.7)', 'rgba(255,82,82,.7)', 'rgba(255,255,255,.1)'],
+          borderColor: ['#00e676', '#ff5252', 'rgba(255,255,255,.15)'],
+          borderWidth: 2,
+          hoverOffset: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        cutout: '68%',
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#0e1219',
+            borderColor: 'rgba(255,255,255,.1)',
+            borderWidth: 1,
+            bodyColor: 'rgba(255,255,255,.7)',
+            titleColor: '#ffd600'
+          }
+        }
+      }
+    });
+
+    // Custom legend
+    var legend = document.getElementById('donut-legend');
+    var items = [
+      {label:'Corrette', val: c, color:'#00e676'},
+      {label:'Errate', val: i, color:'#ff5252'},
+      {label:'Pending', val: Math.max(0,p), color:'rgba(255,255,255,.3)'}
+    ];
+    legend.innerHTML = items.map(function(it) {
+      return '<div style="display:flex;align-items:center;gap:8px">' +
+        '<div style="width:10px;height:10px;border-radius:50%;background:' + it.color + ';flex-shrink:0"></div>' +
+        '<span style="color:rgba(255,255,255,.6);flex:1">' + it.label + '</span>' +
+        '<span style="font-family:Barlow Condensed,sans-serif;font-weight:700;color:#fff;font-size:.95rem">' + it.val + '</span>' +
+      '</div>';
+    }).join('');
+  }
+
+  function renderTable(days) {
+    // Get recent verified predictions (last 10 days with results)
+    var recent = [];
+    var sorted = days.slice().reverse(); // most recent first
+    for (var i = 0; i < sorted.length && recent.length < 20; i++) {
+      var day = sorted[i];
+      var verified = (day.predictions || []).filter(function(p) {
+        return p.result === 'correct' || p.result === 'incorrect';
+      });
+      verified.forEach(function(p) {
+        recent.push({date: day.date, home: p.home, away: p.away, bet: p.bet, result: p.result, score: p.score || ''});
+      });
+    }
+
+    var wrap = document.getElementById('pred-table-wrap');
+    if (!recent.length) {
+      wrap.innerHTML = '<div style="text-align:center;color:rgba(255,255,255,.3);padding:40px;font-size:.88rem">Nessuna previsione verificata ancora. Aggiornamento in corso...</div>';
+      return;
+    }
+
+    wrap.innerHTML = '<table class="pred-table">' +
+      '<thead><tr><th>Data</th><th>Partita</th><th>Pronostico</th><th>Score</th><th>Risultato</th></tr></thead>' +
+      '<tbody>' +
+      recent.map(function(p) {
+        var parts = p.date.split('-');
+        var dateStr = parts[2] + '/' + parts[1] + '/' + parts[0].slice(2);
+        var badge = p.result === 'correct'
+          ? '<span class="result-badge result-correct">&#10003; Corretto</span>'
+          : '<span class="result-badge result-incorrect">&#10005; Errato</span>';
+        return '<tr>' +
+          '<td style="color:rgba(255,255,255,.45);font-size:.78rem">' + dateStr + '</td>' +
+          '<td><strong>' + p.home + '</strong> vs ' + p.away + '</td>' +
+          '<td style="color:rgba(255,255,255,.6)">' + p.bet + '</td>' +
+          '<td style="font-family:Barlow Condensed,sans-serif;font-weight:700;color:#ffd600">' + (p.score || '—') + '</td>' +
+          '<td>' + badge + '</td>' +
+        '</tr>';
+      }).join('') +
+      '</tbody></table>';
+  }
+
+  // Main data fetch
+  fetch(HISTORY_URL)
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(data) {
+      if (!data) return;
+      var stats = data.stats || {};
+      var days = data.days || [];
+      renderStats(stats, days.length);
+      renderTrend(days);
+      renderDonut(stats);
+      renderTable(days);
+    })
+    .catch(function(err) {
+      console.error('Analytics error:', err);
+      document.getElementById('stats-grid').innerHTML =
+        '<div style="grid-column:1/-1;text-align:center;color:rgba(255,255,255,.3);padding:40px">Errore caricamento dati. Riprova tra qualche minuto.</div>';
+    });
+})();
+</script>
+
+</body>
+</html>
