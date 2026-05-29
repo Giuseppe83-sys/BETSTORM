@@ -22,6 +22,10 @@
       "use": "@vercel/static"
     },
     {
+      "src": "/statistiche", 
+      "dest": "/analytics.html" 
+    }
+    {
       "src": "*.json",
       "use": "@vercel/static"
     }
