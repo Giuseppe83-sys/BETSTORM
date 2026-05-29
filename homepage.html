@@ -200,12 +200,13 @@
     <section class="hp-section hp-section--alt">
       <div class="hp-container">
         <p class="hp-label hp-center">Comparatore Quote Multi-Sport</p>
-        <h2 class="hp-title hp-center">Quote migliori per tutte le prossime partite</h2>
+        <h2 class="hp-title hp-center">Quote migliori — Calcio, Mondiale 2026, Tennis e Basket</h2>
         <p class="hp-sub hp-mx hp-center">Calcio, Tennis e Basket — quote reali aggiornate dai tuoi bookmaker affiliati</p>
 
 <!-- Sport tabs -->
 <div class="sport-tabs">
   <button class="sport-tab active" data-sport="calcio" onclick="window._bsSportSwitch('calcio')">⚽ Calcio</button>
+  <button class="sport-tab" data-sport="mondiale" onclick="window._bsSportSwitch('mondiale')">🌍 Mondiale 2026</button>
   <button class="sport-tab" data-sport="tennis" onclick="window._bsSportSwitch('tennis')">🎾 Tennis</button>
   <button class="sport-tab" data-sport="basket" onclick="window._bsSportSwitch('basket')">🏀 Basket</button>
 </div>
@@ -330,6 +331,19 @@
       </div>
     </section>
 
+    
+<!-- BASKET SCHEDINE -->
+<section class="hp-section" id="basket-section">
+  <div class="hp-container hp-center">
+    <p class="hp-label">🏀 Schedine Basket</p>
+    <h2 class="hp-title">NBA Playoffs + WNBA — Schedine del giorno</h2>
+    <p class="hp-sub hp-mx">Quote reali da NBA Playoffs e WNBA. Clicca per giocare sul bookmaker affiliato.</p>
+    <div id="basket-schedine" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:1000px;margin:20px auto">
+      <div style="text-align:center;color:var(--muted);padding:40px;grid-column:1/-1">Caricamento schedine basket...</div>
+    </div>
+  </div>
+</section>
+
     <!-- ======== 7. CTA FINALE ======== -->
     <section class="hp-section">
       <div class="hp-container">
@@ -379,9 +393,10 @@
   var allData = null;
 
   var sportConfig = {
-    'calcio': {label:'⚽ Calcio', headers:['1','X','2'], teams:true},
-    'tennis': {label:'🎾 Tennis', headers:['1','2'], teams:false},
-    'basket':  {label:'🏀 Basket', headers:['1','2'], teams:false}
+    'calcio':   {label:'⚽ Calcio', headers:['1','X','2'], teams:true},
+    'mondiale': {label:'🌍 Mondiale 2026', headers:['1','X','2'], teams:true},
+    'tennis':   {label:'🎾 Tennis', headers:['1','2'], teams:false},
+    'basket':   {label:'🏀 Basket', headers:['1','2'], teams:false, noX:true}
   };
 
   function makeBtn(o) {
@@ -456,6 +471,53 @@
 
   // Expose for onclick
   window._bsSportSwitch = switchTab;
+})();
+</script>
+
+
+<script>
+(function() {
+  var BASKET_URL = 'https://zvftggieqlxujjtotvwg.supabase.co/storage/v1/object/public/betstorm-data/basketball.json';
+  var bsEl = document.getElementById('basket-schedine');
+  if (!bsEl) return;
+  
+  fetch(BASKET_URL)
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(data) {
+      if (!data || !data.schedine) return;
+      var s = data.schedine;
+      var levels = [
+        {key:'easy',   label:'VERDE',     emoji:'🟢', color:'#00e676', desc:'2 pick sicure',       bg:'rgba(0,230,118,.08)'},
+        {key:'medium', label:'GIALLA',    emoji:'🟡', color:'#ffd600', desc:'3 pick bilanciate',    bg:'rgba(255,214,0,.08)'},
+        {key:'hard',   label:'ROSSA',     emoji:'🔴', color:'#ff5252', desc:'3 pick upset/value',   bg:'rgba(255,82,82,.08)'}
+      ];
+      bsEl.innerHTML = levels.map(function(lv) {
+        var slip = s[lv.key];
+        if (!slip || !slip.picks || !slip.picks.length) return '';
+        var picks = slip.picks.map(function(p) {
+          var label = p.bet === '1' ? p.home : p.away;
+          return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.83rem">' +
+            '<div><div style="font-weight:600">' + p.home + ' vs ' + p.away + '</div>' +
+            '<div style="color:' + lv.color + ';font-size:.75rem;font-weight:600">' + label + ' vince' +
+            (p.motivo ? ' — ' + p.motivo : '') + '</div></div>' +
+            '<span style="font-family:Syne,sans-serif;font-weight:800;color:#ffd600;font-size:.95rem">' + parseFloat(p.quota).toFixed(2) + '</span>' +
+          '</div>';
+        }).join('');
+        return '<div style="background:' + lv.bg + ';border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:20px;display:flex;flex-direction:column">' +
+          '<div style="text-align:center;margin-bottom:14px">' +
+          '<div style="font-size:1.3rem">' + lv.emoji + '</div>' +
+          '<div style="font-family:Syne,sans-serif;font-weight:800;color:' + lv.color + '">' + lv.label + '</div>' +
+          '<div style="font-size:.7rem;color:var(--muted)">' + lv.desc + '</div></div>' +
+          '<div style="flex:1;margin-bottom:14px">' + picks + '</div>' +
+          '<div style="background:rgba(0,0,0,.2);border-radius:10px;padding:12px;text-align:center">' +
+          '<div style="font-size:.7rem;color:var(--muted)">QUOTA TOTALE</div>' +
+          '<div style="font-family:Syne,sans-serif;font-size:1.5rem;font-weight:800;color:#ffd600">' + slip.total_quota.toFixed(2) + '</div>' +
+          '<div style="font-size:.7rem;color:var(--muted);margin-top:3px">Vincita con €10</div>' +
+          '<div style="font-family:Syne,sans-serif;font-size:1rem;font-weight:800;color:var(--green)">€' + slip.potential_win_10.toFixed(2) + '</div></div>' +
+          '<a href="https://betwin360.it/fwlink/account-registration?father=amboox18" target="_blank" rel="noopener" style="display:block;text-align:center;background:linear-gradient(135deg,#00c853,#00e676);color:#070a0f;padding:10px;border-radius:8px;font-weight:700;font-size:.82rem;margin-top:12px;text-decoration:none">⚡ Gioca questa schedina</a>' +
+        '</div>';
+      }).join('');
+    }).catch(function(err) { console.error('Basket schedine error:', err); });
 })();
 </script>
 
