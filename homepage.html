@@ -346,6 +346,201 @@
   </div>
 </section>
 
+    
+<!-- ======== STORM ANALYSIS — ANALIZZA LA TUA SCHEDINA ======== -->
+<section class="hp-section hp-section--alt" id="analisi-schedina" style="background:linear-gradient(135deg,rgba(255,214,0,.04) 0%,transparent 60%)">
+  <div class="hp-container hp-center">
+    <p class="hp-label" style="background:rgba(255,214,0,.1);border:1px solid rgba(255,214,0,.2);color:var(--gold);padding:4px 14px;border-radius:20px;font-size:.72rem;letter-spacing:.1em">⚡ Nuovo servizio gratuito</p>
+    <h2 class="hp-title">Analizza la tua Schedina</h2>
+    <p class="hp-sub hp-mx">Inserisci i tuoi pick (o carica la foto della schedina) e ricevi la <strong>Storm Analysis</strong> via email con la probabilità reale di vincita.</p>
+
+    <!-- Tab switcher -->
+    <div id="sched-tabs" style="display:flex;gap:8px;justify-content:center;margin:24px 0 20px">
+      <button id="tab-manual" onclick="switchSchedTab('manual')" style="padding:8px 22px;border-radius:8px;border:1px solid var(--gold);background:var(--gold);color:#070a0f;font-weight:700;font-size:.85rem;cursor:pointer">✏️ Inserisci manualmente</button>
+      <button id="tab-foto" onclick="switchSchedTab('foto')" style="padding:8px 22px;border-radius:8px;border:1px solid rgba(255,255,255,.15);background:transparent;color:var(--muted);font-weight:600;font-size:.85rem;cursor:pointer">📷 Carica foto</button>
+    </div>
+
+    <!-- MANUAL PICKS FORM -->
+    <div id="panel-manual" style="max-width:720px;margin:0 auto">
+      <div id="picks-container">
+        <div class="pick-row" style="display:grid;grid-template-columns:1fr 1fr 80px 28px;gap:8px;margin-bottom:8px;align-items:center">
+          <input type="text" placeholder="Casa (es. Napoli)" class="hp-input pick-home" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-size:.85rem;width:100%">
+          <input type="text" placeholder="Tipo scommessa (es. Vittoria)" class="hp-input pick-bet" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-size:.85rem;width:100%">
+          <input type="number" placeholder="Quota" class="hp-input pick-quota" step="0.01" min="1.01" max="50" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 8px;color:#fff;font-size:.85rem;width:100%;text-align:center">
+          <span></span>
+        </div>
+      </div>
+      <button onclick="addPickRow()" style="background:transparent;border:1px dashed rgba(255,255,255,.2);border-radius:8px;padding:8px 16px;color:var(--muted);font-size:.82rem;cursor:pointer;width:100%;margin-top:4px">+ Aggiungi pick</button>
+      <div style="font-size:.72rem;color:rgba(255,255,255,.3);margin-top:6px;text-align:center">Il campo squadra ospite viene inserito opzionale — puoi lasciarlo vuoto per eventi singoli</div>
+    </div>
+
+    <!-- PHOTO UPLOAD FORM -->
+    <div id="panel-foto" style="display:none;max-width:480px;margin:0 auto">
+      <label id="drop-zone" for="slip-file" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;border:2px dashed rgba(255,214,0,.3);border-radius:14px;padding:40px 24px;cursor:pointer;text-align:center;background:rgba(255,214,0,.03);transition:border-color .2s">
+        <div style="font-size:2.5rem">📸</div>
+        <div style="color:#fff;font-weight:600;font-size:.95rem">Trascina la foto qui<br>o clicca per scegliere</div>
+        <div style="color:var(--muted);font-size:.78rem">JPG, PNG, WEBP — max 8MB</div>
+        <input type="file" id="slip-file" accept="image/*" style="display:none" onchange="previewImage(this)">
+      </label>
+      <div id="img-preview" style="display:none;margin-top:12px;text-align:center">
+        <img id="preview-img" style="max-width:100%;max-height:200px;border-radius:8px;border:1px solid rgba(255,255,255,.1)">
+        <div style="margin-top:8px;font-size:.78rem;color:var(--green)">✓ Foto caricata — l'AI estrarrà i pick automaticamente</div>
+      </div>
+    </div>
+
+    <!-- EMAIL INPUT + SUBMIT -->
+    <div style="max-width:480px;margin:20px auto 0">
+      <input type="email" id="sched-email" placeholder="La tua email (per ricevere l'analisi)" style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:12px 16px;color:#fff;font-size:.92rem;box-sizing:border-box;margin-bottom:12px">
+      <button id="analyze-btn" onclick="submitSchedina()" style="width:100%;background:linear-gradient(135deg,#ffd600,#ffaa00);color:#070a0f;padding:14px;border-radius:10px;font-weight:800;font-size:1rem;border:none;cursor:pointer;transition:opacity .2s">
+        ⚡ Analizza la mia schedina
+      </button>
+      <div id="sched-status" style="display:none;margin-top:12px;padding:14px;border-radius:10px;text-align:center;font-size:.9rem"></div>
+    </div>
+
+    <div style="margin-top:16px;font-size:.72rem;color:rgba(255,255,255,.25);text-align:center">
+      Analisi a scopo informativo. Non costituisce consiglio di gioco. 18+ Gioca responsabilmente.
+    </div>
+  </div>
+</section>
+
+<script>
+(function() {
+  var currentTab = 'manual';
+  var imageBase64 = null;
+  var pickCount = 1;
+
+  window.switchSchedTab = function(tab) {
+    currentTab = tab;
+    var isManual = tab === 'manual';
+    document.getElementById('panel-manual').style.display = isManual ? 'block' : 'none';
+    document.getElementById('panel-foto').style.display   = isManual ? 'none' : 'block';
+    var btnManual = document.getElementById('tab-manual');
+    var btnFoto   = document.getElementById('tab-foto');
+    btnManual.style.background = isManual ? 'var(--gold)' : 'transparent';
+    btnManual.style.color      = isManual ? '#070a0f' : 'var(--muted)';
+    btnManual.style.borderColor = isManual ? 'var(--gold)' : 'rgba(255,255,255,.15)';
+    btnFoto.style.background  = !isManual ? 'var(--gold)' : 'transparent';
+    btnFoto.style.color       = !isManual ? '#070a0f' : 'var(--muted)';
+    btnFoto.style.borderColor  = !isManual ? 'var(--gold)' : 'rgba(255,255,255,.15)';
+  };
+
+  window.addPickRow = function() {
+    if (pickCount >= 15) return;
+    pickCount++;
+    var cont = document.getElementById('picks-container');
+    var row = document.createElement('div');
+    row.className = 'pick-row';
+    row.style.cssText = 'display:grid;grid-template-columns:1fr 1fr 80px 28px;gap:8px;margin-bottom:8px;align-items:center';
+    row.innerHTML =
+      '<input type="text" placeholder="Casa (es. Napoli)" class="hp-input pick-home" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-size:.85rem;width:100%">' +
+      '<input type="text" placeholder="Tipo scommessa" class="hp-input pick-bet" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-size:.85rem;width:100%">' +
+      '<input type="number" placeholder="Quota" class="hp-input pick-quota" step="0.01" min="1.01" max="50" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 8px;color:#fff;font-size:.85rem;width:100%;text-align:center">' +
+      '<button onclick="this.closest(\'.pick-row\').remove();pickCount--" style="background:rgba(255,82,82,.1);border:none;border-radius:6px;color:#ff5252;cursor:pointer;padding:4px 8px;font-size:.85rem">&times;</button>';
+    cont.appendChild(row);
+  };
+
+  window.previewImage = function(input) {
+    if (!input.files || !input.files[0]) return;
+    var file = input.files[0];
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      imageBase64 = e.target.result;
+      document.getElementById('preview-img').src = imageBase64;
+      document.getElementById('img-preview').style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  };
+
+  window.submitSchedina = function() {
+    var email = document.getElementById('sched-email').value.trim();
+    var statusEl = document.getElementById('sched-status');
+    var btn = document.getElementById('analyze-btn');
+
+    if (!email || !email.includes('@')) {
+      statusEl.style.display = 'block';
+      statusEl.style.background = 'rgba(255,82,82,.1)';
+      statusEl.style.color = '#ff5252';
+      statusEl.style.border = '1px solid rgba(255,82,82,.2)';
+      statusEl.textContent = 'Inserisci un\'email valida.';
+      return;
+    }
+
+    var payload = { email: email };
+
+    if (currentTab === 'manual') {
+      var rows = document.querySelectorAll('.pick-row');
+      var picks = [];
+      rows.forEach(function(row) {
+        var home  = row.querySelector('.pick-home')?.value.trim();
+        var bet   = row.querySelector('.pick-bet')?.value.trim();
+        var quota = parseFloat(row.querySelector('.pick-quota')?.value) || 0;
+        if (home && bet && quota > 1) picks.push({ home: home, away: '', bet: bet, quota: quota });
+      });
+      if (!picks.length) {
+        statusEl.style.display = 'block';
+        statusEl.style.background = 'rgba(255,82,82,.1)';
+        statusEl.style.color = '#ff5252';
+        statusEl.style.border = '1px solid rgba(255,82,82,.2)';
+        statusEl.textContent = 'Inserisci almeno un pick con quota valida.';
+        return;
+      }
+      payload.picks = picks;
+    } else {
+      if (!imageBase64) {
+        statusEl.style.display = 'block';
+        statusEl.style.background = 'rgba(255,82,82,.1)';
+        statusEl.style.color = '#ff5252';
+        statusEl.style.border = '1px solid rgba(255,82,82,.2)';
+        statusEl.textContent = 'Carica prima una foto della schedina.';
+        return;
+      }
+      payload.imageBase64 = imageBase64;
+    }
+
+    // Loading state
+    btn.disabled = true;
+    btn.textContent = '⏳ Analisi in corso... (30-60 sec)';
+    btn.style.opacity = '0.6';
+    statusEl.style.display = 'none';
+
+    fetch('/api/analizza', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      btn.disabled = false;
+      btn.textContent = '\u26a1 Analizza la mia schedina';
+      btn.style.opacity = '1';
+      if (data.email_sent) {
+        statusEl.style.display = 'block';
+        statusEl.style.background = 'rgba(0,230,118,.08)';
+        statusEl.style.color = '#00e676';
+        statusEl.style.border = '1px solid rgba(0,230,118,.2)';
+        statusEl.innerHTML = '\u2705 Storm Analysis inviata! Controlla la casella <strong>' + email + '</strong>';
+      } else if (data.error) {
+        statusEl.style.display = 'block';
+        statusEl.style.background = 'rgba(255,82,82,.1)';
+        statusEl.style.color = '#ff5252';
+        statusEl.style.border = '1px solid rgba(255,82,82,.2)';
+        statusEl.textContent = data.error || 'Errore analisi. Riprova.';
+      }
+    })
+    .catch(function(err) {
+      btn.disabled = false;
+      btn.textContent = '\u26a1 Analizza la mia schedina';
+      btn.style.opacity = '1';
+      statusEl.style.display = 'block';
+      statusEl.style.background = 'rgba(255,82,82,.1)';
+      statusEl.style.color = '#ff5252';
+      statusEl.style.border = '1px solid rgba(255,82,82,.2)';
+      statusEl.textContent = 'Errore di connessione. Riprova tra qualche minuto.';
+    });
+  };
+})();
+</script>
+
     <!-- ======== 7. CTA FINALE ======== -->
     <section class="hp-section">
       <div class="hp-container">
