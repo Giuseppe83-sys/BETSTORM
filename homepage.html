@@ -241,41 +241,6 @@
     }).catch(()=>{});
     </script>
 
-    <!-- ======== 4C. RISULTATI LIVE ======== -->
-    <section class="hp-section hp-section--alt">
-      <div class="hp-container hp-center">
-        <p class="hp-label">Risultati Live</p>
-        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:20px;max-width:650px;margin:0 auto">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-            <div style="font-family:var(--font-head);font-size:1rem;font-weight:700">\u26bd Partite in corso</div>
-            <div id="live-count" style="background:rgba(255,82,82,.12);color:#ff5252;padding:4px 10px;border-radius:20px;font-size:.72rem;font-weight:600">\u25cf LIVE</div>
-          </div>
-          <div id="live-scores" style="min-height:50px"><div style="text-align:center;color:var(--muted);padding:16px;font-size:.85rem">Caricamento...</div></div>
-          <div style="text-align:center;margin-top:10px;font-size:.7rem;color:var(--muted)">Aggiornamento ogni 3 minuti • Solo campionati maggiori</div>
-        </div>
-      </div>
-    </section>
-
-    <script>
-    const MAJOR=[2,3,4,5,42,47,48,54,73,78,87,130,135,140,39,45,61,66,143,529,530,531,532,533,848];
-    async function loadLive(){const el=document.getElementById('live-scores');const c=document.getElementById('live-count');try{const r = await fetch('/api/live');if(!r.ok)throw 0;const d=await r.json();const m=(d.response?.live||[]).filter(m=>MAJOR.includes(m.leagueId)).slice(0,8);if(!m.length){el.innerHTML='<div style="text-align:center;color:var(--muted);padding:16px;font-size:.85rem"><i class="fas fa-moon" style="margin-right:6px"></i>Nessuna partita in corso</div>';c.textContent='STANDBY';c.style.background='rgba(255,255,255,.04)';c.style.color='var(--muted)';return;}c.textContent='\u25cf '+m.length+' LIVE';el.innerHTML=m.map(m=>'<div style="display:flex;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)"><div style="flex:1;text-align:right;font-size:.85rem">'+(m.home?.name||'?')+'</div><div style="padding:0 14px;font-family:Syne,sans-serif;font-size:1rem;font-weight:800;color:var(--green);min-width:55px;text-align:center">'+(m.home?.score??'-')+' - '+(m.away?.score??'-')+'</div><div style="flex:1;font-size:.85rem">'+(m.away?.name||'?')+'</div><div style="font-size:.72rem;color:#ff5252;font-weight:600;min-width:32px;text-align:right">'+(m.status?.liveTime?.short||'')+'</div></div>').join('');}catch(e){el.innerHTML='<div style="text-align:center;color:var(--muted);padding:16px;font-size:.85rem"><i class="fas fa-clock" style="margin-right:6px"></i>Disponibili durante le partite</div>';c.textContent='STANDBY';c.style.background='rgba(255,255,255,.04)';c.style.color='var(--muted)';}}
-    loadLive();setInterval(loadLive,180000);
-    </script>
-
-    <!-- ======== 5. EDUCATIVA ======== -->
-    <section class="hp-section">
-      <div class="hp-container" style="max-width:660px">
-        <p class="hp-label hp-center">Impara</p>
-        <h2 class="hp-title hp-center">Come usare i dati per scommettere meglio</h2>
-        <div class="hp-reveal" style="color:var(--muted);font-size:.92rem;line-height:1.7;margin-top:22px">
-          <p>Un approccio basato sui dati aiuta a valutare una scommessa in modo più strutturato, senza eliminare il rischio.</p>
-          <p style="margin-top:14px">BetStorm confronta i dati disponibili e le quote per evidenziare possibili situazioni di valore. Le stime sono indicative e non garantiscono l’esito di una scommessa.</p>
-          <p style="margin-top:14px">Non servono formule: ti diamo il pronostico con la spiegazione. Tu scegli se seguirlo.</p>
-          <div style="text-align:center;margin-top:28px"><a href="/blog.html" class="hp-btn hp-btn--outline"><i class="fas fa-book"></i> Guide gratuite</a></div>
-        </div>
-      </div>
-    </section>
-
     <!-- BASKET SCHEDINE -->
 <section class="hp-section" id="basket-section">
   <div class="hp-container hp-center">
@@ -495,6 +460,42 @@
   };
 })();
 </script>
+
+    <!-- ======== 4C. RISULTATI LIVE ======== -->
+    <section class="hp-section hp-section--alt">
+      <div class="hp-container hp-center">
+        <p class="hp-label">Risultati Live</p>
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:20px;max-width:650px;margin:0 auto">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+            <div style="font-family:var(--font-head);font-size:1rem;font-weight:700">\u26bd Partite in corso</div>
+            <div id="live-count" style="background:rgba(255,82,82,.12);color:#ff5252;padding:4px 10px;border-radius:20px;font-size:.72rem;font-weight:600">\u25cf LIVE</div>
+          </div>
+          <div id="live-scores" style="min-height:50px"><div style="text-align:center;color:var(--muted);padding:16px;font-size:.85rem">Caricamento...</div></div>
+          <div style="text-align:center;margin-top:10px;font-size:.7rem;color:var(--muted)">Aggiornamento ogni 3 minuti • Solo campionati maggiori</div>
+        </div>
+      </div>
+    </section>
+
+    <script>
+    const MAJOR=[2,3,4,5,42,47,48,54,73,78,87,130,135,140,39,45,61,66,143,529,530,531,532,533,848];
+    async function loadLive(){const el=document.getElementById('live-scores');const c=document.getElementById('live-count');try{const r = await fetch('/api/live');if(!r.ok)throw 0;const d=await r.json();const m=(d.response?.live||[]).filter(m=>MAJOR.includes(m.leagueId)).slice(0,8);if(!m.length){el.innerHTML='<div style="text-align:center;color:var(--muted);padding:16px;font-size:.85rem"><i class="fas fa-moon" style="margin-right:6px"></i>Nessuna partita in corso</div>';c.textContent='STANDBY';c.style.background='rgba(255,255,255,.04)';c.style.color='var(--muted)';return;}c.textContent='\u25cf '+m.length+' LIVE';el.innerHTML=m.map(m=>'<div style="display:flex;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)"><div style="flex:1;text-align:right;font-size:.85rem">'+(m.home?.name||'?')+'</div><div style="padding:0 14px;font-family:Syne,sans-serif;font-size:1rem;font-weight:800;color:var(--green);min-width:55px;text-align:center">'+(m.home?.score??'-')+' - '+(m.away?.score??'-')+'</div><div style="flex:1;font-size:.85rem">'+(m.away?.name||'?')+'</div><div style="font-size:.72rem;color:#ff5252;font-weight:600;min-width:32px;text-align:right">'+(m.status?.liveTime?.short||'')+'</div></div>').join('');}catch(e){el.innerHTML='<div style="text-align:center;color:var(--muted);padding:16px;font-size:.85rem"><i class="fas fa-clock" style="margin-right:6px"></i>Disponibili durante le partite</div>';c.textContent='STANDBY';c.style.background='rgba(255,255,255,.04)';c.style.color='var(--muted)';}}
+    loadLive();setInterval(loadLive,180000);
+    </script>
+
+    <!-- ======== 5. EDUCATIVA ======== -->
+    <section class="hp-section">
+      <div class="hp-container" style="max-width:660px">
+        <p class="hp-label hp-center">Impara</p>
+        <h2 class="hp-title hp-center">Come usare i dati per scommettere meglio</h2>
+        <div class="hp-reveal" style="color:var(--muted);font-size:.92rem;line-height:1.7;margin-top:22px">
+          <p>Un approccio basato sui dati aiuta a valutare una scommessa in modo più strutturato, senza eliminare il rischio.</p>
+          <p style="margin-top:14px">BetStorm confronta i dati disponibili e le quote per evidenziare possibili situazioni di valore. Le stime sono indicative e non garantiscono l’esito di una scommessa.</p>
+          <p style="margin-top:14px">Non servono formule: ti diamo il pronostico con la spiegazione. Tu scegli se seguirlo.</p>
+          <div style="text-align:center;margin-top:28px"><a href="/blog.html" class="hp-btn hp-btn--outline"><i class="fas fa-book"></i> Guide gratuite</a></div>
+        </div>
+      </div>
+    </section>
+
 
     <!-- ======== 7. CTA FINALE ======== -->
     <section class="hp-section">
