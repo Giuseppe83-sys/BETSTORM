@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Articolo BetStorm</title>
+  <meta name="description" content="Analisi e approfondimenti BetStorm.">
+  <meta name="robots" content="index,follow">
+  <link id="canonical" rel="canonical" href="https://betstorm.it/articolo.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
+  <style>
+    :root{--bg:#070a0f;--bg2:#0d1117;--text:#f5f7fa;--muted:#8b95a5;--border:rgba(255,255,255,.08);--green:#00e676;--gold:#ffd600;--font-head:'Syne',sans-serif;--font:'DM Sans',sans-serif}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);line-height:1.72}.container{width:min(900px,calc(100% - 32px));margin:auto}a{color:var(--green)}
+    header{border-bottom:1px solid var(--border);background:rgba(7,10,15,.94);position:sticky;top:0;z-index:10}.nav{height:66px;display:flex;align-items:center;justify-content:space-between}.logo{font:800 1.15rem var(--font-head);text-decoration:none;color:var(--text)}.logo b{color:var(--green)}.back{text-decoration:none;color:var(--muted);font-size:.88rem}
+    .article{padding:64px 0 90px}.meta{color:var(--green);font-size:.78rem;font-weight:700;margin-bottom:12px}.article h1{font:800 clamp(2rem,5vw,3.4rem)/1.08 var(--font-head);margin:0 0 20px}.excerpt{font-size:1.05rem;color:var(--muted);border-bottom:1px solid var(--border);padding-bottom:28px;margin-bottom:34px}.content{font-size:1rem}.content h1{display:none}.content h2,.content h3{font-family:var(--font-head);line-height:1.25;margin-top:38px}.content h2{font-size:1.55rem}.content h3{font-size:1.2rem}.content p,.content li{color:#d8dde5}.content table{width:100%;border-collapse:collapse;margin:24px 0;font-size:.9rem;display:block;overflow-x:auto}.content th,.content td{border:1px solid var(--border);padding:10px 12px;text-align:left}.content th{background:var(--bg2);color:var(--green)}.content blockquote{border-left:3px solid var(--gold);margin:24px 0;padding:4px 0 4px 18px;color:var(--muted)}.notice{margin-top:42px;padding:18px;border:1px solid var(--border);border-radius:12px;color:var(--muted);font-size:.82rem;background:var(--bg2)}.state{text-align:center;color:var(--muted);padding:80px 0}
+    footer{border-top:1px solid var(--border);padding:28px 0;color:var(--muted);font-size:.78rem;text-align:center}
+  </style>
+</head>
+<body>
+<header><div class="container nav"><a class="logo" href="/">Bet<b>Storm</b></a><a class="back" href="/blog.html">← Torna al Blog</a></div></header>
+<main class="container"><article id="article" class="article"><div class="state">Caricamento articolo…</div></article></main>
+<footer><div class="container">BetStorm non è un bookmaker. Contenuti a scopo informativo e analitico. 18+ Gioca responsabilmente.</div></footer>
+<script>
+const ARTICLES_URL='https://zvftggieqlxujjtotvwg.supabase.co/storage/v1/object/public/betstorm-data/articles.json';
+const slug=new URLSearchParams(location.search).get('slug')||'';
+const esc=s=>String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+const fmt=d=>{if(!d)return'';const x=new Date(d+'T12:00:00Z');return Number.isNaN(x.getTime())?d:x.toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'})};
+function setMeta(a){
+  const title=a.article_title||a.title||'Articolo BetStorm'; const desc=a.meta_description||a.excerpt||'';
+  document.title=title+' | BetStorm'; document.querySelector('meta[name="description"]').setAttribute('content',desc);
+  document.getElementById('canonical').href='https://betstorm.it/articolo.html?slug='+encodeURIComponent(a.slug||slug);
+}
+fetch(ARTICLES_URL,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}).then(data=>{
+  const a=(data.articles||[]).find(x=>x.slug===slug); const el=document.getElementById('article');
+  if(!a){document.title='Articolo non trovato | BetStorm';el.innerHTML='<div class="state"><h1>Articolo non trovato</h1><p><a href="/blog.html">Torna al Blog</a></p></div>';return}
+  setMeta(a);
+  const safe=DOMPurify.sanitize(a.content_html||'',{USE_PROFILES:{html:true}});
+  el.innerHTML=`<div class="meta">${esc(fmt(a.target_date||String(a.generated_at||'').slice(0,10)))}${a.primary_keyword?' · '+esc(a.primary_keyword):''}</div><h1>${esc(a.article_title||a.title||'')}</h1><div class="excerpt">${esc(a.excerpt||a.meta_description||'')}</div><div class="content">${safe}</div><div class="notice">18+ · Gioca responsabilmente. Le analisi hanno finalità informative e non garantiscono risultati o vincite.</div>`;
+}).catch(()=>{document.getElementById('article').innerHTML='<div class="state">Articolo temporaneamente non disponibile. Riprova più tardi.</div>'});
+</script>
+</body>
+</html>
