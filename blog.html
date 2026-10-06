@@ -1,108 +1,37 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Blog Pronostici Calcio AI — BetStorm</title>
-<meta name="description" content="Pronostici calcio giornalieri generati da AI. Analisi Serie A, Champions League e altro con statistiche e probabilità.">
-<link rel="manifest" href="/manifest.json">
-<link rel="icon" href="/logo.jpg">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#070a0f;--surface:#0d1117;--border:rgba(255,255,255,.06);--green:#00e676;--green2:#00c853;--gold:#ffd600;--muted:#8b949e;--text:#e6edf3}
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-a{color:var(--green);text-decoration:none}
-a:hover{text-decoration:underline}
-nav{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;background:rgba(13,17,23,.95);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)}
-.logo{display:flex;align-items:center;gap:8px;font-family:'Syne',sans-serif;font-size:1.1rem;color:#fff}
-.logo b{color:var(--green)}
-.logo img{width:32px;height:32px;border-radius:8px}
-.container{max-width:800px;margin:0 auto;padding:40px 24px}
-h1{font-family:'Syne',sans-serif;font-size:2rem;margin-bottom:8px}
-.subtitle{color:var(--muted);margin-bottom:40px}
-.article-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:24px;transition:border-color .3s}
-.article-card:hover{border-color:rgba(0,230,118,.2)}
-.article-date{font-size:.78rem;color:var(--muted);margin-bottom:8px}
-.article-title{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:700;margin-bottom:12px}
-.article-title a{color:var(--text)}
-.article-title a:hover{color:var(--green)}
-.article-meta{font-size:.85rem;color:var(--muted);margin-bottom:16px}
-.article-excerpt{color:var(--muted);font-size:.92rem;line-height:1.6}
-.article-full{display:none;line-height:1.7;font-size:.95rem}
-.article-full h2{font-family:'Syne',sans-serif;font-size:1.1rem;color:var(--green);margin:20px 0 8px}
-.article-full p{margin-bottom:12px;color:var(--text)}
-.article-full details{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px}
-.article-full summary{font-weight:600;cursor:pointer;color:var(--green)}
-.read-more{display:inline-block;margin-top:12px;color:var(--green);font-weight:600;cursor:pointer;font-size:.88rem}
-.loading{text-align:center;padding:60px;color:var(--muted)}
-.spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .6s linear infinite;margin:0 auto 12px}
-@keyframes spin{to{transform:rotate(360deg)}}
-footer{text-align:center;padding:40px;color:var(--muted);font-size:.8rem;border-top:1px solid var(--border);margin-top:60px}
-</style>
-<!-- Google Analytics 4 -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-ZD36ZG3X5N"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-ZD36ZG3X5N');</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog BetStorm — Pronostici, Quote e Analisi</title>
+  <meta name="description" content="Guide, pronostici e analisi BetStorm basati sui dati per leggere partite, quote e value bet con maggiore consapevolezza.">
+  <link rel="canonical" href="https://betstorm.it/blog.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#070a0f;--bg2:#0d1117;--bg3:#121821;--text:#f5f7fa;--muted:#8b95a5;--border:rgba(255,255,255,.08);--green:#00e676;--gold:#ffd600;--font-head:'Syne',sans-serif;--font:'DM Sans',sans-serif}
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);line-height:1.6} a{color:inherit}.container{width:min(1120px,calc(100% - 32px));margin:auto}
+    header{position:sticky;top:0;z-index:20;background:rgba(7,10,15,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)} .nav{height:68px;display:flex;align-items:center;justify-content:space-between;gap:18px}.logo{font-family:var(--font-head);font-weight:800;text-decoration:none;font-size:1.15rem}.logo b{color:var(--green)} .links{display:flex;gap:18px;align-items:center}.links a{text-decoration:none;color:var(--muted);font-size:.9rem}.links a:hover{color:var(--text)}
+    .hero{padding:78px 0 46px;text-align:center;background:radial-gradient(circle at 50% 0,rgba(0,230,118,.09),transparent 42%)} .label{display:inline-block;color:var(--green);font-weight:700;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase}.hero h1{font:800 clamp(2rem,5vw,3.6rem)/1.05 var(--font-head);margin:14px auto;max-width:850px}.hero p{color:var(--muted);max-width:700px;margin:auto}
+    main{padding:26px 0 80px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.card{background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.018));border:1px solid var(--border);border-radius:18px;padding:22px;display:flex;flex-direction:column;min-height:310px}.date{font-size:.75rem;color:var(--green);font-weight:700}.card h2{font:700 1.2rem/1.3 var(--font-head);margin:12px 0}.card p{color:var(--muted);font-size:.9rem;flex:1}.keyword{font-size:.72rem;color:var(--gold);margin-top:12px}.btn{display:inline-flex;align-items:center;justify-content:center;margin-top:18px;padding:10px 15px;border-radius:10px;background:var(--green);color:#07100b;text-decoration:none;font-weight:800;font-size:.86rem}.state{grid-column:1/-1;text-align:center;color:var(--muted);padding:55px 10px;border:1px solid var(--border);border-radius:16px;background:var(--bg2)}
+    footer{border-top:1px solid var(--border);padding:28px 0 38px;color:var(--muted);font-size:.78rem;text-align:center}.footer-links{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:10px}.footer-links a{text-decoration:none}
+    @media(max-width:850px){.grid{grid-template-columns:1fr 1fr}} @media(max-width:560px){.grid{grid-template-columns:1fr}.links a:not(:last-child){display:none}.hero{padding-top:54px}.nav{height:60px}}
+  </style>
 </head>
 <body>
-<nav>
-  <a href="/" class="logo"><img src="/logo.jpg" alt="BetStorm"><b>Bet</b>&nbsp;Storm</a>
-  <div><a href="/" style="color:var(--muted)"><i class="fas fa-home"></i> Home</a></div>
-</nav>
-
-<div class="container">
-  <h1><i class="fas fa-newspaper" style="color:var(--green);margin-right:12px"></i>Blog Pronostici</h1>
-  <p class="subtitle">Analisi e pronostici calcio generati quotidianamente dalla nostra AI</p>
-
-  <div id="articles-list">
-    <div class="loading"><div class="spinner"></div><p>Caricamento articoli...</p></div>
-  </div>
-</div>
-
-<footer>
-  <p>&copy; 2026 BetStorm — Analisi AI per Scommesse Calcio</p>
-  <p style="margin-top:8px">Il gioco puo causare dipendenza. Gioca responsabilmente.</p>
-</footer>
-
+<header><div class="container nav"><a class="logo" href="/">Bet<b>Storm</b></a><nav class="links"><a href="/">Home</a><a href="/statistiche">Statistiche</a><a href="/bonus.html">Bonus</a><a href="/dashboard.html">Dashboard</a></nav></div></header>
+<section class="hero"><div class="container"><span class="label">BetStorm Blog</span><h1>Pronostici, quote e analisi basati sui dati</h1><p>Approfondimenti generati dal motore editoriale BetStorm a partire dai dati disponibili sulla piattaforma.</p></div></section>
+<main><div class="container"><div id="articles" class="grid"><div class="state">Caricamento articoli…</div></div></div></main>
+<footer><div class="container"><div class="footer-links"><a href="/">Home</a><a href="/privacy.html">Privacy Policy</a><a href="/termini.html">Termini</a></div><div>BetStorm non è un bookmaker. Contenuti a scopo informativo e analitico. 18+ Gioca responsabilmente.</div></div></footer>
 <script>
-const ARTICLES_URL = 'https://zvftggieqlxujjtotvwg.supabase.co/storage/v1/object/public/betstorm-data/articles.json';
-const list = document.getElementById('articles-list');
-
-fetch(ARTICLES_URL)
-  .then(r => r.json())
-  .then(data => {
-    const articles = data.articles || [];
-    if (!articles.length) {
-      list.innerHTML = '<p style="color:var(--muted);text-align:center;padding:40px">Nessun articolo ancora. Torna presto!</p>';
-      return;
-    }
-    list.innerHTML = articles.map((a, i) => {
-      const date = new Date(a.date).toLocaleDateString('it-IT', {day:'numeric',month:'long',year:'numeric'});
-      const excerpt = a.meta_description || '';
-      return '<div class="article-card">' +
-        '<div class="article-date"><i class="fas fa-calendar"></i> ' + date + '</div>' +
-        '<div class="article-title">' + a.title + '</div>' +
-        '<div class="article-excerpt">' + excerpt + '</div>' +
-        '<div class="article-full" id="article-' + i + '">' + a.content_html + '</div>' +
-        '<span class="read-more" onclick="toggleArticle(' + i + ', this)"><i class="fas fa-chevron-down"></i> Leggi tutto</span>' +
-      '</div>';
-    }).join('');
-  })
-  .catch(() => {
-    list.innerHTML = '<p style="color:#ff7043;text-align:center;padding:40px">Errore nel caricamento degli articoli.</p>';
-  });
-
-function toggleArticle(i, btn) {
-  const el = document.getElementById('article-' + i);
-  if (el.style.display === 'block') {
-    el.style.display = 'none';
-    btn.innerHTML = '<i class="fas fa-chevron-down"></i> Leggi tutto';
-  } else {
-    el.style.display = 'block';
-    btn.innerHTML = '<i class="fas fa-chevron-up"></i> Chiudi';
-  }
-}
+const ARTICLES_URL='https://zvftggieqlxujjtotvwg.supabase.co/storage/v1/object/public/betstorm-data/articles.json';
+const esc=s=>String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+const fmt=d=>{if(!d)return'';const x=new Date(d+'T12:00:00Z');return Number.isNaN(x.getTime())?d:x.toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'})};
+fetch(ARTICLES_URL,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}).then(data=>{
+  const el=document.getElementById('articles'); const arr=(data.articles||[]).slice().reverse();
+  if(!arr.length){el.innerHTML='<div class="state">Nessun articolo disponibile al momento.</div>';return}
+  el.innerHTML=arr.map(a=>`<article class="card"><div class="date">${esc(fmt(a.target_date||String(a.generated_at||'').slice(0,10)))}</div><h2>${esc(a.article_title||a.title||'Articolo BetStorm')}</h2><p>${esc(a.excerpt||a.meta_description||'')}</p>${a.primary_keyword?`<div class="keyword">${esc(a.primary_keyword)}</div>`:''}<a class="btn" href="/articolo.html?slug=${encodeURIComponent(a.slug||'')}">Leggi articolo →</a></article>`).join('');
+}).catch(()=>{document.getElementById('articles').innerHTML='<div class="state">Articoli temporaneamente non disponibili. Riprova più tardi.</div>'});
 </script>
 </body>
 </html>
