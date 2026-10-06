@@ -1,134 +1,356 @@
 // api/matches.js — Vercel Serverless Function
-// Partite prossimi 7 giorni da API-Football (RapidAPI)
-// ============================================================
-// ENV VAR necessaria su Vercel:
-//   RAPIDAPI_KEY = la tua chiave RapidAPI
-// ============================================================
+// Prossime partite REALI da API-Football (RapidAPI)
+// Nessun fallback statico e nessuna probabilità inventata.
+// ENV necessaria: RAPIDAPI_KEY
 
 const LEAGUES = [
-  { id: 135, name: 'Serie A',         flag: '🇮🇹' },
-  { id: 39,  name: 'Premier League',  flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿' },
-  { id: 140, name: 'La Liga',         flag: '🇪🇸' },
-  { id: 2,   name: 'Champions League',flag: '⭐' },
+  { id: 135, name: 'Serie A',          flag: '🇮🇹' },
+  { id: 39,  name: 'Premier League',   flag: '🏴' },
+  { id: 140, name: 'La Liga',          flag: '🇪🇸' },
+  { id: 2,   name: 'Champions League', flag: '⭐' },
 ];
 
-const BET_TYPES = [
-  { bet: 'Goal / Goal',       base: 0.60 },
-  { bet: 'Over 2.5 Gol',     base: 0.58 },
-  { bet: 'Vittoria Casa',     base: 0.52 },
-  { bet: 'Doppia Chance 1X',  base: 0.68 },
-  { bet: 'Over 1.5 Gol',     base: 0.74 },
-  { bet: 'Under 3.5 Gol',    base: 0.70 },
-];
-
-// Cache in memoria (1 ora)
 let cache = null;
 let cacheTime = 0;
 const CACHE_TTL = 60 * 60 * 1000;
 
-function calcProb(fixture) {
-  const seed = ((fixture.teams?.home?.name || '') + (fixture.teams?.away?.name || ''))
-    .split('').reduce((a, c) => a + c.charCodeAt(0), 0);
-  const betType  = BET_TYPES[seed % BET_TYPES.length];
-  const variation = ((seed % 22) - 11) / 100;
-  const pct = Math.round(Math.min(90, Math.max(56, (betType.base + variation) * 100)));
-  return { bet: betType.bet, pct };
+
+// ============================================================
+// DATA / STAGIONE
+// ============================================================
+
+function romeDateParts(date = new Date()) {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Europe/Rome',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(date);
+
+  return Object.fromEntries(
+    parts
+      .filter(p => p.type !== 'literal')
+      .map(p => [p.type, p.value])
+  );
 }
+
+
+function isoDateRome(date = new Date()) {
+  const p = romeDateParts(date);
+  return `${p.year}-${p.month}-${p.day}`;
+}
+
+
+function seasonForCompetition(date = new Date()) {
+  const p = romeDateParts(date);
+
+  const year = Number(p.year);
+  const month = Number(p.month);
+
+  // Esempio:
+  // ottobre 2026 -> stagione 2026/27 -> API season=2026
+  // marzo 2027   -> stagione 2026/27 -> API season=2026
+  return month >= 8 ? year : year - 1;
+}
+
+
+// ============================================================
+// FORMATTAZIONE
+// ============================================================
 
 function formatDate(dateStr) {
   if (!dateStr) return '';
-  const d     = new Date(dateStr);
-  const today = new Date();
-  const tom   = new Date(today); tom.setDate(today.getDate() + 1);
-  const days  = ['Dom','Lun','Mar','Mer','Gio','Ven','Sab'];
-  if (d.toDateString() === today.toDateString()) return 'Oggi';
-  if (d.toDateString() === tom.toDateString())   return 'Domani';
-  return `${days[d.getDay()]} ${d.getDate()}/${d.getMonth() + 1}`;
+
+  const d = new Date(dateStr);
+
+  const eventDay = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Europe/Rome',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).format(d);
+
+  const today = isoDateRome();
+
+  const tomorrowDate = new Date();
+  tomorrowDate.setUTCDate(tomorrowDate.getUTCDate() + 1);
+  const tomorrow = isoDateRome(tomorrowDate);
+
+  if (eventDay === today) return 'Oggi';
+  if (eventDay === tomorrow) return 'Domani';
+
+  return new Intl.DateTimeFormat('it-IT', {
+    timeZone: 'Europe/Rome',
+    weekday: 'short',
+    day: 'numeric',
+    month: 'numeric'
+  }).format(d);
 }
+
 
 function formatTime(dateStr) {
   if (!dateStr) return '';
-  return new Date(dateStr).toLocaleTimeString('it-IT', {
-    hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Rome'
-  });
+
+  return new Intl.DateTimeFormat('it-IT', {
+    timeZone: 'Europe/Rome',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).format(new Date(dateStr));
 }
 
-// Fallback statico — usato quando non c'è API key o l'API fallisce
-function getStaticFallback() {
-  const today = new Date();
-  const d = (offset, h, m) => {
-    const dt = new Date(today);
-    dt.setDate(today.getDate() + offset);
-    dt.setHours(h, m, 0, 0);
-    return dt.toISOString();
-  };
-  return [
-    { home:'Inter',          away:'Juventus',       league:'Serie A 🇮🇹',          when:'Domani · 20:45', bet:'Doppia Chance 1X', pct:71, date: d(1,20,45) },
-    { home:'Arsenal',        away:'Real Madrid',    league:'Champions League ⭐',   when:'Dom · 21:00',    bet:'Goal / Goal',      pct:74, date: d(2,21,0)  },
-    { home:'Liverpool',      away:'Man City',       league:'Premier League 🏴󠁧󠁢󠁥󠁮󠁧󠁿',  when:'Sab · 16:30',    bet:'Over 2.5 Gol',     pct:78, date: d(3,16,30) },
-    { home:'Napoli',         away:'Milan',          league:'Serie A 🇮🇹',          when:'Dom · 18:00',    bet:'Goal / Goal',      pct:68, date: d(3,18,0)  },
-    { home:'Barcellona',     away:'Atletico Madrid',league:'La Liga 🇪🇸',           when:'Sab · 21:00',    bet:'Over 1.5 Gol',     pct:80, date: d(4,21,0)  },
-    { home:'Bayern Monaco',  away:'PSG',            league:'Champions League ⭐',   when:'Mar · 21:00',    bet:'Goal / Goal',      pct:72, date: d(5,21,0)  },
-  ];
-}
+
+// ============================================================
+// API-FOOTBALL
+// ============================================================
 
 async function fetchMatches() {
-  const key = process.env.RAPIDAPI_KEY;
-  if (!key) return { matches: getStaticFallback(), source: 'static' };
 
-  const today  = new Date();
-  const in7    = new Date(today); in7.setDate(today.getDate() + 7);
-  const fmt    = d => d.toISOString().split('T')[0];
-  const season = today.getFullYear() >= 2026 ? 2025 : today.getFullYear();
-  const all    = [];
+  const key = process.env.RAPIDAPI_KEY;
+
+  // IMPORTANTE:
+  // niente partite inventate se manca la chiave
+  if (!key) {
+    return {
+      matches: [],
+      source: 'unavailable',
+      error: 'RAPIDAPI_KEY non configurata',
+      updated: new Date().toISOString(),
+    };
+  }
+
+
+  const today = new Date();
+
+  const in7 = new Date(today);
+  in7.setUTCDate(in7.getUTCDate() + 7);
+
+  const from = isoDateRome(today);
+  const to = isoDateRome(in7);
+
+  const season = seasonForCompetition(today);
+
+  const all = [];
+  const diagnostics = [];
+
 
   for (const league of LEAGUES) {
+
+    const url =
+      `https://api-football-v1.p.rapidapi.com/v3/fixtures` +
+      `?league=${league.id}` +
+      `&season=${season}` +
+      `&from=${from}` +
+      `&to=${to}` +
+      `&status=NS`;
+
     try {
-      const url = `https://api-football-v1.p.rapidapi.com/v3/fixtures?league=${league.id}&season=${season}&from=${fmt(today)}&to=${fmt(in7)}&status=NS`;
-      const res = await fetch(url, {
+
+      const response = await fetch(url, {
         headers: {
-          'X-RapidAPI-Key':  key,
-          'X-RapidAPI-Host': 'api-football-v1.p.rapidapi.com'
-        }
+          'X-RapidAPI-Key': key,
+          'X-RapidAPI-Host': 'api-football-v1.p.rapidapi.com',
+        },
       });
-      if (!res.ok) continue;
-      const data = await res.json();
-      (data.response || []).forEach(f => {
-        const { bet, pct } = calcProb(f);
-        all.push({
-          home:   f.teams?.home?.name || '?',
-          away:   f.teams?.away?.name || '?',
-          league: `${league.name} ${league.flag}`,
-          when:   `${formatDate(f.fixture?.date)} · ${formatTime(f.fixture?.date)}`,
-          date:   f.fixture?.date,
-          bet,
-          pct,
+
+
+      // Registriamo lo status per capire subito
+      // se RapidAPI rifiuta la richiesta.
+      if (!response.ok) {
+
+        diagnostics.push({
+          league: league.id,
+          name: league.name,
+          status: response.status
         });
+
+        continue;
+      }
+
+
+      const data = await response.json();
+
+      const fixtures = Array.isArray(data.response)
+        ? data.response
+        : [];
+
+
+      diagnostics.push({
+        league: league.id,
+        name: league.name,
+        status: 200,
+        fixtures: fixtures.length
       });
-    } catch(_) { continue; }
+
+
+      fixtures.forEach(f => {
+
+        const date = f.fixture?.date;
+
+        if (!date) return;
+
+
+        all.push({
+
+          fixture_id: f.fixture?.id ?? null,
+
+          home:
+            f.teams?.home?.name || '?',
+
+          away:
+            f.teams?.away?.name || '?',
+
+          league:
+            `${league.name} ${league.flag}`,
+
+          when:
+            `${formatDate(date)} · ${formatTime(date)}`,
+
+          date: date
+
+        });
+
+      });
+
+
+    } catch (err) {
+
+      diagnostics.push({
+        league: league.id,
+        name: league.name,
+        status: 'fetch_error'
+      });
+
+    }
+
   }
 
-  if (!all.length) return { matches: getStaticFallback(), source: 'static_fallback' };
-  all.sort((a, b) => new Date(a.date) - new Date(b.date));
-  return { matches: all.slice(0, 12), source: 'api', updated: new Date().toISOString() };
+
+  // Ordine cronologico
+  all.sort(
+    (a, b) =>
+      new Date(a.date) - new Date(b.date)
+  );
+
+
+  return {
+
+    matches:
+      all.slice(0, 12),
+
+    source:
+      'api',
+
+    season:
+      season,
+
+    range: {
+      from,
+      to
+    },
+
+    updated:
+      new Date().toISOString(),
+
+    diagnostics:
+      diagnostics
+
+  };
+
 }
 
+
+// ============================================================
+// VERCEL HANDLER
+// ============================================================
+
 module.exports = async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET');
-  res.setHeader('Content-Type', 'application/json');
+
+  res.setHeader(
+    'Access-Control-Allow-Origin',
+    '*'
+  );
+
+  res.setHeader(
+    'Access-Control-Allow-Methods',
+    'GET'
+  );
+
+  res.setHeader(
+    'Content-Type',
+    'application/json'
+  );
+
+  res.setHeader(
+    'Cache-Control',
+    's-maxage=300, stale-while-revalidate=600'
+  );
+
+
+  if (
+    req.method &&
+    req.method !== 'GET'
+  ) {
+
+    return res.status(405).json({
+      error: 'Method not allowed'
+    });
+
+  }
+
 
   const now = Date.now();
-  if (cache && (now - cacheTime) < CACHE_TTL) {
-    return res.status(200).json({ ...cache, cached: true });
+
+
+  // Cache memoria
+  if (
+    cache &&
+    (now - cacheTime) < CACHE_TTL
+  ) {
+
+    return res.status(200).json({
+      ...cache,
+      cached: true
+    });
+
   }
 
+
   try {
-    const data  = await fetchMatches();
-    cache       = data;
-    cacheTime   = now;
-    return res.status(200).json(data);
+
+    const data =
+      await fetchMatches();
+
+    cache =
+      data;
+
+    cacheTime =
+      now;
+
+    return res
+      .status(200)
+      .json(data);
+
+
   } catch (err) {
-    return res.status(200).json({ matches: getStaticFallback(), source: 'error_fallback' });
+
+    // Anche in caso di errore:
+    // NESSUNA partita inventata.
+    return res.status(502).json({
+
+      matches: [],
+
+      source:
+        'error',
+
+      error:
+        'Servizio partite temporaneamente non disponibile',
+
+      updated:
+        new Date().toISOString()
+
+    });
+
   }
+
 };
