@@ -30,7 +30,7 @@ const fmt=d=>{if(!d)return'';const x=new Date(d+'T12:00:00Z');return Number.isNa
 fetch(ARTICLES_URL,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}).then(data=>{
   const el=document.getElementById('articles'); const arr=(data.articles||[]).slice().reverse();
   if(!arr.length){el.innerHTML='<div class="state">Nessun articolo disponibile al momento.</div>';return}
-  el.innerHTML=arr.map(a=>`<article class="card"><div class="date">${esc(fmt(a.target_date||String(a.generated_at||'').slice(0,10)))}</div><h2>${esc(a.article_title||a.title||'Articolo BetStorm')}</h2><p>${esc(a.excerpt||a.meta_description||'')}</p>${a.primary_keyword?`<div class="keyword">${esc(a.primary_keyword)}</div>`:''}<a class="btn" href="/articolo.html?slug=${encodeURIComponent(a.slug||'')}">Leggi articolo →</a></article>`).join('');
+  el.innerHTML=arr.map(a=>`<article class="card"><div class="date">${esc(fmt(a.target_date||String(a.generated_at||'').slice(0,10)))}</div><h2>${esc(a.article_title||a.title||'Articolo BetStorm')}</h2><p>${esc(a.excerpt||a.meta_description||'')}</p>${a.primary_keyword?`<div class="keyword">${esc(a.primary_keyword)}</div>`:''}<a class="btn" href="/blog/${encodeURIComponent(a.slug||'')}.html">Leggi articolo →</a></article>`).join('');
 }).catch(()=>{document.getElementById('articles').innerHTML='<div class="state">Articoli temporaneamente non disponibili. Riprova più tardi.</div>'});
 </script>
 </body>
