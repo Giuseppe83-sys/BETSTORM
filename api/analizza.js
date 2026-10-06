@@ -319,6 +319,7 @@ async function sendEmail(email, analysis) {
 
   return r.json();
 }
+console.log('[analizza] BetStorm Analysis Engine v2');
 
 module.exports = async function handler(req, res) {
   res.setHeader(
