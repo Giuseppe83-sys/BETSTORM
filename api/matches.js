@@ -1,56 +1,71 @@
-// api/matches.js — Vercel Serverless Function
-// Prossime partite REALI da API-Football (RapidAPI)
-// Nessun fallback statico e nessuna probabilità inventata.
-// ENV necessaria: RAPIDAPI_KEY
+// api/matches.js — BetStorm
+// Partite REALI da "Free API Live Football Data" su RapidAPI
+// Nessun pronostico, percentuale o partita inventata.
+//
+// Vercel ENV:
+// RAPIDAPI_KEY
 
-const LEAGUES = [
-  { id: 135, name: 'Serie A',          flag: '🇮🇹' },
-  { id: 39,  name: 'Premier League',   flag: '🏴' },
-  { id: 140, name: 'La Liga',          flag: '🇪🇸' },
-  { id: 2,   name: 'Champions League', flag: '⭐' },
-];
+const RAPID_HOST = 'free-api-live-football-data.p.rapidapi.com';
 
+// Competizioni principali BetStorm.
+// Gli ID sono quelli restituiti da questa API:
+// Premier League 47
+// Champions League 42
+// LaLiga 87
+// Serie A 55
+const LEAGUES = {
+  47: { name: 'Premier League', flag: '🏴' },
+  42: { name: 'Champions League', flag: '⭐' },
+  87: { name: 'LaLiga', flag: '🇪🇸' },
+  55: { name: 'Serie A', flag: '🇮🇹' }
+};
+
+// Cache serverless
 let cache = null;
 let cacheTime = 0;
-const CACHE_TTL = 60 * 60 * 1000;
+
+// 30 minuti
+const CACHE_TTL = 30 * 60 * 1000;
 
 
 // ============================================================
-// DATA / STAGIONE
+// DATE
 // ============================================================
 
-function romeDateParts(date = new Date()) {
+function dateForApi(date) {
   const parts = new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Europe/Rome',
     year: 'numeric',
     month: '2-digit',
-    day: '2-digit',
+    day: '2-digit'
   }).formatToParts(date);
 
-  return Object.fromEntries(
+  const p = Object.fromEntries(
     parts
-      .filter(p => p.type !== 'literal')
-      .map(p => [p.type, p.value])
+      .filter(x => x.type !== 'literal')
+      .map(x => [x.type, x.value])
   );
+
+  // API vuole YYYYMMDD
+  return `${p.year}${p.month}${p.day}`;
 }
 
 
-function isoDateRome(date = new Date()) {
-  const p = romeDateParts(date);
+function todayRome() {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Europe/Rome',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).formatToParts(new Date());
+
+  const p = Object.fromEntries(
+    parts
+      .filter(x => x.type !== 'literal')
+      .map(x => [x.type, x.value])
+  );
+
   return `${p.year}-${p.month}-${p.day}`;
-}
-
-
-function seasonForCompetition(date = new Date()) {
-  const p = romeDateParts(date);
-
-  const year = Number(p.year);
-  const month = Number(p.month);
-
-  // Esempio:
-  // ottobre 2026 -> stagione 2026/27 -> API season=2026
-  // marzo 2027   -> stagione 2026/27 -> API season=2026
-  return month >= 8 ? year : year - 1;
 }
 
 
@@ -59,25 +74,45 @@ function seasonForCompetition(date = new Date()) {
 // ============================================================
 
 function formatDate(dateStr) {
+
   if (!dateStr) return '';
 
   const d = new Date(dateStr);
 
-  const eventDay = new Intl.DateTimeFormat('en-CA', {
+  const eventDate = new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Europe/Rome',
     year: 'numeric',
     month: '2-digit',
     day: '2-digit'
   }).format(d);
 
-  const today = isoDateRome();
+
+  const today = todayRome();
+
 
   const tomorrowDate = new Date();
-  tomorrowDate.setUTCDate(tomorrowDate.getUTCDate() + 1);
-  const tomorrow = isoDateRome(tomorrowDate);
+  tomorrowDate.setUTCDate(
+    tomorrowDate.getUTCDate() + 1
+  );
 
-  if (eventDay === today) return 'Oggi';
-  if (eventDay === tomorrow) return 'Domani';
+
+  const tomorrow = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Europe/Rome',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).format(tomorrowDate);
+
+
+  if (eventDate === today) {
+    return 'Oggi';
+  }
+
+
+  if (eventDate === tomorrow) {
+    return 'Domani';
+  }
+
 
   return new Intl.DateTimeFormat('it-IT', {
     timeZone: 'Europe/Rome',
@@ -85,141 +120,252 @@ function formatDate(dateStr) {
     day: 'numeric',
     month: 'numeric'
   }).format(d);
+
 }
 
 
 function formatTime(dateStr) {
+
   if (!dateStr) return '';
 
   return new Intl.DateTimeFormat('it-IT', {
     timeZone: 'Europe/Rome',
     hour: '2-digit',
     minute: '2-digit',
-    hour12: false,
+    hour12: false
   }).format(new Date(dateStr));
+
 }
 
 
 // ============================================================
-// API-FOOTBALL
+// RAPIDAPI
+// ============================================================
+
+async function getMatchesForDate(date) {
+
+  const key = process.env.RAPIDAPI_KEY;
+
+  if (!key) {
+    throw new Error('RAPIDAPI_KEY non configurata');
+  }
+
+
+  const apiDate = dateForApi(date);
+
+
+  /*
+   * Endpoint verificato dal playground RapidAPI.
+   *
+   * Se RapidAPI mostra uno slug leggermente diverso nel Code Snippet,
+   * sarà sufficiente modificare questa singola URL.
+   */
+  const url =
+  `https://${RAPID_HOST}/football-get-matches-by-date-and-league?date=${apiDate}`;
+
+
+  const response = await fetch(url, {
+
+    headers: {
+
+      'X-RapidAPI-Key': key,
+
+      'X-RapidAPI-Host': RAPID_HOST
+
+    }
+
+  });
+
+
+  if (!response.ok) {
+
+    throw new Error(
+      `RapidAPI HTTP ${response.status}`
+    );
+
+  }
+
+
+  const data = await response.json();
+
+
+  if (data.status !== 'success') {
+
+    throw new Error(
+      'RapidAPI non ha restituito status success'
+    );
+
+  }
+
+
+  return Array.isArray(data.response)
+    ? data.response
+    : [];
+
+}
+
+
+// ============================================================
+// RACCOLTA PARTITE
 // ============================================================
 
 async function fetchMatches() {
 
-  const key = process.env.RAPIDAPI_KEY;
+  const matches = [];
 
-  // IMPORTANTE:
-  // niente partite inventate se manca la chiave
-  if (!key) {
-    return {
-      matches: [],
-      source: 'unavailable',
-      error: 'RAPIDAPI_KEY non configurata',
-      updated: new Date().toISOString(),
-    };
-  }
-
-
-  const today = new Date();
-
-  const in7 = new Date(today);
-  in7.setUTCDate(in7.getUTCDate() + 7);
-
-  const from = isoDateRome(today);
-  const to = isoDateRome(in7);
-
-  const season = seasonForCompetition(today);
-
-  const all = [];
   const diagnostics = [];
 
 
-  for (const league of LEAGUES) {
+  // Cerchiamo oggi + prossimi 6 giorni
+  // = finestra totale 7 giorni.
+  //
+  // Una richiesta alla volta per evitare
+  // di colpire troppo velocemente RapidAPI.
+  for (let offset = 0; offset < 7; offset++) {
 
-    const url =
-      `https://api-football-v1.p.rapidapi.com/v3/fixtures` +
-      `?league=${league.id}` +
-      `&season=${season}` +
-      `&from=${from}` +
-      `&to=${to}` +
-      `&status=NS`;
+    const date = new Date();
+
+    date.setUTCDate(
+      date.getUTCDate() + offset
+    );
+
+
+    const apiDate = dateForApi(date);
+
 
     try {
 
-      const response = await fetch(url, {
-        headers: {
-          'X-RapidAPI-Key': key,
-          'X-RapidAPI-Host': 'api-football-v1.p.rapidapi.com',
-        },
-      });
+      const competitions =
+        await getMatchesForDate(date);
 
 
-      // Registriamo lo status per capire subito
-      // se RapidAPI rifiuta la richiesta.
-      if (!response.ok) {
+      let added = 0;
 
-        diagnostics.push({
-          league: league.id,
-          name: league.name,
-          status: response.status
-        });
 
-        continue;
+      for (const competition of competitions) {
+
+        const leagueId =
+          Number(competition.id);
+
+
+        // Teniamo soltanto le competizioni
+        // che interessano BetStorm.
+        if (!LEAGUES[leagueId]) {
+          continue;
+        }
+
+
+        const league =
+          LEAGUES[leagueId];
+
+
+        const games =
+          Array.isArray(competition.matches)
+            ? competition.matches
+            : [];
+
+
+        for (const game of games) {
+
+          // Escludiamo partite annullate/posticipate
+          if (game.status?.cancelled) {
+            continue;
+          }
+
+
+          // Per "prossime partite" non mostriamo
+          // quelle già terminate.
+          if (game.status?.finished) {
+            continue;
+          }
+
+
+          const utcTime =
+            game.status?.utcTime;
+
+
+          if (!utcTime) {
+            continue;
+          }
+
+
+          matches.push({
+
+            fixture_id:
+              game.id ?? null,
+
+            league_id:
+              leagueId,
+
+            home:
+              game.home?.name || '?',
+
+            away:
+              game.away?.name || '?',
+
+            league:
+              `${league.name} ${league.flag}`,
+
+            when:
+              `${formatDate(utcTime)} · ${formatTime(utcTime)}`,
+
+            date:
+              utcTime
+
+          });
+
+
+          added++;
+
+        }
+
       }
 
 
-      const data = await response.json();
+      diagnostics.push({
 
-      const fixtures = Array.isArray(data.response)
-        ? data.response
-        : [];
+        date:
+          apiDate,
 
+        status:
+          200,
+
+        competitions:
+          competitions.length,
+
+        matches_added:
+          added
+
+      });
+
+
+    } catch (error) {
 
       diagnostics.push({
-        league: league.id,
-        name: league.name,
-        status: 200,
-        fixtures: fixtures.length
-      });
 
+        date:
+          apiDate,
 
-      fixtures.forEach(f => {
+        status:
+          'error',
 
-        const date = f.fixture?.date;
-
-        if (!date) return;
-
-
-        all.push({
-
-          fixture_id: f.fixture?.id ?? null,
-
-          home:
-            f.teams?.home?.name || '?',
-
-          away:
-            f.teams?.away?.name || '?',
-
-          league:
-            `${league.name} ${league.flag}`,
-
-          when:
-            `${formatDate(date)} · ${formatTime(date)}`,
-
-          date: date
-
-        });
+        message:
+          error.message
 
       });
 
+    }
 
-    } catch (err) {
 
-      diagnostics.push({
-        league: league.id,
-        name: league.name,
-        status: 'fetch_error'
-      });
+    /*
+     * Piccola pausa fra richieste.
+     * Aiuta a evitare chiamate troppo ravvicinate.
+     */
+    if (offset < 6) {
+
+      await new Promise(
+        resolve => setTimeout(resolve, 350)
+      );
 
     }
 
@@ -227,7 +373,7 @@ async function fetchMatches() {
 
 
   // Ordine cronologico
-  all.sort(
+  matches.sort(
     (a, b) =>
       new Date(a.date) - new Date(b.date)
   );
@@ -236,24 +382,15 @@ async function fetchMatches() {
   return {
 
     matches:
-      all.slice(0, 12),
+      matches.slice(0, 12),
 
     source:
-      'api',
-
-    season:
-      season,
-
-    range: {
-      from,
-      to
-    },
+      'free-api-live-football-data',
 
     updated:
       new Date().toISOString(),
 
-    diagnostics:
-      diagnostics
+    diagnostics
 
   };
 
@@ -261,7 +398,7 @@ async function fetchMatches() {
 
 
 // ============================================================
-// VERCEL HANDLER
+// VERCEL
 // ============================================================
 
 module.exports = async (req, res) => {
@@ -280,6 +417,7 @@ module.exports = async (req, res) => {
     'Content-Type',
     'application/json'
   );
+
 
   res.setHeader(
     'Cache-Control',
@@ -302,7 +440,7 @@ module.exports = async (req, res) => {
   const now = Date.now();
 
 
-  // Cache memoria
+  // Cache
   if (
     cache &&
     (now - cacheTime) < CACHE_TTL
@@ -321,27 +459,27 @@ module.exports = async (req, res) => {
     const data =
       await fetchMatches();
 
+
     cache =
       data;
 
     cacheTime =
       now;
 
+
     return res
       .status(200)
       .json(data);
 
 
-  } catch (err) {
+  } catch (error) {
 
-    // Anche in caso di errore:
-    // NESSUNA partita inventata.
     return res.status(502).json({
 
       matches: [],
 
       source:
-        'error',
+        'free-api-live-football-data',
 
       error:
         'Servizio partite temporaneamente non disponibile',
