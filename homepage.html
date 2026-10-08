@@ -1,22 +1,23 @@
 <!DOCTYPE html>
+
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BetStorm — Statistiche e Analisi per Scommesse Calcio 2026</title>
-  <meta name="description" content="Analisi AI e statistiche per scommesse calcio. Individua value bet, confronta quote e scegli il bookmaker migliore. Pronostici Serie A e Champions League.">
-  <link rel="canonical" href="https://betstorm.it/">
-  <link rel="icon" href="logo.jpg">
-  <link rel="manifest" href="/manifest.json">
-  <meta property="og:title" content="BetStorm — Statistiche e Analisi per Scommesse Intelligenti">
-  <meta property="og:description" content="Usa i dati per trovare value bet. Pronostici AI, H2H, confronto quote.">
-  <meta property="og:image" content="https://betstorm.it/logo.jpg">
-  <meta property="og:url" content="https://betstorm.it">
-  <meta property="og:type" content="website">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="homepage.css">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BetStorm — Analisi delle quote e statistiche sportive</title>
+<meta content="Esplora quote ed eventi sportivi, calcola probabilità implicite e analizza la composizione delle tue schedine. Strumento informativo gratuito." name="description"/>
+<link href="https://betstorm.it/" rel="canonical"/>
+<link href="logo.jpg" rel="icon"/>
+<link href="/manifest.json" rel="manifest"/>
+<meta content="BetStorm — Analisi delle quote sportive" property="og:title"/>
+<meta content="Consulta quote sportive e analizza il rischio delle tue selezioni." property="og:description"/>
+<meta content="https://betstorm.it/logo.jpg" property="og:image"/>
+<meta content="https://betstorm.it" property="og:url"/>
+<meta content="website" property="og:type"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&amp;family=DM+Sans:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+<link href="homepage.css" rel="stylesheet"/>
 <style>
 
 @media(max-width:520px){
@@ -67,251 +68,143 @@
 *:focus-visible{outline:2px solid var(--green);outline-offset:2px;border-radius:4px}
 </style>
 <!-- Google Analytics 4 -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZD36ZG3X5N"></script>
-  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-ZD36ZG3X5N');</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"BetStorm","url":"https://betstorm.it","applicationCategory":"SportsApplication","description":"Analisi AI e statistiche per scommesse calcio. Pronostici Serie A, Champions League, Premier League e La Liga.","operatingSystem":"Web"}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-ZD36ZG3X5N"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-ZD36ZG3X5N');</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"BetStorm","url":"https://betstorm.it","applicationCategory":"SportsApplication","description":"Strumento informativo per analisi delle quote e statistiche sportive.","operatingSystem":"Web"}</script>
 </head>
 <body>
-
-  <!-- ======== HEADER ======== -->
-  <a href="#main-content" style="position:absolute;left:-9999px;top:0;z-index:999;background:var(--green);color:#070a0f;padding:8px 16px;font-weight:700" onfocus="this.style.left='0'">Vai al contenuto</a>
-  <header class="hp-header">
-    <div class="hp-container hp-header__inner">
-      <a href="/" class="hp-logo"><img src="logo.jpg" alt="BetStorm" style="width:36px;height:36px;border-radius:8px;object-fit:cover">Bet<b>Storm</b></a>
-      <nav class="hp-nav">
-        <a href="#come-funziona">Come funziona</a>
-        <a href="#analisi">Analisi</a>
-        <a href="#offerte">Offerte</a>
-        <a href="/blog.html">Blog</a>
-        <a href="/statistiche">📈 Statistiche</a>
-        <a href="/bonus.html" style="color:var(--gold)">🎁 Bonus</a>
-      </nav>
-      <div class="hp-nav__cta">
-        <a href="/dashboard.html" class="hp-btn hp-btn--outline hp-btn--sm" data-auth-cta>Accedi</a>
-        <a href="#offerte" class="hp-btn hp-btn--green hp-btn--sm" data-auth-hide>Inizia gratis</a>
-      </div>
-    </div>
-  </header>
-
-  <main id="main-content">
-    <!-- ======== 1. HERO ======== -->
-    <section class="hp-hero">
-      <div class="hp-container">
-        <div class="hp-hero__badge">📊 Tool di analisi — non un bookmaker</div>
-        <h1>Analisi e statistiche per trovare le <span style="color:var(--green)">migliori scommesse</span></h1>
-        <p class="hp-hero__sub">Usa i dati per individuare value bet e scegliere le quote migliori. Pronostici e analisi aggiornati quotidianamente con i dati disponibili.</p>
-        <div class="hp-hero__ctas">
-          <a href="#offerte" class="hp-btn hp-btn--green" data-auth-cta data-auth-hide><i class="fas fa-bolt"></i> Inizia gratis</a>
-          <a href="#analisi" class="hp-btn hp-btn--outline"><i class="fas fa-chart-line"></i> Vedi un esempio</a>
-        </div>
-        <div class="hp-hero__trust">
-          <span><i class="fas fa-circle"></i> Dati oggettivi</span>
-          <span><i class="fas fa-circle"></i> Nessun bookmaker</span>
-          <span><i class="fas fa-circle"></i> Approccio data-driven</span>
-        </div>
-      </div>
-    </section>
-
-    
-    <!-- ======== OFFERTE BOOKMAKER ======== -->
-    <section style="padding:30px 0">
-      <div class="hp-container">
-        <p class="hp-label hp-center">&#127381; Offerte esclusive</p>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px" class="hp-grid--2">
-          
-          <a href="https://lp.bgame.it/slotscommesse?ID=imperialdeal_18" target="_blank" rel="noopener" class="glow-banner" style="background:linear-gradient(135deg,#1a0a0a,#2d0a0a);border:1px solid rgba(255,82,82,.3);animation:glowPulse 3s ease-in-out infinite" data-outbound="bgame-banner">
-            <div class="glow-banner__tag" style="background:rgba(255,82,82,.2);color:#ff5252">&#128293; BGAME</div>
-            <div class="glow-banner__title">Bonus 100% fino a &#8364;2.500</div>
-            <div class="glow-banner__offer">&#8364;2.500 sport + &#8364;1.000 slot senza deposito + 50% fino a &#8364;10 RealBonus sulla 2a ricarica</div>
-            <div class="glow-banner__cta" style="background:linear-gradient(135deg,#e53935,#ff5252)">Ottieni il bonus &#8594;</div>
-          </a>
-          
-          <a href="https://track.padrinopartners.com/visit/?bta=35842&nci=5343&afp10=Network&utm_campaign=imperialdeal_20" target="_blank" rel="noopener" class="glow-banner" style="background:linear-gradient(135deg,#0a0a1a,#0d0a2d);border:1px solid rgba(124,77,255,.3);animation:glowPulsePurple 3s ease-in-out infinite .5s" data-outbound="nfs-banner">
-            <div class="glow-banner__tag" style="background:rgba(124,77,255,.2);color:#b388ff">&#128142; NEED FOR SLOTS</div>
-            <div class="glow-banner__title">Fino a &#8364;1.500 + 250 giri</div>
-            <div class="glow-banner__offer">Bonus benvenuto &#8364;1.500 + 250 giri gratuiti per i nuovi iscritti</div>
-            <div class="glow-banner__cta" style="background:linear-gradient(135deg,#7c4dff,#b388ff)">Registrati ora &#8594;</div>
-          </a>
-          
-        
-          
-          <a href="https://www.betpassion.it/imperialdeal?promoter=imperialdeal62" target="_blank" rel="noopener" class="glow-banner" style="background:linear-gradient(135deg,#0a1a0a,#0a2d0d);border:1px solid rgba(0,230,118,.3);animation:glowPulse 3s ease-in-out infinite 1s;grid-column:1/-1;max-width:100%" data-outbound="betpassion-banner">
-            <div class="glow-banner__tag" style="background:rgba(0,230,118,.2);color:#00e676">&#9889; BETPASSION — ESCLUSIVA</div>
-            <div class="glow-banner__title">Bonus 200% fino a &#8364;200 Sport + Casino</div>
-            <div class="glow-banner__offer">Prima ricarica da &#8364;10: ricevi il 200% dell'importo versato. Bonus esclusivo per i nostri utenti!</div>
-            <div class="glow-banner__cta" style="background:linear-gradient(135deg,#00c853,#00e676)">Ottieni il bonus 200% &#8594;</div>
-          </a>
-        </div>
-      </div>
-    </section>
-
+<!-- ======== HEADER ======== -->
+<a href="#main-content" onfocus="this.style.left='0'" style="position:absolute;left:-9999px;top:0;z-index:999;background:var(--green);color:#070a0f;padding:8px 16px;font-weight:700">Vai al contenuto</a>
+<header class="hp-header">
+<div class="hp-container hp-header__inner">
+<a class="hp-logo" href="/"><img alt="BetStorm" src="logo.jpg" style="width:36px;height:36px;border-radius:8px;object-fit:cover"/>Bet<b>Storm</b></a>
+<nav class="hp-nav">
+<a href="#come-funziona">Come funziona</a>
+<a href="#analisi">Analisi</a>
+<a href="/blog.html">Blog</a>
+<a href="/statistiche">📈 Statistiche</a>
+</nav>
+<div class="hp-nav__cta">
+<a class="hp-btn hp-btn--outline hp-btn--sm" data-auth-cta="" href="/dashboard.html">Accedi</a>
+<a class="hp-btn hp-btn--green hp-btn--sm" data-auth-hide="" href="#analisi-schedina">Analizza la tua schedina</a>
+</div>
+</div>
+</header>
+<main id="main-content">
+<!-- ======== 1. HERO ======== -->
+<section class="hp-hero">
+<div class="hp-container">
+<div class="hp-hero__badge">📊 Tool di analisi — non un bookmaker</div>
+<h1>Analisi e statistiche per comprendere le <span style="color:var(--green)">quote sportive</span></h1>
+<p class="hp-hero__sub">Consulta eventi e quote disponibili. Analizza le probabilità implicite delle tue selezioni: nessuna stima garantisce un risultato.</p>
+<div class="hp-hero__ctas">
+<a class="hp-btn hp-btn--green" data-auth-cta="" data-auth-hide="" href="#analisi-schedina">Analizza la tua schedina</a>
+<a class="hp-btn hp-btn--outline" href="#analisi"><i class="fas fa-chart-line"></i> Vedi un esempio</a>
+</div>
+<div class="hp-hero__trust">
+<span><i class="fas fa-circle"></i> Dati da fonti esterne</span>
+<span><i class="fas fa-circle"></i> Non accettiamo scommesse</span>
+<span><i class="fas fa-circle"></i> Limiti delle stime dichiarati</span>
+</div>
+</div>
+</section>
+<!-- ======== OFFERTE BOOKMAKER ======== -->
 <!-- ======== 2. COME FUNZIONA ======== -->
-    <section class="hp-section hp-section--alt" id="come-funziona">
-      <div class="hp-container hp-center">
-        <p class="hp-label">Come funziona</p>
-        <h2 class="hp-title">Tre passi per scommesse piu intelligenti</h2>
-        <div class="hp-grid hp-grid--3" style="margin-top:36px">
-          <div class="hp-card hp-reveal"><div class="hp-card__step">01</div><div class="hp-card__icon hp-card__icon--g"><i class="fas fa-database"></i></div><h3 class="hp-card__title">Analizziamo i dati</h3><p class="hp-card__text">Raccogliamo dati su partite e quote dalle fonti integrate in BetStorm. L'AI li elabora per offrirti un'analisi sintetica.</p></div>
-          <div class="hp-card hp-reveal"><div class="hp-card__step">02</div><div class="hp-card__icon hp-card__icon--y"><i class="fas fa-bullseye"></i></div><h3 class="hp-card__title">Individuiamo value bet</h3><p class="hp-card__text">Dove le quote dei bookmaker offrono valore reale rispetto alla probabilita stimata.</p></div>
-          <div class="hp-card hp-reveal"><div class="hp-card__step">03</div><div class="hp-card__icon hp-card__icon--b"><i class="fas fa-external-link-alt"></i></div><h3 class="hp-card__title">Ti indirizziamo alla scelta migliore</h3><p class="hp-card__text">Confrontiamo le quote e ti reindirizziamo al bookmaker con la quota piu alta.</p></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ======== 3. PERCHE BETSTORM ======== -->
-    <section class="hp-section">
-      <div class="hp-container">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center" class="hp-why-grid">
-          <div><p class="hp-label">Perche BetStorm</p><h2 class="hp-title">Decisioni migliori, rischio ridotto</h2><p class="hp-sub">Non siamo un bookmaker. Siamo il tuo vantaggio competitivo basato sui dati.</p></div>
-          <div class="hp-bullets">
-            <div class="hp-bullet hp-reveal"><div class="hp-bullet__icon"><i class="fas fa-chart-bar"></i></div><div><div class="hp-bullet__title">Decisioni basate sui dati</div><div class="hp-bullet__text">Probabilita calcolate, non intuizioni.</div></div></div>
-            <div class="hp-bullet hp-reveal"><div class="hp-bullet__icon"><i class="fas fa-shield-alt"></i></div><div><div class="hp-bullet__title">Riduzione del rischio</div><div class="hp-bullet__text">Filtri per evitare scommesse svantaggiose.</div></div></div>
-            <div class="hp-bullet hp-reveal"><div class="hp-bullet__icon"><i class="fas fa-eye-slash"></i></div><div><div class="hp-bullet__title">Analisi separata dalle offerte</div><div class="hp-bullet__text">Le analisi seguono i dati disponibili; le offerte bookmaker sono indicate separatamente.</div></div></div>
-            <div class="hp-bullet hp-reveal"><div class="hp-bullet__icon"><i class="fas fa-brain"></i></div><div><div class="hp-bullet__title">Analisi avanzata accessibile</div><div class="hp-bullet__text">AI e statistiche spiegate in modo semplice.</div></div></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ======== 4. ESEMPIO PRATICO ======== -->
-    <section class="hp-section hp-section--alt" id="analisi">
-      <div class="hp-container hp-center">
-        <p class="hp-label">Esempio pratico</p>
-        <h2 class="hp-title">Ecco come appare un'analisi BetStorm</h2>
-        <p class="hp-sub hp-mx">Dati reali, insight chiari, azione immediata.</p>
-        <div id="esempio-card" class="hp-match hp-reveal"><div style="text-align:center;color:var(--muted);padding:40px;font-size:.9rem">Caricamento analisi...</div></div>
-      </div>
-    </section>
-
-    
-    
-    <!-- ======== COMPARATORE QUOTE ======== -->
-    <section class="hp-section hp-section--alt">
-      <div class="hp-container">
-        <p class="hp-label hp-center">Comparatore Quote Multi-Sport</p>
-        <h2 class="hp-title hp-center">Quote migliori — Calcio, Tennis e Basket</h2>
-        <p class="hp-sub hp-mx hp-center">Calcio, Tennis e Basket — quote reali aggiornate dai tuoi bookmaker affiliati</p>
-
+<section class="hp-section hp-section--alt" id="come-funziona">
+<div class="hp-container hp-center">
+<p class="hp-label">Come funziona</p>
+<h2 class="hp-title">Tre passi per comprendere le quote</h2>
+<div class="hp-grid hp-grid--3" style="margin-top:36px">
+<div class="hp-card hp-reveal"><div class="hp-card__step">01</div><div class="hp-card__icon hp-card__icon--g"><i class="fas fa-database"></i></div><h3 class="hp-card__title">Analizziamo i dati</h3><p class="hp-card__text">Raccogliamo dati su eventi e quote da servizi esterni. La disponibilità dipende dai feed.</p></div>
+<div class="hp-card hp-reveal"><div class="hp-card__step">02</div><div class="hp-card__icon hp-card__icon--y"><i class="fas fa-bullseye"></i></div><h3 class="hp-card__title">Calcoliamo probabilità implicite</h3><p class="hp-card__text">Convertiamo le quote in probabilità implicite grezze, che non equivalgono a previsioni indipendenti.</p></div>
+<div class="hp-card hp-reveal"><div class="hp-card__step">03</div><div class="hp-card__icon hp-card__icon--b"><i class="fas fa-external-link-alt"></i></div><h3 class="hp-card__title">Mostriamo le informazioni disponibili</h3><p class="hp-card__text">Visualizziamo le quote disponibili senza garantire che siano complete, aggiornate o le migliori del mercato.</p></div>
+</div>
+</div>
+</section>
+<!-- ======== 3. PERCHE BETSTORM ======== -->
+<section class="hp-section">
+<div class="hp-container">
+<div class="hp-why-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center">
+<div><p class="hp-label">Perche BetStorm</p><h2 class="hp-title">Informazioni più chiare, rischio sempre presente</h2><p class="hp-sub">Non accettiamo scommesse. Offriamo strumenti informativi per comprendere quote e incertezze.</p></div>
+<div class="hp-bullets">
+<div class="hp-bullet hp-reveal"><div class="hp-bullet__icon"><i class="fas fa-chart-bar"></i></div><div><div class="hp-bullet__title">Decisioni basate sui dati</div><div class="hp-bullet__text">Probabilità implicite derivate dalle quote, non previsioni validate.</div></div></div>
+<div class="hp-bullet hp-reveal"><div class="hp-bullet__icon"><i class="fas fa-shield-alt"></i></div><div><div class="hp-bullet__title">Consapevolezza del rischio</div><div class="hp-bullet__text">Una quota bassa non elimina il rischio e non garantisce risultati.</div></div></div>
+<div class="hp-bullet hp-reveal"><div class="hp-bullet__icon"><i class="fas fa-eye-slash"></i></div><div><div class="hp-bullet__title">Analisi senza promozioni</div><div class="hp-bullet__text">Gli strumenti informativi sono disponibili senza collegamenti promozionali in homepage.</div></div></div>
+<div class="hp-bullet hp-reveal"><div class="hp-bullet__icon"><i class="fas fa-brain"></i></div><div><div class="hp-bullet__title">Spiegazioni accessibili</div><div class="hp-bullet__text">Statistiche e limiti delle probabilità spiegati in modo semplice.</div></div></div>
+</div>
+</div>
+</div>
+</section>
+<!-- ======== 4. ESEMPIO PRATICO ======== -->
+<section class="hp-section hp-section--alt" id="analisi">
+<div class="hp-container hp-center">
+<p class="hp-label">Esempio pratico</p>
+<h2 class="hp-title">Ecco come appare un'analisi BetStorm</h2>
+<p class="hp-sub hp-mx">Esempio informativo: le quote non garantiscono alcun esito.</p>
+<div class="hp-match hp-reveal" id="esempio-card"><div style="text-align:center;color:var(--muted);padding:40px;font-size:.9rem">Una quota di 2,00 corrisponde a una probabilità implicita grezza del 50%. Questa conversione non è una previsione del risultato e non corregge il margine del bookmaker.</div></div>
+</div>
+</section>
+<!-- ======== COMPARATORE QUOTE ======== -->
+<section class="hp-section hp-section--alt">
+<div class="hp-container">
+<p class="hp-label hp-center">Comparatore Quote Multi-Sport</p>
+<h2 class="hp-title hp-center">Quote disponibili — Calcio, Tennis e Basket</h2>
+<p class="hp-sub hp-mx hp-center">Quote dai feed esterni: disponibilità e aggiornamento possono variare. Non è garantita la copertura di tutti gli operatori.</p>
 <!-- Sport tabs -->
 <div class="sport-tabs">
-  <button class="sport-tab active" data-sport="calcio" onclick="window._bsSportSwitch('calcio')">⚽ Calcio</button>
-  <button class="sport-tab" data-sport="tennis" onclick="window._bsSportSwitch('tennis')">🎾 Tennis</button>
-  <button class="sport-tab" data-sport="basket" onclick="window._bsSportSwitch('basket')">🏀 Basket</button>
+<button class="sport-tab active" data-sport="calcio" onclick="window._bsSportSwitch('calcio')">⚽ Calcio</button>
+<button class="sport-tab" data-sport="tennis" onclick="window._bsSportSwitch('tennis')">🎾 Tennis</button>
+<button class="sport-tab" data-sport="basket" onclick="window._bsSportSwitch('basket')">🏀 Basket</button>
 </div>
-
-        <div id="odds-table" style="max-width:900px;margin:20px auto">
-          <div style="text-align:center;color:var(--muted);padding:30px">Caricamento quote...</div>
-        </div>
-      </div>
-    </section>
-
-    
-
-    <!-- ======== 4B. SCHEDINE DEL GIORNO ======== -->
-    <section class="hp-section">
-      <div class="hp-container hp-center">
-        <p class="hp-label">Schedine del Giorno AI</p>
-        <h2 class="hp-title">3 schedine pronte — scegli il tuo livello</h2>
-        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:24px 0">
-          <a href="https://betwin360.it/fwlink/account-registration?father=amboox18" target="_blank" rel="noopener" class="hp-btn hp-btn--gold hp-btn--sm" data-outbound="betwin360-schedine"><i class="fas fa-bolt"></i> Gioca su Betwin360</a>
-          <a href="https://track.padrinopartners.com/visit/?bta=35842&nci=5343&afp10=Network&utm_campaign=imperialdeal_20" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#7c4dff,#b388ff);color:#fff;padding:10px 20px;border-radius:12px;font-weight:700;font-size:.82rem;text-decoration:none" data-outbound="nfs-schedine"><i class="fas fa-gem"></i> Need for Slots</a>
-          <a href="https://lp.bgame.it/slotscommesse?ID=imperialdeal_18" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#e53935,#ff5252);color:#fff;padding:10px 20px;border-radius:12px;font-weight:700;font-size:.82rem;text-decoration:none" data-outbound="bgame-schedine"><i class="fas fa-fire"></i> Bgame</a>
-          <a href="https://www.betpassion.it/imperialdeal?promoter=imperialdeal62" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#00c853,#00e676);color:#070a0f;padding:10px 20px;border-radius:12px;font-weight:700;font-size:.82rem;text-decoration:none" data-outbound="betpassion-schedine"><i class="fas fa-star"></i> Betpassion 200%</a>
-          <a href="https://www.vincitu.it/signup?codAffiliato=wabrokerbet76" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#1565c0,#42a5f5);color:#fff;padding:10px 20px;border-radius:12px;font-weight:700;font-size:.82rem;text-decoration:none" data-outbound="vincitu-schedine"><i class="fas fa-futbol"></i> Vincitu</a>
-        </div>
-        <div id="schedine-grid" class="hp-grid hp-grid--3 hp-reveal">
-          <div style="text-align:center;color:var(--muted);padding:40px;grid-column:1/-1">Caricamento schedine...</div>
-        </div>
-      </div>
-    </section>
-
-    <script>
-    fetch('https://zvftggieqlxujjtotvwg.supabase.co/storage/v1/object/public/betstorm-data/matches.json').then(r=>r.ok?r.json():null).then(data=>{
-      if(!data||!data.schedina)return;const s=data.schedina;const grid=document.getElementById('schedine-grid');if(!grid)return;
-      const levels=[
-        {key:'easy',label:'FACILE',emoji:'\ud83d\udfe2',color:'#00e676',desc:'2 pick selezionate',gradient:'linear-gradient(135deg,rgba(0,230,118,.08),rgba(0,200,83,.04))'},
-        {key:'medium',label:'MEDIA',emoji:'\ud83d\udfe1',color:'#ffd600',desc:'4 pick bilanciate',gradient:'linear-gradient(135deg,rgba(255,214,0,.08),rgba(255,171,0,.04))'},
-        {key:'hard',label:'DIFFICILE',emoji:'\ud83d\udd34',color:'#ff5252',desc:'6 pick alta quota',gradient:'linear-gradient(135deg,rgba(255,82,82,.08),rgba(255,23,68,.04))'}
-      ];
-      grid.innerHTML=levels.map(lv=>{
-        const slip=s[lv.key];if(!slip||!slip.picks)return'';
-        const picks=slip.picks.map(p=>'<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.82rem"><span>'+p.home+' vs '+p.away+'</span><span style="color:#00e676;font-size:.74rem;font-weight:600">'+p.bet+'</span><span style="color:'+lv.color+';font-weight:700;min-width:36px;text-align:right">'+p.quota.toFixed(2)+'</span></div>').join('');
-        return'<div style="background:'+lv.gradient+';border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:20px;display:flex;flex-direction:column"><div style="text-align:center;margin-bottom:12px"><div style="font-size:1.3rem">'+lv.emoji+'</div><div style="font-family:Syne,sans-serif;font-weight:800;color:'+lv.color+'">'+lv.label+'</div><div style="font-size:.72rem;color:var(--muted)">'+lv.desc+'</div></div><div style="flex:1;margin-bottom:12px">'+picks+'</div><div style="background:rgba(0,0,0,.2);border-radius:10px;padding:12px;text-align:center"><div style="font-size:.7rem;color:var(--muted)">QUOTA TOTALE</div><div style="font-family:Syne,sans-serif;font-size:1.5rem;font-weight:800;color:var(--gold)">'+slip.total_quota.toFixed(2)+'</div><div style="font-size:.7rem;color:var(--muted);margin-top:4px">Vincita con \u20ac10</div><div style="font-family:Syne,sans-serif;font-size:1.1rem;font-weight:800;color:var(--green)">\u20ac'+slip.potential_win_10.toFixed(2)+'</div></div><a href="https://betwin360.it/fwlink/account-registration?father=amboox18" target="_blank" rel="noopener" style="display:block;text-align:center;background:linear-gradient(135deg,#00c853,#00e676);color:#070a0f;padding:10px;border-radius:8px;font-weight:700;font-size:.85rem;margin-top:12px;text-decoration:none">\u26a1 Gioca questa schedina</a></div>';
-      }).join('');
-    }).catch(()=>{});
-    </script>
-
-    <!-- BASKET SCHEDINE -->
-<section class="hp-section" id="basket-section">
-  <div class="hp-container hp-center">
-    <p class="hp-label">🏀 Schedine Basket</p>
-    <h2 class="hp-title">NBA + WNBA — Schedine del giorno</h2>
-    <p class="hp-sub hp-mx">Quote disponibili per NBA e WNBA. Clicca per consultare il bookmaker affiliato.</p>
-    <div id="basket-schedine" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:1000px;margin:20px auto">
-      <div style="text-align:center;color:var(--muted);padding:40px;grid-column:1/-1">Caricamento schedine basket...</div>
-    </div>
-  </div>
+<div id="odds-table" style="max-width:900px;margin:20px auto">
+<div style="text-align:center;color:var(--muted);padding:30px">Caricamento quote...</div>
+</div>
+</div>
 </section>
-
-
+<!-- ======== 4B. SCHEDINE DEL GIORNO ======== -->
+<!-- BASKET SCHEDINE -->
 <!-- TENNIS SCHEDINE -->
-<section class="hp-section" id="tennis-section">
-  <div class="hp-container hp-center">
-    <p class="hp-label">🎾 Schedine Tennis</p>
-    <h2 class="hp-title">Tennis ATP + WTA — Schedine del giorno</h2>
-    <p class="hp-sub hp-mx">Quote disponibili per gli eventi ATP e WTA presenti nei dati. Clicca per consultare il bookmaker affiliato.</p>
-    <div id="tennis-schedine" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;max-width:960px;margin:0 auto">
-      <div style="color:var(--muted);text-align:center;padding:40px;grid-column:1/-1">Caricamento schedine tennis...</div>
-    </div>
-  </div>
-</section>
-
-    
 <!-- ======== STORM ANALYSIS — ANALIZZA LA TUA SCHEDINA ======== -->
 <section class="hp-section hp-section--alt" id="analisi-schedina" style="background:linear-gradient(135deg,rgba(255,214,0,.04) 0%,transparent 60%)">
-  <div class="hp-container hp-center">
-    <p class="hp-label" style="background:rgba(255,214,0,.1);border:1px solid rgba(255,214,0,.2);color:var(--gold);padding:4px 14px;border-radius:20px;font-size:.72rem;letter-spacing:.1em">⚡ Nuovo servizio gratuito</p>
-    <h2 class="hp-title">Analizza la tua Schedina</h2>
-    <p class="hp-sub hp-mx">Scegli eventi reali dai feed BetStorm, crea la tua schedina e ricevi la <strong>Storm Analysis</strong> via email con una stima analitica basata sulle quote selezionate.</p>
-
-    <!-- CREA SCHEDINA CON EVENTI REALI -->
-    <div id="real-slip-builder" style="max-width:760px;margin:24px auto 0">
-      <div style="display:grid;grid-template-columns:150px 1fr;gap:10px;margin-bottom:10px">
-        <select id="real-sport" onchange="loadRealEvents()" class="hp-input" style="background:#111820;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:11px 12px;color:#fff;width:100%">
-          <option value="calcio">⚽ Calcio</option>
-          <option value="tennis">🎾 Tennis</option>
-          <option value="basket">🏀 Basket</option>
-        </select>
-        <select id="real-event" onchange="updateRealBetOptions()" class="hp-input" style="background:#111820;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:11px 12px;color:#fff;width:100%">
-          <option value="">Caricamento eventi reali...</option>
-        </select>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 120px 170px;gap:10px">
-        <select id="real-bet" onchange="updateRealQuota()" class="hp-input" style="background:#111820;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:11px 12px;color:#fff;width:100%">
-          <option value="">Scegli pronostico</option>
-        </select>
-        <input id="real-quota" type="number" placeholder="Quota" step="0.01" min="1.01" max="100" class="hp-input" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:11px 10px;color:#fff;width:100%;box-sizing:border-box;text-align:center">
-        <button type="button" onclick="addRealPick()" class="hp-btn hp-btn--green" style="justify-content:center;border:none;cursor:pointer">+ Aggiungi pick</button>
-      </div>
-      <div id="real-feed-status" style="font-size:.72rem;color:var(--muted);margin-top:8px;text-align:center">Gli eventi vengono caricati dai feed BetStorm.</div>
-      <div id="selected-real-picks" style="margin-top:18px"></div>
-    </div>
-
-    <!-- EMAIL INPUT + SUBMIT -->
-    <div style="max-width:480px;margin:20px auto 0">
-      <input type="email" id="sched-email" placeholder="La tua email (per ricevere l'analisi)" style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:12px 16px;color:#fff;font-size:.92rem;box-sizing:border-box;margin-bottom:12px">
-      <button id="analyze-btn" onclick="submitSchedina()" style="width:100%;background:linear-gradient(135deg,#ffd600,#ffaa00);color:#070a0f;padding:14px;border-radius:10px;font-weight:800;font-size:1rem;border:none;cursor:pointer;transition:opacity .2s">
+<div class="hp-container hp-center">
+<p class="hp-label" style="background:rgba(255,214,0,.1);border:1px solid rgba(255,214,0,.2);color:var(--gold);padding:4px 14px;border-radius:20px;font-size:.72rem;letter-spacing:.1em">⚡ Nuovo servizio gratuito</p>
+<h2 class="hp-title">Analizza la tua Schedina</h2>
+<p class="hp-sub hp-mx">Scegli eventi dai feed BetStorm, componi le tue selezioni e ricevi la <strong>Storm Analysis</strong> via email con il calcolo delle probabilità implicite basato sulle quote selezionate. Non è una previsione indipendente.</p>
+<!-- CREA SCHEDINA CON EVENTI REALI -->
+<div id="real-slip-builder" style="max-width:760px;margin:24px auto 0">
+<div style="display:grid;grid-template-columns:150px 1fr;gap:10px;margin-bottom:10px">
+<select class="hp-input" id="real-sport" onchange="loadRealEvents()" style="background:#111820;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:11px 12px;color:#fff;width:100%">
+<option value="calcio">⚽ Calcio</option>
+<option value="tennis">🎾 Tennis</option>
+<option value="basket">🏀 Basket</option>
+</select>
+<select class="hp-input" id="real-event" onchange="updateRealBetOptions()" style="background:#111820;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:11px 12px;color:#fff;width:100%">
+<option value="">Caricamento eventi reali...</option>
+</select>
+</div>
+<div style="display:grid;grid-template-columns:1fr 120px 170px;gap:10px">
+<select class="hp-input" id="real-bet" onchange="updateRealQuota()" style="background:#111820;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:11px 12px;color:#fff;width:100%">
+<option value="">Scegli pronostico</option>
+</select>
+<input class="hp-input" id="real-quota" max="100" min="1.01" placeholder="Quota" step="0.01" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:11px 10px;color:#fff;width:100%;box-sizing:border-box;text-align:center" type="number"/>
+<button class="hp-btn hp-btn--green" onclick="addRealPick()" style="justify-content:center;border:none;cursor:pointer" type="button">+ Aggiungi pick</button>
+</div>
+<div id="real-feed-status" style="font-size:.72rem;color:var(--muted);margin-top:8px;text-align:center">Gli eventi vengono caricati dai feed BetStorm.</div>
+<div id="selected-real-picks" style="margin-top:18px"></div>
+</div>
+<!-- EMAIL INPUT + SUBMIT -->
+<div style="max-width:480px;margin:20px auto 0">
+<input id="sched-email" placeholder="La tua email (solo per ricevere il report)" style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:12px 16px;color:#fff;font-size:.92rem;box-sizing:border-box;margin-bottom:12px" type="email"/>
+<button id="analyze-btn" onclick="submitSchedina()" style="width:100%;background:linear-gradient(135deg,#ffd600,#ffaa00);color:#070a0f;padding:14px;border-radius:10px;font-weight:800;font-size:1rem;border:none;cursor:pointer;transition:opacity .2s">
         ⚡ Analizza la mia schedina
       </button>
-      <div id="sched-status" style="display:none;margin-top:12px;padding:14px;border-radius:10px;text-align:center;font-size:.9rem"></div>
-    </div>
-
-    <div style="margin-top:16px;font-size:.72rem;color:rgba(255,255,255,.25);text-align:center">
+<div id="sched-status" style="display:none;margin-top:12px;padding:14px;border-radius:10px;text-align:center;font-size:.9rem"></div>
+</div>
+<div style="margin-top:16px;font-size:.72rem;color:rgba(255,255,255,.25);text-align:center">
       Analisi a scopo informativo. Non costituisce consiglio di gioco. 18+ Gioca responsabilmente.
     </div>
-  </div>
+</div>
 </section>
-
 <script>
 (function() {
   var DATA_BASE = 'https://zvftggieqlxujjtotvwg.supabase.co/storage/v1/object/public/betstorm-data/';
@@ -402,93 +295,54 @@
   };
 })();
 </script>
-
-    <!-- ======== 4C. RISULTATI LIVE ======== -->
-    <section class="hp-section hp-section--alt">
-      <div class="hp-container hp-center">
-        <p class="hp-label">Risultati Live</p>
-        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:20px;max-width:650px;margin:0 auto">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-            <div style="font-family:var(--font-head);font-size:1rem;font-weight:700">\u26bd Partite in corso</div>
-            <div id="live-count" style="background:rgba(255,82,82,.12);color:#ff5252;padding:4px 10px;border-radius:20px;font-size:.72rem;font-weight:600">\u25cf LIVE</div>
-          </div>
-          <div id="live-scores" style="min-height:50px"><div style="text-align:center;color:var(--muted);padding:16px;font-size:.85rem">Caricamento...</div></div>
-          <div style="text-align:center;margin-top:10px;font-size:.7rem;color:var(--muted)">Aggiornamento ogni 3 minuti • Solo campionati maggiori</div>
-        </div>
-      </div>
-    </section>
-
-    <script>
+<!-- ======== 4C. RISULTATI LIVE ======== -->
+<section class="hp-section hp-section--alt">
+<div class="hp-container hp-center">
+<p class="hp-label">Risultati Live</p>
+<div style="background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:20px;max-width:650px;margin:0 auto">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+<div style="font-family:var(--font-head);font-size:1rem;font-weight:700">\u26bd Partite in corso</div>
+<div id="live-count" style="background:rgba(255,82,82,.12);color:#ff5252;padding:4px 10px;border-radius:20px;font-size:.72rem;font-weight:600">\u25cf LIVE</div>
+</div>
+<div id="live-scores" style="min-height:50px"><div style="text-align:center;color:var(--muted);padding:16px;font-size:.85rem">Caricamento...</div></div>
+<div style="text-align:center;margin-top:10px;font-size:.7rem;color:var(--muted)">Aggiornamento ogni 3 minuti • Solo campionati maggiori</div>
+</div>
+</div>
+</section>
+<script>
     const MAJOR=[2,3,4,5,42,47,48,54,73,78,87,130,135,140,39,45,61,66,143,529,530,531,532,533,848];
     async function loadLive(){const el=document.getElementById('live-scores');const c=document.getElementById('live-count');try{const r = await fetch('/api/live');if(!r.ok)throw 0;const d=await r.json();const m=(d.response?.live||[]).filter(m=>MAJOR.includes(m.leagueId)).slice(0,8);if(!m.length){el.innerHTML='<div style="text-align:center;color:var(--muted);padding:16px;font-size:.85rem"><i class="fas fa-moon" style="margin-right:6px"></i>Nessuna partita in corso</div>';c.textContent='STANDBY';c.style.background='rgba(255,255,255,.04)';c.style.color='var(--muted)';return;}c.textContent='\u25cf '+m.length+' LIVE';el.innerHTML=m.map(m=>'<div style="display:flex;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)"><div style="flex:1;text-align:right;font-size:.85rem">'+(m.home?.name||'?')+'</div><div style="padding:0 14px;font-family:Syne,sans-serif;font-size:1rem;font-weight:800;color:var(--green);min-width:55px;text-align:center">'+(m.home?.score??'-')+' - '+(m.away?.score??'-')+'</div><div style="flex:1;font-size:.85rem">'+(m.away?.name||'?')+'</div><div style="font-size:.72rem;color:#ff5252;font-weight:600;min-width:32px;text-align:right">'+(m.status?.liveTime?.short||'')+'</div></div>').join('');}catch(e){el.innerHTML='<div style="text-align:center;color:var(--muted);padding:16px;font-size:.85rem"><i class="fas fa-clock" style="margin-right:6px"></i>Disponibili durante le partite</div>';c.textContent='STANDBY';c.style.background='rgba(255,255,255,.04)';c.style.color='var(--muted)';}}
     loadLive();setInterval(loadLive,180000);
     </script>
-
-    <!-- ======== 5. EDUCATIVA ======== -->
-    <section class="hp-section">
-      <div class="hp-container" style="max-width:660px">
-        <p class="hp-label hp-center">Impara</p>
-        <h2 class="hp-title hp-center">Come usare i dati per scommettere meglio</h2>
-        <div class="hp-reveal" style="color:var(--muted);font-size:.92rem;line-height:1.7;margin-top:22px">
-          <p>Un approccio basato sui dati aiuta a valutare una scommessa in modo più strutturato, senza eliminare il rischio.</p>
-          <p style="margin-top:14px">BetStorm confronta i dati disponibili e le quote per evidenziare possibili situazioni di valore. Le stime sono indicative e non garantiscono l’esito di una scommessa.</p>
-          <p style="margin-top:14px">Non servono formule: ti diamo il pronostico con la spiegazione. Tu scegli se seguirlo.</p>
-          <div style="text-align:center;margin-top:28px"><a href="/blog.html" class="hp-btn hp-btn--outline"><i class="fas fa-book"></i> Guide gratuite</a></div>
-        </div>
-      </div>
-    </section>
-
-
-    <!-- ======== 7. CTA FINALE ======== -->
-    <section class="hp-section">
-      <div class="hp-container">
-        <div class="hp-cta-banner hp-reveal">
-          <h2 class="hp-title">Analizza le partite di oggi</h2>
-          <p class="hp-sub hp-mx" style="margin-bottom:24px">Trova value bet e gioca la schedina con il bookmaker che offre di piu.</p>
-          <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-            <a href="#offerte" class="hp-btn hp-btn--green" data-auth-cta><i class="fas fa-bolt"></i> Inizia ora gratuitamente</a>
-            <a href="https://betwin360.it/fwlink/account-registration?father=amboox18" target="_blank" class="hp-btn hp-btn--gold hp-btn--sm" data-outbound="betwin360-final"><i class="fas fa-external-link-alt"></i> Betwin360</a>
-            <a href="https://track.padrinopartners.com/visit/?bta=35842&nci=5343&afp10=Network&utm_campaign=imperialdeal_20" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#7c4dff,#b388ff);color:#fff;padding:10px 18px;border-radius:12px;font-weight:700;font-size:.82rem;text-decoration:none" data-outbound="nfs-final"><i class="fas fa-gem"></i> Need for Slots</a>
-            <a href="https://lp.bgame.it/slotscommesse?ID=imperialdeal_18" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#e53935,#ff5252);color:#fff;padding:10px 18px;border-radius:12px;font-weight:700;font-size:.82rem;text-decoration:none" data-outbound="bgame-final"><i class="fas fa-fire"></i> Bgame</a>
-            <a href="https://www.betpassion.it/imperialdeal?promoter=imperialdeal62" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#00c853,#00e676);color:#070a0f;padding:10px 18px;border-radius:12px;font-weight:700;font-size:.82rem;text-decoration:none" data-outbound="betpassion-final"><i class="fas fa-star"></i> Betpassion</a>
-            <a href="https://www.vincitu.it/signup?codAffiliato=wabrokerbet76" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#1565c0,#42a5f5);color:#fff;padding:10px 18px;border-radius:12px;font-weight:700;font-size:.82rem;text-decoration:none" data-outbound="vincitu-final"><i class="fas fa-futbol"></i> Vincitu</a>
-          </div>
-        </div>
-      </div>
-    </section>
-    <!-- ======== 6. ACCESSO GRATUITO + OFFERTE PARTNER ======== -->
-    <section class="hp-section hp-section--alt" id="offerte">
-      <div class="hp-container hp-center">
-        <p class="hp-label">BetStorm gratuito</p>
-        <h2 class="hp-title">Nessun abbonamento, nessun pagamento</h2>
-        <p class="hp-sub hp-mx">Le analisi e gli strumenti BetStorm restano gratuiti. Se il servizio ti è utile, puoi sostenerlo usando — solo se lo desideri — uno dei link partner indicati qui sotto.</p>
-        <div class="hp-grid hp-grid--3" style="margin-top:36px">
-          <div class="hp-plan hp-reveal"><div class="hp-plan__name">Accesso gratuito</div><div class="hp-plan__price">€0<span>/sempre</span></div><ul class="hp-plan__features"><li><i class="fas fa-check"></i> Analisi e statistiche</li><li><i class="fas fa-check"></i> Schedine del giorno</li><li><i class="fas fa-check"></i> Comparatore quote</li><li><i class="fas fa-check"></i> Risultati live</li></ul><a href="#analisi-schedina" class="hp-btn hp-btn--green" style="width:100%;justify-content:center"><i class="fas fa-bolt"></i> Usa BetStorm gratis</a></div>
-          <div class="hp-plan hp-plan--pop hp-reveal"><div class="hp-plan__name">Offerte partner</div><div style="font-size:2rem;margin:12px 0">🎁</div><ul class="hp-plan__features"><li><i class="fas fa-check"></i> Link partner separati dalle analisi</li><li><i class="fas fa-check"></i> Nessun acquisto richiesto per usare BetStorm</li><li><i class="fas fa-check"></i> Consulta sempre termini e condizioni</li></ul><a href="#offerte-partner" class="hp-btn hp-btn--outline" style="width:100%;justify-content:center">Vedi le offerte</a></div>
-          <div class="hp-plan hp-reveal"><div class="hp-plan__name">Supporta il progetto</div><div style="font-size:2rem;margin:12px 0">💚</div><ul class="hp-plan__features"><li><i class="fas fa-check"></i> Continua a usare BetStorm gratuitamente</li><li><i class="fas fa-check"></i> Usa un partner solo se ti interessa davvero</li><li><i class="fas fa-check"></i> Gioca responsabilmente, 18+</li></ul><a href="/blog.html" class="hp-btn hp-btn--outline" style="width:100%;justify-content:center">Leggi le guide</a></div>
-        </div>
-        <div id="offerte-partner" style="margin-top:42px"><p class="hp-label">Offerte partner</p><h3 class="hp-title" style="font-size:1.5rem">Più opzioni, senza paywall</h3><p class="hp-sub hp-mx">I link possono essere affiliati. BetStorm può ricevere una commissione senza costi aggiuntivi per te. Le offerte possono cambiare: verifica sempre condizioni, requisiti e disponibilità sul sito dell'operatore.</p><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:22px"><a href="https://betwin360.it/fwlink/account-registration?father=amboox18" target="_blank" rel="noopener" class="hp-btn hp-btn--gold hp-btn--sm" data-outbound="betwin360-offerte">Betwin360</a><a href="https://track.padrinopartners.com/visit/?bta=35842&nci=5343&afp10=Network&utm_campaign=imperialdeal_20" target="_blank" rel="noopener" class="hp-btn hp-btn--outline hp-btn--sm" data-outbound="nfs-offerte">Need for Slots</a><a href="https://lp.bgame.it/slotscommesse?ID=imperialdeal_18" target="_blank" rel="noopener" class="hp-btn hp-btn--outline hp-btn--sm" data-outbound="bgame-offerte">Bgame</a><a href="https://www.betpassion.it/imperialdeal?promoter=imperialdeal62" target="_blank" rel="noopener" class="hp-btn hp-btn--outline hp-btn--sm" data-outbound="betpassion-offerte">Betpassion</a><a href="https://www.vincitu.it/signup?codAffiliato=wabrokerbet76" target="_blank" rel="noopener" class="hp-btn hp-btn--outline hp-btn--sm" data-outbound="vincitu-offerte">Vincitu</a></div><p style="margin-top:16px;font-size:.72rem;color:var(--muted)">18+. Il gioco comporta rischi e può creare dipendenza. Le analisi BetStorm non garantiscono vincite.</p></div>
-      </div>
-    </section>
-
-
-  </main>
-
-  <!-- ======== FOOTER ======== -->
-  <footer class="hp-footer">
-    <div class="hp-container">
-      <div class="hp-footer__links">
-        <a href="/">Home</a><a href="/blog.html">Blog</a><a href="/bonus.html">Bonus</a><a href="/dashboard.html">Dashboard</a><a href="/privacy.html">Privacy Policy</a><a href="/termini.html">Termini</a>
-      </div>
-      <p>&copy; 2026 BetStorm — Analisi e statistiche per scommesse sportive</p>
-      <p class="hp-footer__disc">BetStorm NON e un bookmaker e non accetta scommesse. Contenuti a scopo informativo e analitico. Il gioco d'azzardo puo creare dipendenza. 18+. Bookmaker linkati autorizzati ADM.</p>
-    </div>
-  </footer>
-
-  <!-- Supabase SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="homepage.js"></script>
-
+<!-- ======== 5. EDUCATIVA ======== -->
+<section class="hp-section">
+<div class="hp-container" style="max-width:660px">
+<p class="hp-label hp-center">Impara</p>
+<h2 class="hp-title hp-center">Come interpretare le quote e i loro limiti</h2>
+<div class="hp-reveal" style="color:var(--muted);font-size:.92rem;line-height:1.7;margin-top:22px">
+<p>Un approccio basato sui dati aiuta a valutare una scommessa in modo più strutturato, senza eliminare il rischio.</p>
+<p style="margin-top:14px">BetStorm mostra dati e quote disponibili. Le probabilità implicite si ricavano dalle quote e non rappresentano una valutazione indipendente della probabilità reale.</p>
+<p style="margin-top:14px">Spieghiamo come leggere i numeri, le ipotesi e i limiti dei calcoli.</p>
+<div style="text-align:center;margin-top:28px"><a class="hp-btn hp-btn--outline" href="/blog.html"><i class="fas fa-book"></i> Guide gratuite</a></div>
+</div>
+</div>
+</section>
+<!-- ======== 7. CTA FINALE ======== -->
+<!-- ======== 6. ACCESSO GRATUITO + OFFERTE PARTNER ======== -->
+</main>
+<!-- ======== FOOTER ======== -->
+<footer class="hp-footer">
+<div class="hp-container">
+<div class="hp-footer__links">
+<a href="/">Home</a><a href="/blog.html">Blog</a><a href="/dashboard.html">Dashboard</a><a href="/privacy.html">Privacy Policy</a><a href="/termini.html">Termini</a>
+</div>
+<p>© 2026 BetStorm — Analisi e statistiche per scommesse sportive</p>
+<p class="hp-footer__disc">BetStorm NON e un bookmaker e non accetta scommesse. Contenuti a scopo informativo e analitico. Il gioco d'azzardo puo creare dipendenza. 18+. Verifica sempre le informazioni ufficiali degli operatori.</p>
+</div>
+</footer>
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="homepage.js"></script>
 <style>
 .sport-tabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:20px}
 .sport-tab{padding:10px 20px;border-radius:20px;border:1px solid var(--border);background:var(--bg3);color:var(--muted);cursor:pointer;font-size:.82rem;font-weight:600;transition:all .25s}
@@ -496,7 +350,6 @@
 .sport-tab.active{background:var(--green);color:#070a0f;border-color:var(--green)}
 .sport-icon{margin-right:5px}
 </style>
-
 <script>
 (function() {
   var DATA_BASE = 'https://zvftggieqlxujjtotvwg.supabase.co/storage/v1/object/public/betstorm-data/';
@@ -599,158 +452,5 @@
   window._bsSportSwitch = switchTab;
 })();
 </script>
-
-
-<script>
-(function() {
-  var BASKET_URL = 'https://zvftggieqlxujjtotvwg.supabase.co/storage/v1/object/public/betstorm-data/basketball.json';
-  var bsEl = document.getElementById('basket-schedine');
-  if (!bsEl) return;
-  
-  fetch(BASKET_URL)
-    .then(function(r) { return r.ok ? r.json() : null; })
-    .then(function(data) {
-      if (!data || !data.schedine) return;
-      var s = data.schedine;
-      var levels = [
-        {key:'easy',   label:'VERDE',     emoji:'🟢', color:'#00e676', desc:'2 pick selezionate',       bg:'rgba(0,230,118,.08)'},
-        {key:'medium', label:'GIALLA',    emoji:'🟡', color:'#ffd600', desc:'3 pick bilanciate',    bg:'rgba(255,214,0,.08)'},
-        {key:'hard',   label:'ROSSA',     emoji:'🔴', color:'#ff5252', desc:'3 pick upset/value',   bg:'rgba(255,82,82,.08)'}
-      ];
-      bsEl.innerHTML = levels.map(function(lv) {
-        var slip = s[lv.key];
-        if (!slip || !slip.picks || !slip.picks.length) return '';
-        var picks = slip.picks.map(function(p) {
-          var label = p.bet === '1' ? p.home : p.away;
-          return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.83rem">' +
-            '<div><div style="font-weight:600">' + p.home + ' vs ' + p.away + '</div>' +
-            '<div style="color:' + lv.color + ';font-size:.75rem;font-weight:600">' + label + ' vince' +
-            (p.motivo ? ' — ' + p.motivo : '') + '</div></div>' +
-            '<span style="font-family:Syne,sans-serif;font-weight:800;color:#ffd600;font-size:.95rem">' + parseFloat(p.quota).toFixed(2) + '</span>' +
-          '</div>';
-        }).join('');
-        return '<div style="background:' + lv.bg + ';border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:20px;display:flex;flex-direction:column">' +
-          '<div style="text-align:center;margin-bottom:14px">' +
-          '<div style="font-size:1.3rem">' + lv.emoji + '</div>' +
-          '<div style="font-family:Syne,sans-serif;font-weight:800;color:' + lv.color + '">' + lv.label + '</div>' +
-          '<div style="font-size:.7rem;color:var(--muted)">' + lv.desc + '</div></div>' +
-          '<div style="flex:1;margin-bottom:14px">' + picks + '</div>' +
-          '<div style="background:rgba(0,0,0,.2);border-radius:10px;padding:12px;text-align:center">' +
-          '<div style="font-size:.7rem;color:var(--muted)">QUOTA TOTALE</div>' +
-          '<div style="font-family:Syne,sans-serif;font-size:1.5rem;font-weight:800;color:#ffd600">' + slip.total_quota.toFixed(2) + '</div>' +
-          '<div style="font-size:.7rem;color:var(--muted);margin-top:3px">Vincita con €10</div>' +
-          '<div style="font-family:Syne,sans-serif;font-size:1rem;font-weight:800;color:var(--green)">€' + slip.potential_win_10.toFixed(2) + '</div></div>' +
-          '<a href="https://betwin360.it/fwlink/account-registration?father=amboox18" target="_blank" rel="noopener" style="display:block;text-align:center;background:linear-gradient(135deg,#00c853,#00e676);color:#070a0f;padding:10px;border-radius:8px;font-weight:700;font-size:.82rem;margin-top:12px;text-decoration:none">⚡ Gioca questa schedina</a>' +
-        '</div>';
-      }).join('');
-    }).catch(function(err) { console.error('Basket schedine error:', err); });
-})();
-</script>
-
-<script>
-(function() {
-  var TENNIS_URL = 'https://zvftggieqlxujjtotvwg.supabase.co/storage/v1/object/public/betstorm-data/tennis.json';
-  var tnEl = document.getElementById('tennis-schedine');
-  if (!tnEl) return;
-  fetch(TENNIS_URL)
-    .then(function(r) { return r.ok ? r.json() : null; })
-    .then(function(data) {
-      if (!data || !data.schedine) return;
-      var s = data.schedine;
-      var levels = [
-        {key:'easy',   label:'VERDE',  emoji:'🟢', color:'#00e676', desc:'2 pick selezionate',     bg:'rgba(0,230,118,.08)'},
-        {key:'medium', label:'GIALLA', emoji:'🟡', color:'#ffd600', desc:'3 pick bilanciate',  bg:'rgba(255,214,0,.08)'},
-        {key:'hard',   label:'ROSSA',  emoji:'🔴', color:'#ff5252', desc:'3 pick upset/value', bg:'rgba(255,82,82,.08)'}
-      ];
-      tnEl.innerHTML = levels.map(function(lv) {
-        var slip = s[lv.key];
-        if (!slip || !slip.picks || !slip.picks.length) return '';
-        var picks = slip.picks.map(function(p) {
-          var winner = p.bet === '1' ? p.home : p.away;
-          return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.83rem">' +
-            '<div><div style="font-weight:600">' + p.home + ' vs ' + p.away + '</div>' +
-            '<div style="color:' + lv.color + ';font-size:.75rem;font-weight:600">' + winner + ' vince' +
-            (p.motivo ? ' — ' + p.motivo : '') + '</div></div>' +
-            '<span style="font-family:Syne,sans-serif;font-weight:800;color:#ffd600;font-size:.95rem">' + parseFloat(p.quota).toFixed(2) + '</span>' +
-          '</div>';
-        }).join('');
-        return '<div style="background:' + lv.bg + ';border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:20px;display:flex;flex-direction:column">' +
-          '<div style="text-align:center;margin-bottom:14px">' +
-          '<div style="font-size:1.3rem">' + lv.emoji + '</div>' +
-          '<div style="font-family:Syne,sans-serif;font-weight:800;color:' + lv.color + '">' + lv.label + '</div>' +
-          '<div style="font-size:.7rem;color:var(--muted)">' + lv.desc + '</div></div>' +
-          '<div style="flex:1;margin-bottom:14px">' + picks + '</div>' +
-          '<div style="background:rgba(0,0,0,.2);border-radius:10px;padding:12px;text-align:center">' +
-          '<div style="font-size:.7rem;color:var(--muted)">QUOTA TOTALE</div>' +
-          '<div style="font-family:Syne,sans-serif;font-size:1.5rem;font-weight:800;color:#ffd600">' + slip.total_quota.toFixed(2) + '</div>' +
-          '<div style="font-size:.7rem;color:var(--muted);margin-top:3px">Vincita con \u20ac10</div>' +
-          '<div style="font-family:Syne,sans-serif;font-size:1rem;font-weight:800;color:var(--green)">\u20ac' + slip.potential_win_10.toFixed(2) + '</div></div>' +
-          '<a href="https://betwin360.it/fwlink/account-registration?father=amboox18" target="_blank" rel="noopener" style="display:block;text-align:center;background:linear-gradient(135deg,#00c853,#00e676);color:#070a0f;padding:10px;border-radius:8px;font-weight:700;font-size:.82rem;margin-top:12px;text-decoration:none">\u26a1 Gioca questa schedina</a>' +
-        '</div>';
-      }).join('');
-    }).catch(function(err) { console.error('Tennis schedine error:', err); });
-})();
-</script>
-
-
-
-<script>
-(function() {
-  var MATCHES_URL = 'https://zvftggieqlxujjtotvwg.supabase.co/storage/v1/object/public/betstorm-data/matches.json';
-  var card = document.getElementById('esempio-card');
-  if (!card) return;
-
-  fetch(MATCHES_URL)
-    .then(function(r) { return r.ok ? r.json() : null; })
-    .then(function(data) {
-      if (!data || !data.matches || !data.matches.length) return;
-
-      // Pick match with highest confidence %
-      var sorted = data.matches.slice().sort(function(a, b) {
-        return ((b.pct || 0) - (a.pct || 0));
-      });
-      var m = sorted[0];
-
-      // Find best quota from schedina picks
-      var quota = null;
-      var schedina = data.schedina || {};
-      ['medium', 'hard', 'easy'].forEach(function(lv) {
-        ((schedina[lv] || {}).picks || []).forEach(function(p) {
-          if (p.home === m.home && p.away === m.away && p.quota) quota = p.quota;
-        });
-      });
-      if (!quota) quota = 1.80;
-
-      var vincita = (10 * quota).toFixed(2);
-      var pct = m.pct || 0;
-      var isValue = pct >= 70;
-      var badge = isValue ? '<span class="hp-match__badge">?? VALUE BET</span>' : '';
-
-      card.innerHTML =
-        '<div class="hp-match__head">' +
-        '<span class="hp-match__league">' + (m.league || 'Serie A') + (m.when ? ' — ' + m.when : '') + '</span>' +
-        badge +
-        '</div>' +
-        '<div class="hp-match__body">' +
-        '<div class="hp-match__teams">' + m.home + ' <span class="hp-match__vs">vs</span> ' + m.away + '</div>' +
-        '<div class="hp-match__stats">' +
-        '<div class="hp-match__stat"><div class="hp-match__stat-lbl">Prob. stimata</div>' +
-        '<div class="hp-match__stat-val" style="color:var(--green)">' + pct + '%</div></div>' +
-        '<div class="hp-match__stat"><div class="hp-match__stat-lbl">Quota migliore</div>' +
-        '<div class="hp-match__stat-val" style="color:var(--gold)">' + parseFloat(quota).toFixed(2) + '</div></div>' +
-        '<div class="hp-match__stat"><div class="hp-match__stat-lbl">Vincita con \u20ac10</div>' +
-        '<div class="hp-match__stat-val">\u20ac' + vincita + '</div></div>' +
-        '</div>' +
-        '<div class="hp-match__insight"><i class="fas fa-lightbulb"></i>' +
-        '<strong>Insight AI:</strong> ' + (m.why || m.h2h || 'Analisi AI disponibile') + '</div>' +
-        '<div style="text-align:center"><a href="https://betwin360.it/fwlink/account-registration?father=amboox18"' +
-        ' target="_blank" rel="noopener" class="hp-btn hp-btn--gold" data-outbound="betwin360">' +
-        '<i class="fas fa-external-link-alt"></i> Vai alla migliore quota</a></div>' +
-        '</div>';
-    })
-    .catch(function(e) { console.error('Esempio card:', e); });
-})();
-</script>
-
 </body>
 </html>
