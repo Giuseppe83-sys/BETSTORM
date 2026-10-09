@@ -374,7 +374,7 @@
     var a = o.affiliate || {};
     var initial = a.name ? a.name.charAt(0) : '?';
     var color = a.color || '#666';
-    var url = a.url || '#';
+    var url = '#';
     return '<a href="' + url + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;min-width:55px;justify-content:center;text-decoration:none" data-outbound="odds-' + (a.name||'?') + '">' +
       '<span style="width:18px;height:18px;border-radius:4px;background:' + color + ';display:inline-flex;align-items:center;justify-content:center;font-size:.5rem;color:#fff;font-weight:800">' + initial + '</span>' +
       '<span style="font-weight:700;color:var(--text);font-size:.88rem">' + o.value.toFixed(2) + '</span></a>';
