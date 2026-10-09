@@ -220,7 +220,7 @@ function emailHtml(a) {
           <th align="left">Evento</th>
           <th align="left">Pick</th>
           <th align="left">Quota</th>
-          <th align="left">Stima*</th>
+          <th align="left">Prob. implicita*</th>
         </tr>
       </thead>
 
