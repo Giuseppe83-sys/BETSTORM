@@ -207,7 +207,7 @@ function emailHtml(a) {
       reale di vincita della schedina.
       </p>
       <p>
-        <strong>Profilo di rischio:</strong>
+        <strong>Classe indicativa basata sulle quote:</strong>
         ${a.risk}
       </p>
 
