@@ -252,7 +252,7 @@ function emailHtml(a) {
       (${pct(a.weakest.estimate)})
     </p>
 
-    <h2>Come ridurre il rischio</h2>
+    <h2>Effetto della rimozione di una selezione</h2>
 
     <p>
       ${improvement}
