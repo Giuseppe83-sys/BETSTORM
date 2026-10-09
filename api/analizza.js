@@ -230,7 +230,7 @@ function emailHtml(a) {
 
     </table>
 
-    <h2>Pick più solido</h2>
+    <h2>Selezione con probabilità implicita più alta</h2>
 
     <p>
       ${esc(a.strongest.event)} —
@@ -238,7 +238,7 @@ function emailHtml(a) {
       (${pct(a.strongest.estimate)})
     </p>
 
-    <h2>Pick più rischioso</h2>
+    <h2>Selezione con probabilità implicita più bassa</h2>
 
     <p>
       ${esc(a.weakest.event)} —
