@@ -151,6 +151,7 @@
 <p class="hp-label hp-center">Comparatore Quote Multi-Sport</p>
 <h2 class="hp-title hp-center">Quote disponibili — Calcio, Tennis e Basket</h2>
 <p class="hp-sub hp-mx hp-center">Quote dai feed esterni: disponibilità e aggiornamento possono variare. Non è garantita la copertura di tutti gli operatori.</p>
+<div id="bs-odds-updated" role="status" aria-live="polite" style="max-width:900px;margin:14px auto 18px;padding:11px 15px;border:1px solid var(--border);border-radius:10px;background:var(--bg3);color:var(--muted);font-size:.8rem;text-align:center">Verifica dell’ultimo aggiornamento quote...</div>
 <!-- Sport tabs -->
 <div class="sport-tabs">
 <button class="sport-tab active" data-sport="calcio" onclick="window._bsSportSwitch('calcio')">⚽ Calcio</button>
@@ -386,6 +387,28 @@
   };
   var currentSport = 'calcio';
   var allData = { matches: [] };
+  var feedUpdates = { calcio: null, tennis: null, basket: null };
+  function parseFeedUtc(raw) {
+    if (typeof raw !== 'string' || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:?\d{2})?$/.test(raw)) return null;
+    var hasTimezone = /(?:Z|[+-]\d{2}:?\d{2})$/.test(raw);
+    var parsed = new Date(hasTimezone ? raw : raw + 'Z');
+    return Number.isFinite(parsed.getTime()) ? parsed : null;
+  }
+  function showFeedUpdate(sport) {
+    var el = document.getElementById('bs-odds-updated');
+    if (!el) return;
+    var d = feedUpdates[sport];
+    if (!d) {
+      el.textContent = 'Ultimo aggiornamento quote non disponibile · Dati non in tempo reale';
+      return;
+    }
+    var formatted = new Intl.DateTimeFormat('it-IT', {
+      timeZone: 'Europe/Rome', day: 'numeric', month: 'long', year: 'numeric',
+      hour: '2-digit', minute: '2-digit', hourCycle: 'h23'
+    }).format(d);
+    el.textContent = 'Ultimo aggiornamento quote: ' + formatted + ' (ora italiana) · Dati non in tempo reale';
+  }
+
 
   var sportConfig = {
     'calcio':   {label:'⚽ Calcio', headers:['1','X','2'], teams:true},
@@ -515,12 +538,14 @@
     var tab = document.querySelector('[data-sport="' + sport + '"]');
     if (tab) tab.classList.add('active');
     renderTable(sport);
+    showFeedUpdate(sport);
   }
 
   Promise.all(Object.keys(SPORT_URLS).map(function(sport){
     return fetch(SPORT_URLS[sport])
       .then(function(r){ return r.ok ? r.json() : null; })
       .then(function(data){
+        feedUpdates[sport] = data ? parseFeedUtc(data.updated_at) : null;
         var matches = data && Array.isArray(data.matches) ? data.matches : [];
         return matches.map(function(m){
           if (!m.sport) m.sport = sport;
@@ -534,7 +559,8 @@
   }))
     .then(function(groups){
       allData.matches = [].concat.apply([], groups);
-      renderTable(currentSport);
+       renderTable(currentSport);
+      showFeedUpdate(currentSport);
     });
 
   // Expose for onclick
