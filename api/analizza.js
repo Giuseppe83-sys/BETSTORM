@@ -199,7 +199,13 @@ function emailHtml(a) {
         <strong>Probabilità implicita combinata:</strong>
         ${pct(a.combined)}
       </p>
-
+      <p style="font-size:12px;color:#9ba9b4;line-height:1.6">
+      Questo valore deriva dalla moltiplicazione delle probabilità
+      implicite delle quote selezionate. Il calcolo assume che gli
+      eventi siano indipendenti e non corregge il margine dei bookmaker.
+      Non rappresenta una previsione verificata della probabilità
+      reale di vincita della schedina.
+      </p>
       <p>
         <strong>Profilo di rischio:</strong>
         ${a.risk}
