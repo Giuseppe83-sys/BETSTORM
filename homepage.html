@@ -157,6 +157,17 @@
 <button class="sport-tab" data-sport="tennis" onclick="window._bsSportSwitch('tennis')">🎾 Tennis</button>
 <button class="sport-tab" data-sport="basket" onclick="window._bsSportSwitch('basket')">🏀 Basket</button>
 </div>
+<div id="bs-odds-modal" class="bs-odds-modal" hidden>
+  <div class="bs-odds-modal__backdrop" data-close-odds></div>
+  <section class="bs-odds-modal__panel" role="dialog" aria-modal="true" aria-labelledby="bs-odds-modal-title" tabindex="-1">
+    <button type="button" class="bs-odds-modal__close" data-close-odds aria-label="Chiudi dettagli quota">×</button>
+    <p class="hp-label" style="margin:0 0 10px">Dettagli informativi</p>
+    <h3 id="bs-odds-modal-title" style="font-family:Syne,sans-serif;font-size:1.15rem;margin:0 25px 16px 0">Dettagli quota</h3>
+    <div id="bs-odds-modal-content"></div>
+    <p class="bs-odds-modal__note">La probabilità implicita grezza deriva da 100 ÷ quota: non è una previsione indipendente e non corregge il margine del bookmaker. Le quote potrebbero essere cambiate dall'ultimo aggiornamento.</p>
+    <button type="button" class="bs-odds-modal__done" data-close-odds>Chiudi</button>
+  </section>
+</div>
 <div id="odds-table" style="max-width:900px;margin:20px auto">
 <div style="text-align:center;color:var(--muted);padding:30px">Caricamento quote...</div>
 </div>
@@ -351,6 +362,19 @@
 .sport-tab:hover{border-color:rgba(0,230,118,.3);color:var(--text)}
 .sport-tab.active{background:var(--green);color:#070a0f;border-color:var(--green)}
 .sport-icon{margin-right:5px}
+.bs-odds-quote{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;min-width:55px;gap:3px;background:transparent;border:1px solid transparent;border-radius:7px;padding:3px 2px;cursor:pointer;font:inherit}
+.bs-odds-quote:hover,.bs-odds-quote:focus-visible{border-color:var(--green);background:rgba(0,230,118,.06)}
+.bs-odds-modal[hidden]{display:none!important}
+.bs-odds-modal{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;padding:18px}
+.bs-odds-modal__backdrop{position:absolute;inset:0;background:rgba(0,0,0,.78)}
+.bs-odds-modal__panel{position:relative;background:#131a22;color:#fff;border:1px solid rgba(255,255,255,.18);border-radius:16px;padding:24px;max-width:440px;width:100%;max-height:calc(100vh - 36px);overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.bs-odds-modal__close{position:absolute;top:12px;right:15px;border:0;background:transparent;color:#fff;font-size:1.8rem;cursor:pointer}
+.bs-odds-modal__row{display:flex;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.1);font-size:.88rem}
+.bs-odds-modal__row span:first-child{color:var(--muted)}
+.bs-odds-modal__row strong{text-align:right}
+.bs-odds-modal__note{font-size:.77rem;line-height:1.6;color:var(--muted);margin:18px 0}
+.bs-odds-modal__done{background:var(--green);color:#070a0f;border:0;border-radius:9px;padding:10px 20px;font-weight:700;cursor:pointer;width:100%}
+
 </style>
 <script>
 (function() {
@@ -369,22 +393,78 @@
     'basket':   {label:'🏀 Basket', headers:['1','2'], teams:false, noX:true}
   };
 
-  function makeBtn(o) {
+  function escapeHtml(v) {
+    return String(v == null ? '' : v).replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  function makeBtn(o, matchIndex, outcome) {
     if (!o || !Number.isFinite(Number(o.value)) || Number(o.value) <= 1) {
       return '<span style="min-width:55px;text-align:center;color:var(--muted)">-</span>';
     }
     var quota = Number(o.value).toFixed(2);
-    var bookmaker = String(o.bookmaker || 'Fonte non disponibile');
-    var safeName = bookmaker.replace(/&/g, '&amp;').replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-    return '<span title="' + safeName + '" ' +
-      'style="display:inline-flex;flex-direction:column;align-items:center;' +
-      'justify-content:center;min-width:55px;gap:3px">' +
+    var bookmaker = escapeHtml(o.bookmaker || 'Fonte non disponibile');
+    return '<button type="button" class="bs-odds-quote" data-match-index="' + matchIndex +
+      '" data-outcome="' + outcome + '" aria-label="Dettagli quota ' + quota +
+      ', bookmaker ' + bookmaker + '">' +
       '<strong style="color:var(--text);font-size:.88rem">' + quota + '</strong>' +
-      '<small style="color:var(--muted);font-size:.58rem;max-width:95px;' +
-      'overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' +
-      safeName + '</small></span>';
+      '<small title="' + bookmaker + '" style="color:var(--muted);font-size:.58rem;max-width:95px;' +
+      'overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + bookmaker +
+      '</small></button>';
   }
+
+  var modal = document.getElementById('bs-odds-modal');
+  var modalPanel = modal.querySelector('.bs-odds-modal__panel');
+  var lastFocused = null;
+  function closeOddsModal() {
+    modal.hidden = true;
+    document.body.style.overflow = '';
+    if (lastFocused && lastFocused.isConnected) lastFocused.focus();
+  }
+  function openOddsModal(matchIndex, outcome) {
+    var m = allData.matches[matchIndex];
+    var o = m && m.odds && m.odds[outcome];
+    if (!o || !(Number(o.value) > 1)) return;
+    var quota = Number(o.value);
+    var selection = outcome === 'X' ? 'Pareggio' :
+      outcome === '1' ? m.home + ' vincente' : m.away + ' vincente';
+    var fields = [
+      ['Selezione', selection],
+      ['Quota decimale', quota.toFixed(2)],
+      ['Bookmaker (fonte)', o.bookmaker || 'Non disponibile'],
+      ['Probabilità implicita grezza', (100 / quota).toFixed(1).replace('.', ',') + '%']
+    ];
+    document.getElementById('bs-odds-modal-title').textContent = m.home + ' – ' + m.away;
+    document.getElementById('bs-odds-modal-content').innerHTML = fields.map(function(f) {
+      return '<div class="bs-odds-modal__row"><span>' + escapeHtml(f[0]) +
+        '</span><strong>' + escapeHtml(f[1]) + '</strong></div>';
+    }).join('');
+    lastFocused = document.activeElement;
+    modal.hidden = false;
+    document.body.style.overflow = 'hidden';
+    modalPanel.focus();
+  }
+  document.getElementById('odds-table').addEventListener('click', function(e) {
+    var btn = e.target.closest('button[data-match-index][data-outcome]');
+    if (btn && this.contains(btn)) openOddsModal(Number(btn.dataset.matchIndex), btn.dataset.outcome);
+  });
+  modal.addEventListener('click', function(e) {
+    if (e.target.closest('[data-close-odds]')) closeOddsModal();
+  });
+  document.addEventListener('keydown', function(e) {
+    if (modal.hidden) return;
+    if (e.key === 'Escape') closeOddsModal();
+    if (e.key === 'Tab') {
+      var focusables = Array.from(modalPanel.querySelectorAll('button:not([disabled])'));
+      var first = focusables[0], last = focusables[focusables.length - 1];
+      if (e.shiftKey && (document.activeElement === first || document.activeElement === modalPanel)) {
+        e.preventDefault(); last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault(); first.focus();
+      }
+    }
+  });
 
   function renderTable(sport) {
     var el = document.getElementById('odds-table');
@@ -411,6 +491,7 @@
       if (showX) out += '<span style="min-width:55px;text-align:center">X</span>';
       out += '<span style="min-width:55px;text-align:center">2</span></span></div>';
       ms.slice(0,8).forEach(function(m){
+        var matchIndex = allData.matches.indexOf(m);
         var d = new Date(m.start);
         var day = d.toLocaleDateString('it-IT',{weekday:'short',day:'numeric',month:'short'});
         var time = d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
@@ -418,9 +499,9 @@
         out += '<div style="min-width:45px;color:var(--muted);font-size:.7rem"><div>' + day + '</div><div>' + time + '</div></div>';
         out += '<div style="flex:1"><div style="font-weight:600">' + m.home + '</div><div style="color:var(--muted);font-size:.75rem">' + m.away + '</div></div>';
         out += '<div style="display:flex;gap:8px;align-items:center">';
-        out += makeBtn(m.odds['1']);
-        if (showX) out += makeBtn(m.odds['X']);
-        out += makeBtn(m.odds['2']);
+        out += makeBtn(m.odds['1'], matchIndex, '1');
+        if (showX) out += makeBtn(m.odds['X'], matchIndex, 'X');
+        out += makeBtn(m.odds['2'], matchIndex, '2');
         out += '</div></div>';
       });
       out += '</div>';
