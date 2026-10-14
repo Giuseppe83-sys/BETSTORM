@@ -36,6 +36,13 @@
       "dest": "/termini.html"
     },
     {
+      "src": "/index\\.html",
+      "status": 308,
+      "headers": {
+        "Location": "/"
+      }
+    },
+    {
       "src": "/",
       "dest": "/homepage.html"
     },
