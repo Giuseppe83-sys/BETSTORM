@@ -12,10 +12,6 @@
       "dest": "/api/$1"
     },
     {
-      "src": "/statistiche",
-      "dest": "/analytics.html"
-    },
-    {
       "src": "/blog",
       "dest": "/blog.html"
     },
@@ -34,6 +30,13 @@
     {
       "src": "/termini",
       "dest": "/termini.html"
+    },
+    {
+      "src": "/(statistiche|analytics\\.html)",
+      "status": 308,
+      "headers": {
+        "Location": "/"
+      }
     },
     {
       "src": "/index\\.html",
