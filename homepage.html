@@ -364,6 +364,50 @@
 .sport-icon{margin-right:5px}
 .bs-odds-quote{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;min-width:55px;gap:3px;background:transparent;border:1px solid transparent;border-radius:7px;padding:3px 2px;cursor:pointer;font:inherit}
 .bs-odds-quote:hover,.bs-odds-quote:focus-visible{border-color:var(--green);background:rgba(0,230,118,.06)}
+
+/* BetStorm: comparatore leggibile e responsive */
+#odds-table{max-width:1100px!important}
+.bs-league{margin-bottom:22px;border:1px solid rgba(157,180,211,.17);border-radius:14px;overflow:hidden;background:#0b1119}
+.bs-league__head{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:12px;background:#151e29;padding:15px 18px;border-bottom:1px solid rgba(157,180,211,.17)}
+.bs-league__name{font-family:Syne,sans-serif;font-size:1rem;font-weight:800;color:#f7faff;overflow-wrap:anywhere}
+.bs-odds-labels,.bs-odds-cells{display:grid;grid-template-columns:repeat(3,minmax(0,92px));gap:8px}
+.bs-odds-labels span{text-align:center;font-size:.75rem;font-weight:700;color:#9fb4cf}
+.bs-league[data-outcomes="2"] .bs-odds-labels,.bs-league[data-outcomes="2"] .bs-odds-cells{grid-template-columns:repeat(2,minmax(0,92px))}
+.bs-match-row{display:grid;grid-template-columns:95px minmax(0,1fr) auto;gap:18px;align-items:center;padding:17px 18px;border-bottom:1px solid rgba(157,180,211,.12)}
+.bs-match-row:last-child{border-bottom:0}
+.bs-match-date{color:#aabed6;font-size:.78rem;line-height:1.65}
+.bs-match-date time{display:block}
+.bs-match-teams{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:12px;min-width:0}
+.bs-team{min-width:0;font-size:1rem;line-height:1.35;overflow-wrap:anywhere}
+.bs-team--home{color:#fff;font-weight:800}
+.bs-team--away{color:#e3ecf8;font-weight:600}
+.bs-vs{color:#8fa8c5;font-size:.72rem;font-weight:800;letter-spacing:.06em}
+.bs-odds-quote{width:100%;min-width:0;min-height:62px;padding:8px 5px;border:1px solid #34475e;border-radius:10px;background:#121d2b;gap:5px}
+.bs-odds-quote strong{font-size:1.03rem!important;color:#fff!important}
+.bs-odds-quote small{font-size:.67rem!important;color:#afc2da!important;max-width:100%!important}
+.bs-odds-empty{display:flex;align-items:center;justify-content:center;min-height:62px;color:#8196ad;border:1px dashed #2a3a4d;border-radius:10px}
+@media(max-width:850px){
+ .bs-match-row{grid-template-columns:75px minmax(0,1fr);gap:10px 14px}
+ .bs-odds-cells{grid-column:1/-1;grid-template-columns:repeat(3,minmax(0,1fr))}
+ .bs-league[data-outcomes="2"] .bs-odds-cells{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .bs-odds-labels{display:none}
+ .bs-odds-quote{min-height:65px}
+ .bs-odds-quote::before{content:attr(data-outcome);font-size:.67rem;font-weight:700;color:#9fb4cf}
+ .bs-match-teams{gap:9px}
+}
+@media(max-width:480px){
+ .bs-league__head{padding:13px 12px}
+ .bs-match-row{padding:14px 12px;grid-template-columns:62px minmax(0,1fr);gap:10px}
+ .bs-match-date{font-size:.7rem}
+ .bs-team{font-size:.88rem}
+ .bs-match-teams{gap:6px}
+ .bs-vs{font-size:.63rem}
+ .bs-odds-cells{gap:6px}
+ .bs-odds-quote{padding:7px 3px}
+ .bs-odds-quote strong{font-size:.94rem!important}
+ .bs-odds-quote small{font-size:.61rem!important}
+}
+
 .bs-odds-modal[hidden]{display:none!important}
 .bs-odds-modal{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;padding:18px}
 .bs-odds-modal__backdrop{position:absolute;inset:0;background:rgba(0,0,0,.78)}
@@ -445,17 +489,15 @@
 
   function makeBtn(o, matchIndex, outcome) {
     if (!o || !Number.isFinite(Number(o.value)) || Number(o.value) <= 1) {
-      return '<span style="min-width:55px;text-align:center;color:var(--muted)">-</span>';
+      return '<span class="bs-odds-empty" aria-label="Quota non disponibile">–</span>';
     }
     var quota = Number(o.value).toFixed(2);
     var bookmaker = escapeHtml(o.bookmaker || 'Fonte non disponibile');
     return '<button type="button" class="bs-odds-quote" data-match-index="' + matchIndex +
       '" data-outcome="' + outcome + '" aria-label="Dettagli quota ' + quota +
       ', bookmaker ' + bookmaker + '">' +
-      '<strong style="color:var(--text);font-size:.88rem">' + quota + '</strong>' +
-      '<small title="' + bookmaker + '" style="color:var(--muted);font-size:.58rem;max-width:95px;' +
-      'overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + bookmaker +
-      '</small></button>';
+      '<strong>' + quota + '</strong>' +
+      '<small title="' + bookmaker + '">' + bookmaker + '</small></button>';
   }
 
   var modal = document.getElementById('bs-odds-modal');
@@ -520,35 +562,35 @@
     }
     var byLeague = {};
     matches.forEach(function(m){
-      if (!byLeague[m.league]) byLeague[m.league] = [];
-      byLeague[m.league].push(m);
+      var league = String(m.league || 'Altri eventi');
+      if (!Object.prototype.hasOwnProperty.call(byLeague, league)) byLeague[league] = [];
+      byLeague[league].push(m);
     });
-    var cfg = sportConfig[sport] || sportConfig['calcio'];
-    var showX = cfg.headers.indexOf('X') > -1;
+    var cfg = sportConfig[sport] || sportConfig.calcio;
+    var showX = cfg.headers.indexOf('X') !== -1;
     var out = '';
     Object.keys(byLeague).forEach(function(league){
       var ms = byLeague[league];
-      out += '<div style="margin-bottom:20px"><div style="background:var(--bg3);padding:10px 16px;border-radius:10px 10px 0 0;font-family:Syne,sans-serif;font-weight:700;font-size:.88rem;border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">';
-      out += '<span>' + league + '</span>';
-      out += '<span style="display:flex;gap:' + (showX?'30px':'50px') + ';font-size:.7rem;color:var(--muted);font-weight:400">';
-      out += '<span style="min-width:55px;text-align:center">1</span>';
-      if (showX) out += '<span style="min-width:55px;text-align:center">X</span>';
-      out += '<span style="min-width:55px;text-align:center">2</span></span></div>';
+      out += '<section class="bs-league" data-outcomes="' + (showX ? '3' : '2') + '">';
+      out += '<div class="bs-league__head"><div class="bs-league__name">' + escapeHtml(league) + '</div>';
+      out += '<div class="bs-odds-labels" aria-hidden="true"><span>1</span>' + (showX ? '<span>X</span>' : '') + '<span>2</span></div></div>';
       ms.slice(0,8).forEach(function(m){
         var matchIndex = allData.matches.indexOf(m);
         var d = new Date(m.start);
-        var day = d.toLocaleDateString('it-IT',{weekday:'short',day:'numeric',month:'short'});
-        var time = d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
-        out += '<div style="display:flex;align-items:center;padding:10px 16px;border:1px solid var(--border);border-top:0;gap:10px;font-size:.82rem">';
-        out += '<div style="min-width:45px;color:var(--muted);font-size:.7rem"><div>' + day + '</div><div>' + time + '</div></div>';
-        out += '<div style="flex:1"><div style="font-weight:600">' + m.home + '</div><div style="color:var(--muted);font-size:.75rem">' + m.away + '</div></div>';
-        out += '<div style="display:flex;gap:8px;align-items:center">';
-        out += makeBtn(m.odds['1'], matchIndex, '1');
-        if (showX) out += makeBtn(m.odds['X'], matchIndex, 'X');
-        out += makeBtn(m.odds['2'], matchIndex, '2');
+        var validDate = Number.isFinite(d.getTime());
+        var day = validDate ? d.toLocaleDateString('it-IT',{weekday:'short',day:'numeric',month:'short'}) : 'Data n/d';
+        var time = validDate ? d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'}) : '–';
+        var odds = m.odds || {};
+        out += '<div class="bs-match-row">';
+        out += '<div class="bs-match-date"><time>' + escapeHtml(day) + '</time><time>' + escapeHtml(time) + '</time></div>';
+        out += '<div class="bs-match-teams"><span class="bs-team bs-team--home">' + escapeHtml(m.home || 'Squadra di casa') + '</span><span class="bs-vs">VS</span><span class="bs-team bs-team--away">' + escapeHtml(m.away || 'Squadra ospite') + '</span></div>';
+        out += '<div class="bs-odds-cells">';
+        out += makeBtn(odds['1'], matchIndex, '1');
+        if (showX) out += makeBtn(odds['X'], matchIndex, 'X');
+        out += makeBtn(odds['2'], matchIndex, '2');
         out += '</div></div>';
       });
-      out += '</div>';
+      out += '</section>';
     });
     el.innerHTML = out;
   }
