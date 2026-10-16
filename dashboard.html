@@ -80,6 +80,14 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .acc-label{color:var(--muted);text-transform:uppercase;font-size:.72rem;letter-spacing:.06em}
 .acc-val{font-weight:500}
 
+/* MULTISPORT */
+.sport-catalog{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px;margin:15px 0 22px}
+.sport-tile{border:1px solid var(--border);background:rgba(255,255,255,.025);border-radius:12px;padding:12px;text-align:center;font-size:.78rem;color:var(--text)}
+.sport-tile .sport-emoji{font-size:1.5rem;display:block;margin-bottom:7px}
+.sport-tile small{display:block;color:#ffd96a;margin-top:6px;font-size:.67rem}
+.sport-select{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);width:100%;font:inherit}
+.sport-select option{background:var(--bg2)}
+.sport-status{border:1px solid rgba(255,214,0,.25);background:rgba(255,214,0,.045);border-radius:10px;padding:14px;color:#f1d891;font-size:.83rem;line-height:1.6;margin:15px 0}
 /* COMBO ANALISI */
 .combo-full{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:24px}
 .event-row-label{display:block;font-size:.72rem;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em}
@@ -229,14 +237,17 @@ input,select{max-width:100%}input:focus,select:focus{border-color:#00e676!import
     <!-- ANALISI COMBINATA -->
     <div class="combo-full">
       <div class="section-title"><i class="fas fa-bolt"></i> Storm Analysis <span class="bs-method-tag">STIMA INDICATIVA</span></div>
-      <p class="bs-combo-intro">Componi le tue selezioni e consulta una stima orientativa. Il risultato non garantisce un esito.</p>
+      <p class="bs-combo-intro">Esplora tutti gli sport e prepara le tue analisi. Le percentuali sono disponibili soltanto con dati aggiornati, tracciabili e un modello verificato per lo sport selezionato.</p>
+      <div class="section-title" style="font-size:.88rem;margin-bottom:10px"><i class="fas fa-layer-group"></i> Catalogo sportivo</div>
+      <div id="sport-catalog" class="sport-catalog"></div>
+      <div class="sport-status" id="sport-status" role="status">Nessun modello sportivo è attualmente certificato per generare percentuali: puoi esplorare e selezionare gli sport, ma non verranno create stime senza dati sufficienti.</div>
       <div id="combo-events"></div>
       <div style="display:flex;gap:10px;margin-top:4px">
         <button class="btn btn-outline" onclick="addComboEvent()" style="flex:1">
           <i class="fas fa-plus"></i> Aggiungi evento
         </button>
         <button class="btn btn-primary" id="combo-btn" onclick="runComboAnalysis()" style="flex:2">
-          <i class="fas fa-bolt"></i> Analizza Combinata
+          <i class="fas fa-shield-alt"></i> Verifica disponibilità analisi
         </button>
       </div>
       <div class="combo-result" id="combo-result">
@@ -244,7 +255,7 @@ input,select{max-width:100%}input:focus,select:focus{border-color:#00e676!import
         <div class="combo-bar-track"><div class="combo-bar-fill" id="combo-fill"></div></div>
         <div class="combo-verdict" id="combo-verdict"></div>
         <div id="combo-events-summary"></div>
-        <p class="bs-method-note">Il valore è una stima basata su parametri del modello, non una probabilità reale validata. Se i dati sono insufficienti, il modello può utilizzare valori sostitutivi. <a href="/metodologia.html">Scopri il metodo e i limiti</a>.</p>
+        <p class="bs-method-note">Le analisi vengono abilitate solo dopo la verifica di fonti, aggiornamento dei dati e validità del metodo. <a href="/metodologia.html">Scopri il metodo e i limiti</a>.</p>
       </div>
     </div>
 
@@ -264,7 +275,7 @@ input,select{max-width:100%}input:focus,select:focus{border-color:#00e676!import
       <div class="section-card">
         <div class="section-title"><i class="fas fa-chart-bar"></i> Le tue statistiche</div>
         <div class="stat-bar-row">
-          <div class="stat-bar-label"><span>Tasso successo</span><span class="stat-bar-val" id="success-rate">—</span></div>
+          <div class="stat-bar-label"><span>Analisi storiche con stima ≥65%</span><span class="stat-bar-val" id="success-rate">—</span></div>
           <div class="bar-track"><div class="bar-fill" id="success-fill"></div></div>
         </div>
         <div class="stat-bar-row">
@@ -272,7 +283,7 @@ input,select{max-width:100%}input:focus,select:focus{border-color:#00e676!import
           <div class="bar-track"><div class="bar-fill" id="monthly-fill"></div></div>
         </div>
         <div class="stat-bar-row">
-          <div class="stat-bar-label"><span>Probabilità media</span><span class="stat-bar-val" id="avg-pct">—</span></div>
+          <div class="stat-bar-label"><span>Media delle stime storiche</span><span class="stat-bar-val" id="avg-pct">—</span></div>
           <div class="bar-track"><div class="bar-fill" id="avg-fill"></div></div>
         </div>
       </div>
@@ -405,7 +416,7 @@ function renderAnalyses(analyses) {
     const pct = a.result_pct || 0, color = pct>=70?'var(--green)':pct>=50?'#ffd600':'#ff7043';
     const date = new Date(a.created_at).toLocaleDateString('it-IT',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
     const evts = Array.isArray(a.events) ? a.events.map(e=>`${e.home} vs ${e.away}`).join(', ') : '—';
-    return `<div class="analysis-item"><div style="flex:1;min-width:0"><div style="font-size:.875rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${evts}</div><div class="analysis-date">${date}</div></div><div class="analysis-pct" style="color:${color}">${pct}%</div></div>`;
+    return `<div class="analysis-item"><div style="flex:1;min-width:0"><div style="font-size:.875rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${evts}</div><div class="analysis-date">${date} · Stima storica non validata</div></div><div class="analysis-pct" style="color:${color}">${pct}%</div></div>`;
   }).join('');
 }
 
@@ -466,62 +477,66 @@ function updateLeague(eid) {
   ['home','away'].forEach(s=>{row.querySelector(`.${s}-input`).value=''; row.querySelector(`.${s}-team-id`).value='';});
 }
 
-// COMBO
+// MULTISPORT — catalogo descrittivo; nessuna percentuale non verificata.
+const BS_SPORTS = [
+  ['⚽','Calcio'],['🏀','Basket'],['🎾','Tennis'],['🏐','Pallavolo'],
+  ['🏒','Hockey su ghiaccio'],['⚾','Baseball'],['🏈','Football americano'],
+  ['🏉','Rugby'],['🥊','Boxe'],['🥋','MMA'],['🏎️','Formula 1'],
+  ['🏍️','Motociclismo'],['🏏','Cricket'],['🏸','Badminton'],
+  ['🏓','Tennis tavolo'],['🎯','Freccette'],['🎱','Biliardo'],
+  ['🤾','Pallamano'],['🏑','Hockey su prato'],['🚴','Ciclismo'],
+  ['⛳','Golf'],['🏊','Nuoto'],['⛷️','Sport invernali'],
+  ['🎮','Esport'],['🏆','Altri sport']
+];
+const BS_VERIFIED_MODELS = Object.freeze({}); // Attivare solo dopo integrazione e verifica dei dati.
 let comboCount=0;
-function addComboEvent() {
+function renderSportCatalog(){
+  const c=document.getElementById('sport-catalog');if(!c)return;
+  c.replaceChildren();
+  BS_SPORTS.forEach(([emoji,name])=>{
+    const tile=document.createElement('div');tile.className='sport-tile';
+    const symbol=document.createElement('span');symbol.className='sport-emoji';symbol.textContent=emoji;
+    const label=document.createElement('span');label.textContent=name;
+    const status=document.createElement('small');status.textContent='Dati da verificare';
+    tile.append(symbol,label,status);c.appendChild(tile);
+  });
+}
+function addComboEvent(){
   const c=document.getElementById('combo-events');
   if(c.children.length>=5){showToast('Massimo 5 eventi','error');return;}
-  comboCount++;
-  const id=comboCount;
-  const leagues=(typeof BETSTORM_TEAMS!=='undefined')?Object.keys(BETSTORM_TEAMS).map(l=>`<option value="${l}">${l}</option>`).join(''):'';
-  const bets=BET_TYPES.map(b=>`<option value="${b.value}">${b.label}</option>`).join('');
-  const row=document.createElement('div');
-  row.className='event-row'; row.dataset.id=id;
-  row.innerHTML=`
-    <div><span class="event-row-label">Squadra Casa</span><div class="team-autocomplete"><input type="text" class="team-input home-input" placeholder="Cerca in tutti i campionati..." autocomplete="off" oninput="filterTeams(${id},'home')" onfocus="showDropdown(${id},'home')" onblur="hideDropdown(${id},'home',300)"><input type="hidden" class="home-team-id"><div class="autocomplete-dropdown" id="home-drop-${id}"></div></div></div>
-    <div><span class="event-row-label">Squadra Ospite</span><div class="team-autocomplete"><input type="text" class="team-input away-input" placeholder="Cerca in tutti i campionati..." autocomplete="off" oninput="filterTeams(${id},'away')" onfocus="showDropdown(${id},'away')" onblur="hideDropdown(${id},'away',300)"><input type="hidden" class="away-team-id"><div class="autocomplete-dropdown" id="away-drop-${id}"></div></div></div>
-    <div><span class="event-row-label">Scommessa</span><select class="bet-select" style="width:100%">${bets}</select></div>
-    <div><button class="btn-remove" onclick="this.closest('.event-row').remove()" title="Rimuovi"><i class="fas fa-times"></i></button></div>`;
-  c.appendChild(row);
+  const id=++comboCount;
+  const row=document.createElement('div');row.className='event-row';row.dataset.id=id;
+  row.style.gridTemplateColumns='1fr 1fr 1fr auto';
+  const sportCol=document.createElement('div');
+  const sportLabel=document.createElement('label');sportLabel.className='event-row-label';sportLabel.textContent='Sport';
+  const sportSelect=document.createElement('select');sportSelect.className='sport-select';
+  BS_SPORTS.forEach(([,name])=>{const opt=document.createElement('option');opt.value=name;opt.textContent=name;sportSelect.appendChild(opt);});
+  sportCol.append(sportLabel,sportSelect);
+  const eventCol=document.createElement('div');
+  const eventLabel=document.createElement('label');eventLabel.className='event-row-label';eventLabel.textContent='Evento / Incontro';
+  const eventInput=document.createElement('input');eventInput.className='team-input';eventInput.placeholder='Es. Squadra A - Squadra B';eventInput.maxLength=120;
+  eventCol.append(eventLabel,eventInput);
+  const infoCol=document.createElement('div');
+  const infoLabel=document.createElement('span');infoLabel.className='event-row-label';infoLabel.textContent='Stato analisi';
+  const info=document.createElement('div');info.style.cssText='padding:10px 0;color:#ffd96a;font-size:.8rem';info.textContent='In attesa di dati verificati';
+  infoCol.append(infoLabel,info);
+  const removeCol=document.createElement('div');
+  const remove=document.createElement('button');remove.className='btn-remove';remove.type='button';remove.title='Rimuovi evento';
+  remove.innerHTML='<i class="fas fa-times"></i>';remove.onclick=()=>row.remove();removeCol.appendChild(remove);
+  row.append(sportCol,eventCol,infoCol,removeCol);c.appendChild(row);
 }
-
-function calcProb(h, a, v) {
-  const bt = BET_TYPES.find(b => b.value === v);
-  if (!bt) return 0.55;
-  // Usa dati reali se disponibili, altrimenti valori medi
-  const home = h || { goals_scored_avg:1.5, goals_conceded_avg:1.2, home_win_pct:0.48, away_win_pct:0.35 };
-  const away = a || { goals_scored_avg:1.3, goals_conceded_avg:1.4, home_win_pct:0.48, away_win_pct:0.33 };
-  try {
-    const raw = bt.factor(home, away);
-    return Math.min(0.92, Math.max(0.18, raw));
-  } catch(_) { return 0.55; }
-}
-
-async function runComboAnalysis() {
-  const rows=document.querySelectorAll('.event-row');
+function runComboAnalysis(){
+  const rows=[...document.querySelectorAll('.event-row')];
   if(!rows.length){showToast('Aggiungi almeno un evento','error');return;}
-  const btn=document.getElementById('combo-btn');
-  btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Analisi in corso...';
-  const events=[]; let combined=1;
-  rows.forEach(row=>{
-    const hId=row.querySelector('.home-team-id')?.value||'', aId=row.querySelector('.away-team-id')?.value||'', bv=row.querySelector('.bet-select')?.value||'gg';
-    const hN=row.querySelector('.home-input')?.value.trim()||'Squadra A', aN=row.querySelector('.away-input')?.value.trim()||'Squadra B';
-    const prob=calcProb(_teamById(hId),_teamById(aId),bv);
-    combined*=prob; events.push({home:hN,away:aN,bet:BET_TYPES.find(b=>b.value===bv)?.label||bv,prob:Math.round(prob*100)});
-  });
-  if(rows.length>1) combined*=Math.pow(0.97,rows.length-1);
-  const pct=Math.min(92,Math.max(18,Math.round(combined*100)));
-  await new Promise(r=>setTimeout(r,1000));
-  btn.disabled=false; btn.innerHTML='<i class="fas fa-bolt"></i> Analizza Combinata';
-  const res=document.getElementById('combo-result'); res.style.display='block';
-  const color=pct>=70?'var(--green)':pct>=50?'#ffd600':'#ff5252';
-  const grad=pct>=70?'linear-gradient(90deg,#00b248,#00e676)':pct>=50?'linear-gradient(90deg,#f57f17,#ffd600)':'linear-gradient(90deg,#b71c1c,#ff5252)';
-  document.getElementById('combo-pct-display').textContent=pct+'%'; document.getElementById('combo-pct-display').style.color=color;
-  const fill=document.getElementById('combo-fill'); fill.style.background=grad; fill.style.width='0'; setTimeout(()=>fill.style.width=pct+'%',50);
-  document.getElementById('combo-verdict').innerHTML=pct>=70?`Stima indicativa elevata: ${pct}%`:pct>=50?`Stima indicativa intermedia: ${pct}%`:`Stima indicativa bassa: ${pct}%`;
-  document.getElementById('combo-events-summary').innerHTML=events.map(e=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:.82rem"><span>${e.home} vs ${e.away}</span><span style="color:var(--muted)">${e.bet}</span><span style="color:${e.prob>=70?'var(--green)':e.prob>=50?'#ffd600':'#ff5252'};font-weight:600">${e.prob}%</span></div>`).join('');
-  if(currentUser) sb.from('analyses').insert({user_id:currentUser.id,events,result_pct:pct}).then(()=>sb.from('analyses').select('*').eq('user_id',currentUser.id).order('created_at',{ascending:false}).limit(20).then(r=>{renderAnalyses(r.data);renderStats(r.data);}));
+  const incomplete=rows.some(row=>!row.querySelector('input.team-input').value.trim());
+  if(incomplete){showToast('Inserisci il nome di ogni evento prima di verificare','error');return;}
+  document.getElementById('combo-result').style.display='none';
+  const selected=[...new Set(rows.map(row=>row.querySelector('.sport-select').value))];
+  const msg='Analisi non disponibile per '+selected.join(', ')+': mancano dati sportivi verificati e un modello validato. Nessuna percentuale è stata generata o salvata.';
+  const status=document.getElementById('sport-status');status.textContent=msg;status.scrollIntoView({behavior:'smooth',block:'nearest'});
+  showToast('Dati insufficienti: analisi non disponibile','error');
 }
+renderSportCatalog();
 
 // LOGOUT / DELETE
 async function handleLogout() { bsClear(); try{await sb.auth.signOut();}catch(_){} window.location.href='/'; }
