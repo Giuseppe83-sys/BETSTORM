@@ -243,6 +243,19 @@ input,select{max-width:100%}input:focus,select:focus{border-color:#00e676!import
 .st-result{flex:1;min-width:0;text-align:center;padding:7px 2px;border-radius:7px;font-size:.75rem;font-weight:800;background:rgba(255,255,255,.06)}
 .st-result.win{color:#00e676}.st-result.draw{color:#ffd96a}.st-result.loss{color:#ff7777}
 @media(max-width:600px){.st-grid{grid-template-columns:1fr}.st-card{padding:12px}}
+
+/* BASKET DATA CENTER — dati NBA verificati tramite proxy Vercel */
+.bd-tools{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin:16px 0}
+.bd-tools>div{flex:1;min-width:170px}
+.bd-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:14px 0}
+.bd-summary>div{padding:14px;border:1px solid var(--border);border-radius:11px;background:var(--glass)}
+.bd-summary strong{display:block;color:var(--green);font:800 1.05rem 'Syne',sans-serif;margin-top:7px;overflow-wrap:anywhere}
+.bd-teams{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0 20px}
+.bd-team{border:1px solid var(--border);border-radius:10px;background:rgba(255,255,255,.025);padding:12px;min-width:0}
+.bd-team strong{display:block;font-size:.83rem;overflow-wrap:anywhere}.bd-team small{color:var(--muted);font-size:.73rem;display:block;margin-top:5px}
+.bd-notice{padding:12px 14px;background:rgba(255,214,0,.045);border:1px solid rgba(255,214,0,.2);border-radius:10px;color:#f1d891;font-size:.81rem;line-height:1.65;margin:12px 0}
+@media(max-width:700px){.bd-teams{grid-template-columns:repeat(2,minmax(0,1fr))}.bd-summary{grid-template-columns:1fr 1fr}}
+@media(max-width:430px){.bd-teams{grid-template-columns:1fr}.bd-summary{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -347,6 +360,31 @@ input,select{max-width:100%}input:focus,select:focus{border-color:#00e676!import
       <div class="fd-subtitle">Classifica</div>
       <div class="fd-table-wrap" id="fd-standings"><p class="fd-message">La classifica apparirà se disponibile nella copertura gratuita.</p></div>
       <p class="bs-method-note">Dati: football-data.org, tramite <code>/api/football</code>. La copertura dipende dal piano API e dalla competizione. Le statistiche di questa sezione non abilitano automaticamente Storm Analysis: per le percentuali serve un modello distinto e verificato.</p>
+    </section>
+
+
+    <!-- DATI REALI BASKET — NBA via BALLDONTLIE -->
+    <section class="combo-full" id="bd-panel" aria-labelledby="bd-title">
+      <div class="section-title" id="bd-title"><i class="fas fa-basketball-ball"></i> Basket Data Center <span class="bs-method-tag">DATI NBA REALI</span></div>
+      <p class="bs-combo-intro">Esplora le squadre NBA e, se incluse nel tuo piano API, il calendario e i risultati. Dati recuperati dal server BetStorm tramite BALLDONTLIE, senza pronostici o probabilità.</p>
+      <div class="bd-tools">
+        <div><label for="bd-season" class="event-row-label">Stagione NBA (anno di inizio)</label><select id="bd-season" class="sport-select"><option value="2026">2026–27</option><option value="2025">2025–26</option><option value="2024">2024–25</option></select></div>
+        <button type="button" class="btn btn-primary" id="bd-refresh"><i class="fas fa-sync-alt"></i> Aggiorna NBA</button>
+      </div>
+      <div id="bd-state" class="fd-message" role="status" aria-live="polite">Caricamento dati NBA in attesa...</div>
+      <div class="bd-summary">
+        <div><span class="stat-label">Fonte</span><strong>BALLDONTLIE</strong></div>
+        <div><span class="stat-label">Squadre ricevute</span><strong id="bd-team-count">—</strong></div>
+        <div><span class="stat-label">Ultimo aggiornamento</span><strong id="bd-updated" style="font-size:.83rem">—</strong></div>
+      </div>
+      <div class="fd-subtitle">Squadre NBA</div>
+      <div id="bd-team-status" class="fd-message">Caricamento elenco squadre...</div>
+      <div id="bd-teams" class="bd-teams"></div>
+      <div class="fd-subtitle">Calendario e risultati <span id="bd-games-label" style="color:var(--muted);font-size:.75rem;font-weight:400"></span></div>
+      <div id="bd-games-status" class="fd-message">La disponibilità delle partite dipende dal piano API.</div>
+      <div id="bd-games" class="fd-table-wrap"></div>
+      <button type="button" class="btn btn-outline" id="bd-more" style="display:none;margin-top:12px"><i class="fas fa-arrow-down"></i> Carica altre partite</button>
+      <p class="bs-method-note">Fonte: BALLDONTLIE tramite <code>/api/basket</code>. Le classifiche e le statistiche avanzate non sono mostrate perché non sono garantite dal piano gratuito. La stagione è identificata dall'anno in cui inizia. Le partite sono riportate come ricevute dalla fonte; i dati mancanti non vengono ricostruiti. Nessuna previsione.</p>
     </section>
 
     <div class="grid-2">
@@ -497,6 +535,7 @@ async function loadDashboard() {
     renderStats(analyses);
     if (!document.getElementById('combo-events').children.length) addComboEvent();
     fdInit();
+    bdInit();
   } catch(e) { console.error(e); showNotLogged(); }
 }
 
@@ -890,6 +929,115 @@ async function fdLoadSelected(){
     if(receivedAt)fdText('fd-updated',fdDate(receivedAt));
     fdText('fd-state',matchesError&&standingsError?'Dati non disponibili per questa competizione: '+matchesError+'; '+standingsError:matchesError||standingsError?'Dati parziali: '+(matchesError||standingsError):'Dati ricevuti dalla fonte. Ultima richiesta: '+fdDate(receivedAt)+'.');
   } finally {refresh.disabled=false;}
+}
+
+
+// BASKET DATA CENTER — sola consultazione di dati NBA ricevuti dal proxy server.
+let bdReady=false;
+let bdNextCursor=null;
+let bdLoading=false;
+let bdRequestVersion=0;
+const bdEl=id=>document.getElementById(id);
+function bdSet(id,value){const el=bdEl(id);if(el)el.textContent=String(value);}
+function bdDate(value){
+  if(!value)return '—';
+  const d=new Date(value);return Number.isNaN(d.getTime())?'—':d.toLocaleString('it-IT',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+}
+async function bdFetch(type,params={}){
+  const query=new URLSearchParams({type,...params});
+  const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),13000);
+  try{
+    const response=await fetch('/api/basket?'+query.toString(),{headers:{Accept:'application/json'},signal:controller.signal});
+    let payload;try{payload=await response.json();}catch(_){throw new Error('Risposta NBA non valida.');}
+    if(!response.ok)throw new Error(payload?.error||'Richiesta NBA non riuscita ('+response.status+').');
+    if(payload?.source!=='balldontlie'||!payload?.data||!Array.isArray(payload.data.data))throw new Error('Formato dei dati NBA inatteso.');
+    return payload;
+  }finally{clearTimeout(timer);}
+}
+function bdRenderTeams(teams){
+  const root=bdEl('bd-teams');root.replaceChildren();
+  const filtered=teams.filter(t=>t&&t.id!=null&&t.full_name);
+  filtered.sort((a,b)=>String(a.full_name).localeCompare(String(b.full_name),'it'));
+  for(const team of filtered){
+    const card=document.createElement('div');card.className='bd-team';
+    const name=document.createElement('strong');name.textContent=team.full_name;
+    const info=document.createElement('small');info.textContent=[team.abbreviation,team.conference,team.division].filter(Boolean).join(' · ')||'Informazioni aggiuntive non disponibili';
+    card.append(name,info);root.appendChild(card);
+  }
+  bdSet('bd-team-count',filtered.length);
+  bdSet('bd-team-status',filtered.length?'Squadre ricevute dalla fonte: '+filtered.length+'.':'Nessuna squadra disponibile nella risposta.');
+}
+function bdRenderGames(games,append){
+  const root=bdEl('bd-games');
+  let table=root.querySelector('table'),tbody=table?.querySelector('tbody');
+  if(!append||!table){root.replaceChildren();table=document.createElement('table');table.className='fd-table';
+    const head=document.createElement('thead'),tr=document.createElement('tr');
+    ['Data','Casa','Ospite','Punteggio','Stato'].forEach(label=>fdCell(tr,label,'th'));
+    head.appendChild(tr);table.appendChild(head);tbody=document.createElement('tbody');table.appendChild(tbody);root.appendChild(table);
+  }
+  for(const game of games){
+    if(!game||game.id==null)continue;
+    const tr=document.createElement('tr');
+    const home=game.home_team?.full_name||game.home_team?.abbreviation||'—';
+    const away=game.visitor_team?.full_name||game.visitor_team?.abbreviation||'—';
+    const hs=game.home_team_score,as=game.visitor_team_score;
+    const hasScores=Number.isFinite(hs)&&Number.isFinite(as)&&((hs>0||as>0)||String(game.status||'').toLowerCase().includes('final'));
+    const status=String(game.status||'—');
+    const date=game.datetime||game.date;
+    [bdDate(date),home,away,hasScores?hs+' – '+as:'—',status].forEach(v=>fdCell(tr,v));
+    tbody.appendChild(tr);
+  }
+}
+async function bdLoadTeams(){
+  bdSet('bd-team-status','Caricamento squadre NBA...');
+  try{
+    const result=await bdFetch('teams');
+    bdRenderTeams(result.data.data);
+    bdSet('bd-updated',bdDate(result.fetched_at));
+    return true;
+  }catch(e){bdSet('bd-team-status','Squadre non disponibili: '+(e.message||'Errore di connessione'));bdSet('bd-team-count','—');return false;}
+}
+async function bdLoadGames(append=false){
+  if(bdLoading)return;
+  bdLoading=true;const version=bdRequestVersion;
+  const season=bdEl('bd-season').value;
+  const more=bdEl('bd-more');more.style.display='none';
+  bdSet('bd-games-status','Caricamento partite stagione '+season+'–'+String(Number(season)+1).slice(-2)+'...');
+  if(!append){bdNextCursor=null;bdEl('bd-games').replaceChildren();}
+  try{
+    const params={season};if(append&&bdNextCursor!=null)params.cursor=String(bdNextCursor);
+    const result=await bdFetch('games',params);
+    if(version!==bdRequestVersion)return;
+    const games=result.data.data;
+    bdRenderGames(games,append);
+    const cursor=result.data.meta?.next_cursor;
+    bdNextCursor=(cursor!==undefined&&cursor!==null&&/^\d+$/.test(String(cursor)))?String(cursor):null;
+    more.style.display=bdNextCursor?'inline-flex':'none';
+    bdSet('bd-games-label','(pagine fino a 100 partite, ordinate dalla fonte)');
+    bdSet('bd-games-status',games.length?'Ricevute '+games.length+' partite'+(append?' aggiuntive':'')+'. Usa “Carica altre partite” per continuare, se disponibile.':'Nessuna partita restituita per la stagione selezionata.');
+    bdSet('bd-updated',bdDate(result.fetched_at));
+  }catch(e){
+    if(version===bdRequestVersion){
+      bdSet('bd-games-status','Partite non disponibili: '+(e.message||'Errore di connessione')+'. Le squadre restano consultabili.');
+      if(!append)bdEl('bd-games').replaceChildren();
+    }
+  }finally{bdLoading=false;}
+}
+async function bdRefresh(){
+  bdRequestVersion++;
+  bdSet('bd-state','Aggiornamento NBA in corso...');
+  const button=bdEl('bd-refresh');button.disabled=true;
+  const ok=await bdLoadTeams();
+  await bdLoadGames(false);
+  bdSet('bd-state',ok?'Dati NBA caricati dalla fonte. La disponibilità delle partite dipende dal piano API.':'Fonte NBA parzialmente o temporaneamente non disponibile.');
+  button.disabled=false;
+}
+function bdInit(){
+  if(bdReady||!bdEl('bd-panel'))return;bdReady=true;
+  bdEl('bd-refresh').addEventListener('click',bdRefresh);
+  bdEl('bd-season').addEventListener('change',()=>{bdNextCursor=null;bdLoadGames(false);});
+  bdEl('bd-more').addEventListener('click',()=>{if(bdNextCursor!==null)bdLoadGames(true);});
+  bdRefresh();
 }
 
 renderSportCatalog();
