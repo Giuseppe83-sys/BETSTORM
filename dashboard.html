@@ -336,6 +336,18 @@ input,select{max-width:100%}input:focus,select:focus{border-color:#00e676!import
 .sw-meta{color:#b9cbdc;font-size:.74rem}.sw-teams{font-weight:700;font-size:.87rem;line-height:1.45;overflow-wrap:anywhere}.sw-open{color:var(--green);font-size:.74rem;font-weight:700}
 .sw-empty{color:var(--muted);font-size:.83rem;line-height:1.7;grid-column:1/-1}
 @media(max-width:650px){.sw-panel{padding:15px}.sw-list{grid-template-columns:1fr}}
+
+/* STORM TENNIS CENTER */
+.tn-tools{display:flex;gap:12px;align-items:end;flex-wrap:wrap;margin:16px 0}
+.tn-tools>div{flex:1;min-width:170px}
+.tn-status{color:var(--muted);font-size:.84rem;line-height:1.7;margin:12px 0}
+.tn-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin-top:14px}
+.tn-match{padding:15px;text-align:left;border:1px solid var(--border);border-radius:12px;background:var(--glass);color:var(--text);cursor:pointer;font:inherit}
+.tn-match:hover,.tn-match:focus-visible{border-color:var(--green);outline:none}
+.tn-match strong{display:block;margin:8px 0;font-size:.88rem;line-height:1.5}
+.tn-match small{color:var(--muted);font-size:.73rem;line-height:1.6}
+.tn-center{margin-top:18px;border:1px solid rgba(0,230,118,.25);border-radius:13px;padding:18px;background:rgba(0,230,118,.035)}
+@media(max-width:650px){.tn-list{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -383,6 +395,7 @@ input,select{max-width:100%}input:focus,select:focus{border-color:#00e676!import
       <div class="bs-sport-buttons" role="group" aria-label="Sport disponibili">
         <button type="button" class="bs-sport-choice" data-sport="calcio" aria-pressed="true">⚽ Calcio</button>
         <button type="button" class="bs-sport-choice" data-sport="basket" aria-pressed="false">🏀 Basket NBA</button>
+        <button type="button" class="bs-sport-choice" data-sport="tennis" aria-pressed="false">🎾 Tennis ATP/WTA</button>
       </div>
     </nav>
 
@@ -518,6 +531,24 @@ input,select{max-width:100%}input:focus,select:focus{border-color:#00e676!import
       <div id="bd-match-center" class="bd-match-center" aria-live="polite"><p class="fd-message">Seleziona una partita NBA nella tabella per confrontare le squadre con i risultati già caricati.</p></div>
       <button type="button" class="btn btn-outline" id="bd-more" style="display:none;margin-top:12px"><i class="fas fa-arrow-down"></i> Carica altre partite</button>
       <p class="bs-method-note">Fonte: BALLDONTLIE tramite <code>/api/basket</code>. Le classifiche e le statistiche avanzate non sono mostrate perché non sono garantite dal piano gratuito. La stagione è identificata dall'anno in cui inizia. Le partite sono riportate come ricevute dalla fonte; i dati mancanti non vengono ricostruiti. Nessuna previsione.</p>
+    </section>
+
+
+    <!-- STORM TENNIS CENTER: dati soltanto da API server verificata -->
+    <section class="combo-full bs-sport-panel" id="tn-panel" hidden aria-labelledby="tn-title">
+      <div class="section-title" id="tn-title"><i class="fas fa-table-tennis"></i> Storm Tennis Center <span class="bs-method-tag">ATP / WTA</span></div>
+      <p class="bs-combo-intro">Calendario e risultati del tennis professionistico. I dati vengono visualizzati soltanto quando è configurata una fonte API autorizzata sul server BetStorm: nessun incontro dimostrativo viene spacciato per reale.</p>
+      <div class="tn-tools">
+        <div><label for="tn-tour" class="event-row-label">Circuito</label><select id="tn-tour" class="sport-select"><option value="all">ATP e WTA</option><option value="atp">ATP</option><option value="wta">WTA</option></select></div>
+        <div><label for="tn-date" class="event-row-label">Giorno (ora italiana)</label><input type="date" id="tn-date" class="bs-date-input" style="width:100%;max-width:none"></div>
+        <button type="button" class="btn btn-primary" id="tn-refresh"><i class="fas fa-sync-alt"></i> Aggiorna tennis</button>
+      </div>
+      <div id="tn-status" class="tn-status" role="status" aria-live="polite">Seleziona Tennis per verificare la disponibilità della fonte.</div>
+      <div id="tn-count" class="bs-calendar-count">0 incontri caricati</div>
+      <div id="tn-matches" class="tn-list"></div>
+      <div class="fd-subtitle"><i class="fas fa-chart-line" style="color:var(--green)"></i> Storm Tennis Match Center</div>
+      <div id="tn-center" class="tn-center" aria-live="polite"><p class="fd-message">Seleziona un incontro disponibile per vedere i dettagli effettivamente forniti dalla fonte.</p></div>
+      <p class="bs-method-note">Integrazione predisposta per <code>/api/tennis</code>. Il servizio server e la relativa chiave API, se richiesta, devono essere configurati separatamente. Senza una fonte collegata, BetStorm mostra un messaggio trasparente anziché risultati inventati.</p>
     </section>
 
     <div class="grid-2">
@@ -1324,12 +1355,13 @@ function bdInit(){
 function bsSportInit(){
   const buttons=[...document.querySelectorAll('.bs-sport-choice')];
   const select=sport=>{
-    if(!['calcio','basket'].includes(sport))return;
+    if(!['calcio','basket','tennis'].includes(sport))return;
     buttons.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.sport===sport)));
     fdEl('fd-panel').hidden=sport!=='calcio';
     bdEl('bd-panel').hidden=sport!=='basket';
+    document.getElementById('tn-panel').hidden=sport!=='tennis';
     try{sessionStorage.setItem('bs_data_sport',sport);}catch(_){}
-    if(sport==='calcio')fdInit();else bdInit();
+    if(sport==='calcio')fdInit();else if(sport==='basket')bdInit();else tnInit();
   };
   buttons.forEach(b=>b.addEventListener('click',()=>select(b.dataset.sport)));
   let initial='calcio';try{initial=sessionStorage.getItem('bs_data_sport')||'calcio';}catch(_){}
@@ -1478,6 +1510,61 @@ function swOpen(item){
   if(item.sport==='fd')fdShowMatch(item.id);else bdOpenMatch(item.id);
   const target=document.getElementById(item.sport==='fd'?'fd-match-center':'bd-match-center');
   if(target)target.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+
+// Tennis: client API. Richiede /api/tennis sul server; nessun dato fittizio.
+let tnReady=false,tnMatches=[];
+const tnGet=id=>document.getElementById(id);
+const tnText=v=>String(v==null?'':v);
+function tnInit(){
+  if(tnReady)return;tnReady=true;
+  tnGet('tn-date').value=bsDay(new Date());
+  tnGet('tn-refresh').addEventListener('click',tnLoad);
+  tnGet('tn-date').addEventListener('change',tnLoad);
+  tnGet('tn-tour').addEventListener('change',tnLoad);
+  tnLoad();
+}
+async function tnLoad(){
+  const status=tnGet('tn-status'),root=tnGet('tn-matches');
+  root.replaceChildren();tnMatches=[];tnGet('tn-count').textContent='0 incontri caricati';
+  tnGet('tn-center').textContent='Seleziona un incontro per visualizzare i dettagli disponibili.';
+  status.textContent='Caricamento dati tennis dalla fonte server...';
+  const url='/api/tennis?date='+encodeURIComponent(tnGet('tn-date').value)+'&tour='+encodeURIComponent(tnGet('tn-tour').value);
+  try{
+    const response=await fetch(url,{headers:{Accept:'application/json'}});
+    if(!response.ok){
+      status.textContent=response.status===404?'Fonte tennis non ancora configurata: occorre aggiungere /api/tennis al progetto Vercel.':'Fonte tennis non disponibile (HTTP '+response.status+'). Verifica il collegamento API sul server.';
+      return;
+    }
+    const payload=await response.json();
+    if(!payload||!Array.isArray(payload.matches))throw Error('Formato API non riconosciuto');
+    tnMatches=payload.matches.filter(m=>m&&typeof m==='object'&&m.player1&&m.player2);
+    tnGet('tn-count').textContent=tnMatches.length+' incontri ricevuti';
+    status.textContent=tnMatches.length?'Fonte: '+tnText(payload.source||'API tennis configurata')+' · Incontri realmente ricevuti.':'Nessun incontro disponibile per questa data e circuito nella fonte collegata.';
+    tnMatches.forEach((m,index)=>{
+      const b=document.createElement('button');b.type='button';b.className='tn-match';
+      const meta=document.createElement('small');meta.textContent=[m.tour,m.tournament,m.round].filter(Boolean).map(tnText).join(' · ');
+      const names=document.createElement('strong');names.textContent=tnText(m.player1)+' — '+tnText(m.player2);
+      const details=document.createElement('small');
+      const date=m.startTime?new Date(m.startTime):null;
+      details.textContent=[date&&!isNaN(date.getTime())?date.toLocaleString('it-IT',{timeZone:'Europe/Rome',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'',m.status,m.score].filter(Boolean).map(tnText).join(' · ');
+      b.append(meta,names,details);b.addEventListener('click',()=>tnOpen(index));root.appendChild(b);
+    });
+  }catch(e){status.textContent='Impossibile leggere i dati tennis. La fonte API potrebbe non essere ancora configurata o non rispettare il formato previsto.';}
+}
+function tnOpen(index){
+  const m=tnMatches[index],root=tnGet('tn-center');if(!m)return;
+  root.replaceChildren();
+  const title=document.createElement('h3');title.textContent=tnText(m.player1)+' — '+tnText(m.player2);title.style.marginBottom='12px';root.appendChild(title);
+  for(const [label,value] of [['Circuito',m.tour],['Torneo',m.tournament],['Turno',m.round],['Stato',m.status],['Punteggio',m.score],['Superficie',m.surface]]){
+    if(value==null||value==='')continue;
+    const p=document.createElement('p');p.className='fd-metric';
+    const span=document.createElement('span');span.textContent=label;
+    const strong=document.createElement('strong');strong.textContent=tnText(value);
+    p.append(span,strong);root.appendChild(p);
+  }
+  const note=document.createElement('p');note.className='fd-small';note.textContent='Mostriamo soltanto le informazioni ricevute dalla fonte. Nessuna previsione di esito.';root.appendChild(note);
 }
 
 // LOGOUT / DELETE
