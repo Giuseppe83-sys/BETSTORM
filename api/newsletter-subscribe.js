@@ -57,11 +57,15 @@ module.exports = async function handler(req, res) {
     'RESEND_FROM_EMAIL'
   ];
 
-  if (required.some(name => !process.env[name])) {
-    return res.status(503).json({
-      error: 'Servizio temporaneamente non disponibile.'
-    });
-  }
+ const missing = required.filter(name => !process.env[name]);
+
+if (missing.length) {
+  console.error('[newsletter-subscribe] Variabili mancanti:', missing.join(', '));
+
+  return res.status(503).json({
+    error: 'Servizio temporaneamente non disponibile.'
+  });
+}
 
   try {
     const query = `newsletter?select=id,confirmed,unsubscribed&email=eq.${encodeURIComponent(address)}&limit=1`;
