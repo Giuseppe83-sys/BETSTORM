@@ -256,6 +256,24 @@ input,select{max-width:100%}input:focus,select:focus{border-color:#00e676!import
 .bd-notice{padding:12px 14px;background:rgba(255,214,0,.045);border:1px solid rgba(255,214,0,.2);border-radius:10px;color:#f1d891;font-size:.81rem;line-height:1.65;margin:12px 0}
 @media(max-width:700px){.bd-teams{grid-template-columns:repeat(2,minmax(0,1fr))}.bd-summary{grid-template-columns:1fr 1fr}}
 @media(max-width:430px){.bd-teams{grid-template-columns:1fr}.bd-summary{grid-template-columns:1fr}}
+
+/* NAVIGAZIONE SPORT E MATCH CENTER NBA */
+.bs-sport-picker{margin:0 0 25px;padding:22px;border:1px solid rgba(0,230,118,.26);border-radius:17px;background:linear-gradient(125deg,rgba(0,230,118,.07),rgba(16,25,35,.95))}
+.bs-sport-picker h2{font:800 1.05rem 'Syne',sans-serif;margin-bottom:7px}
+.bs-sport-picker p{font-size:.82rem;color:var(--muted);margin-bottom:14px;line-height:1.6}
+.bs-sport-buttons{display:flex;gap:10px;flex-wrap:wrap}
+.bs-sport-choice{padding:12px 19px;border:1px solid var(--border);border-radius:11px;background:rgba(255,255,255,.04);color:var(--text);font:700 .9rem 'DM Sans',sans-serif;cursor:pointer}
+.bs-sport-choice[aria-pressed="true"]{border-color:var(--green);background:rgba(0,230,118,.13);color:var(--green)}
+.bs-sport-panel[hidden]{display:none!important}
+.bd-match-row{cursor:pointer}.bd-match-row:hover,.bd-match-row:focus{background:rgba(0,230,118,.08);outline:1px solid rgba(0,230,118,.35)}
+.bd-match-row[aria-selected="true"]{background:rgba(0,230,118,.1)}
+.bd-match-center{border:1px solid rgba(0,230,118,.24);border-radius:14px;background:rgba(0,230,118,.035);padding:18px;margin-top:12px}
+.bd-match-center .bd-team-compare{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
+.bd-match-center .bd-team-compare>div{border:1px solid var(--border);padding:14px;border-radius:12px;min-width:0}
+.bd-match-center h4{font-family:'Syne',sans-serif;font-size:.86rem;overflow-wrap:anywhere;margin-bottom:10px}
+.bd-trend{display:flex;gap:5px;margin-top:10px;align-items:end;min-height:65px}
+.bd-trend span{flex:1;max-width:28px;min-width:5px;background:var(--green);border-radius:4px 4px 0 0}
+@media(max-width:550px){.bd-match-center .bd-team-compare{grid-template-columns:1fr}.bs-sport-choice{flex:1}}
 </style>
 </head>
 <body>
@@ -296,6 +314,15 @@ input,select{max-width:100%}input:focus,select:focus{border-color:#00e676!import
       <p>Il tuo spazio personale per esplorare le analisi e comprendere meglio i dati sportivi.</p>
       <div class="bs-dashboard-eyebrow"><i class="fas fa-chart-line"></i> BETSTORM / AREA PERSONALE <span>18+ · Uso informativo</span></div>
     </div>
+
+    <nav class="bs-sport-picker" aria-label="Selezione sport dati">
+      <h2><i class="fas fa-layer-group" style="color:var(--green)"></i> Quale sport vuoi visualizzare?</h2>
+      <p>Scegli uno sport per mostrare solo il suo centro dati. Le altre funzioni personali rimangono disponibili.</p>
+      <div class="bs-sport-buttons" role="group" aria-label="Sport disponibili">
+        <button type="button" class="bs-sport-choice" data-sport="calcio" aria-pressed="true">⚽ Calcio</button>
+        <button type="button" class="bs-sport-choice" data-sport="basket" aria-pressed="false">🏀 Basket NBA</button>
+      </div>
+    </nav>
 
     <div class="stats-grid">
       <div class="stat-card">
@@ -339,7 +366,7 @@ input,select{max-width:100%}input:focus,select:focus{border-color:#00e676!import
 
 
     <!-- DATI REALI CALCIO: la fonte non implica disponibilità di previsioni -->
-    <section class="combo-full" id="fd-panel" aria-labelledby="fd-title">
+    <section class="combo-full bs-sport-panel" id="fd-panel" aria-labelledby="fd-title">
       <div class="section-title" id="fd-title"><i class="fas fa-futbol"></i> Centro dati calcio <span class="bs-method-tag">FONTE ESTERNA</span></div>
       <p class="bs-combo-intro">Consulta calendari, risultati e classifiche recuperati tramite il server BetStorm da football-data.org. Questi sono dati sportivi, non previsioni di esito.</p>
       <div class="fd-tools">
@@ -364,7 +391,7 @@ input,select{max-width:100%}input:focus,select:focus{border-color:#00e676!import
 
 
     <!-- DATI REALI BASKET — NBA via BALLDONTLIE -->
-    <section class="combo-full" id="bd-panel" aria-labelledby="bd-title">
+    <section class="combo-full bs-sport-panel" id="bd-panel" hidden aria-labelledby="bd-title">
       <div class="section-title" id="bd-title"><i class="fas fa-basketball-ball"></i> Basket Data Center <span class="bs-method-tag">DATI NBA REALI</span></div>
       <p class="bs-combo-intro">Esplora le squadre NBA e, se incluse nel tuo piano API, il calendario e i risultati. Dati recuperati dal server BetStorm tramite BALLDONTLIE, senza pronostici o probabilità.</p>
       <div class="bd-tools">
@@ -383,6 +410,8 @@ input,select{max-width:100%}input:focus,select:focus{border-color:#00e676!import
       <div class="fd-subtitle">Calendario e risultati <span id="bd-games-label" style="color:var(--muted);font-size:.75rem;font-weight:400"></span></div>
       <div id="bd-games-status" class="fd-message">La disponibilità delle partite dipende dal piano API.</div>
       <div id="bd-games" class="fd-table-wrap"></div>
+      <div class="fd-subtitle"><i class="fas fa-chart-line" style="color:var(--green)"></i> Storm NBA Match Center</div>
+      <div id="bd-match-center" class="bd-match-center" aria-live="polite"><p class="fd-message">Seleziona una partita NBA nella tabella per confrontare le squadre con i risultati già caricati.</p></div>
       <button type="button" class="btn btn-outline" id="bd-more" style="display:none;margin-top:12px"><i class="fas fa-arrow-down"></i> Carica altre partite</button>
       <p class="bs-method-note">Fonte: BALLDONTLIE tramite <code>/api/basket</code>. Le classifiche e le statistiche avanzate non sono mostrate perché non sono garantite dal piano gratuito. La stagione è identificata dall'anno in cui inizia. Le partite sono riportate come ricevute dalla fonte; i dati mancanti non vengono ricostruiti. Nessuna previsione.</p>
     </section>
@@ -534,8 +563,7 @@ async function loadDashboard() {
     renderAnalyses(analyses);
     renderStats(analyses);
     if (!document.getElementById('combo-events').children.length) addComboEvent();
-    fdInit();
-    bdInit();
+    bsSportInit();
   } catch(e) { console.error(e); showNotLogged(); }
 }
 
@@ -967,6 +995,59 @@ function bdRenderTeams(teams){
   bdSet('bd-team-count',filtered.length);
   bdSet('bd-team-status',filtered.length?'Squadre ricevute dalla fonte: '+filtered.length+'.':'Nessuna squadra disponibile nella risposta.');
 }
+let bdCurrentGames=[];
+let bdSelectedGameId=null;
+function bdIsFinal(g){
+  return !!g && /^final/i.test(String(g.status||'').trim()) &&
+    Number.isFinite(g.home_team_score) && Number.isFinite(g.visitor_team_score);
+}
+function bdTeamHistory(teamId,selected){
+  const cutoff=new Date(selected.datetime||selected.date).getTime();
+  if(!Number.isFinite(cutoff))return [];
+  return bdCurrentGames.filter(g=>bdIsFinal(g)&&String(g.id)!==String(selected.id)&&
+    new Date(g.datetime||g.date).getTime()<cutoff &&
+    (String(g.home_team?.id)===String(teamId)||String(g.visitor_team?.id)===String(teamId)))
+    .sort((a,b)=>new Date(b.datetime||b.date)-new Date(a.datetime||a.date)).slice(0,5);
+}
+function bdTeamCompare(team,selected){
+  const card=document.createElement('div');
+  const heading=document.createElement('h4');heading.textContent=team?.full_name||'Squadra non disponibile';card.appendChild(heading);
+  if(team?.id==null){const note=document.createElement('p');note.className='fd-small';note.textContent='Identificativo squadra assente.';card.appendChild(note);return card;}
+  const history=bdTeamHistory(team.id,selected);
+  fdMetric(card,'Partite precedenti disponibili',history.length+' / 5');
+  if(!history.length){const p=document.createElement('p');p.className='fd-small';p.textContent='Nessun risultato precedente presente nelle pagine caricate. Usa “Carica altre partite” se disponibile.';card.appendChild(p);return card;}
+  let wins=0,losses=0,scored=0,conceded=0;
+  const form=document.createElement('div');form.className='fd-form';
+  for(const g of history){
+    const home=String(g.home_team?.id)===String(team.id);
+    const pts=home?g.home_team_score:g.visitor_team_score;
+    const opp=home?g.visitor_team_score:g.home_team_score;
+    scored+=pts;conceded+=opp;
+    const win=pts>opp;if(win)wins++;else if(pts<opp)losses++;
+    const badge=document.createElement('span');badge.className=win?'win':'loss';badge.textContent=win?'V':'P';form.appendChild(badge);
+  }
+  fdMetric(card,'Vittorie · Sconfitte',wins+' · '+losses);
+  fdMetric(card,'Punti segnati · subiti',scored+' · '+conceded);
+  fdMetric(card,'Media punti segnati',(scored/history.length).toFixed(1).replace('.',','));
+  fdMetric(card,'Media punti subiti',(conceded/history.length).toFixed(1).replace('.',','));
+  card.appendChild(form);
+  const note=document.createElement('p');note.className='fd-small';
+  note.textContent='Campione parziale: solo le partite precedenti presenti nelle pagine NBA già caricate.';card.appendChild(note);
+  return card;
+}
+function bdOpenMatch(id){
+  const game=bdCurrentGames.find(g=>String(g.id)===String(id));if(!game)return;
+  bdSelectedGameId=String(id);
+  document.querySelectorAll('.bd-match-row').forEach(r=>r.setAttribute('aria-selected',String(r.dataset.gameId===String(id))));
+  const root=bdEl('bd-match-center');root.replaceChildren();
+  const title=document.createElement('h3');title.style.cssText="font:800 1rem 'Syne',sans-serif;line-height:1.5";
+  title.textContent=(game.home_team?.full_name||'Casa')+' vs '+(game.visitor_team?.full_name||'Ospite');root.appendChild(title);
+  const meta=document.createElement('p');meta.className='fd-small';meta.textContent=bdDate(game.datetime||game.date)+' · '+(game.status||'Stato non disponibile');root.appendChild(meta);
+  if(bdIsFinal(game)){const score=document.createElement('p');score.style.cssText='font:800 1.5rem Syne,sans-serif;color:var(--green);margin-top:8px';score.textContent=game.home_team_score+' – '+game.visitor_team_score;root.appendChild(score);}
+  const compare=document.createElement('div');compare.className='bd-team-compare';
+  compare.append(bdTeamCompare(game.home_team,game),bdTeamCompare(game.visitor_team,game));root.appendChild(compare);
+  const warning=document.createElement('p');warning.className='fd-small';warning.textContent='Statistiche descrittive, non pronostici. Il campione dipende dalle pagine caricate e potrebbe non includere tutte le partite della stagione.';root.appendChild(warning);
+}
 function bdRenderGames(games,append){
   const root=bdEl('bd-games');
   let table=root.querySelector('table'),tbody=table?.querySelector('tbody');
@@ -977,7 +1058,9 @@ function bdRenderGames(games,append){
   }
   for(const game of games){
     if(!game||game.id==null)continue;
-    const tr=document.createElement('tr');
+    const tr=document.createElement('tr');tr.className='bd-match-row';tr.tabIndex=0;tr.dataset.gameId=String(game.id);tr.setAttribute('aria-selected',String(String(game.id)===bdSelectedGameId));
+    tr.title='Apri Storm NBA Match Center';tr.addEventListener('click',()=>bdOpenMatch(game.id));
+    tr.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();bdOpenMatch(game.id);}});
     const home=game.home_team?.full_name||game.home_team?.abbreviation||'—';
     const away=game.visitor_team?.full_name||game.visitor_team?.abbreviation||'—';
     const hs=game.home_team_score,as=game.visitor_team_score;
@@ -1009,7 +1092,11 @@ async function bdLoadGames(append=false){
     const result=await bdFetch('games',params);
     if(version!==bdRequestVersion)return;
     const games=result.data.data;
+    if(!append){bdCurrentGames=[];bdSelectedGameId=null;bdSet('bd-match-center','Seleziona una partita NBA nella tabella per aprire Storm NBA Match Center.');}
+    const ids=new Set(bdCurrentGames.map(g=>String(g.id)));
+    for(const g of games){if(g&&g.id!=null&&!ids.has(String(g.id))){bdCurrentGames.push(g);ids.add(String(g.id));}}
     bdRenderGames(games,append);
+    if(bdSelectedGameId)bdOpenMatch(bdSelectedGameId);
     const cursor=result.data.meta?.next_cursor;
     bdNextCursor=(cursor!==undefined&&cursor!==null&&/^\d+$/.test(String(cursor)))?String(cursor):null;
     more.style.display=bdNextCursor?'inline-flex':'none';
@@ -1019,7 +1106,7 @@ async function bdLoadGames(append=false){
   }catch(e){
     if(version===bdRequestVersion){
       bdSet('bd-games-status','Partite non disponibili: '+(e.message||'Errore di connessione')+'. Le squadre restano consultabili.');
-      if(!append)bdEl('bd-games').replaceChildren();
+      if(!append){bdEl('bd-games').replaceChildren();bdCurrentGames=[];bdSet('bd-match-center','Partite non disponibili per il confronto.');}
     }
   }finally{bdLoading=false;}
 }
@@ -1038,6 +1125,21 @@ function bdInit(){
   bdEl('bd-season').addEventListener('change',()=>{bdNextCursor=null;bdLoadGames(false);});
   bdEl('bd-more').addEventListener('click',()=>{if(bdNextCursor!==null)bdLoadGames(true);});
   bdRefresh();
+}
+
+function bsSportInit(){
+  const buttons=[...document.querySelectorAll('.bs-sport-choice')];
+  const select=sport=>{
+    if(!['calcio','basket'].includes(sport))return;
+    buttons.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.sport===sport)));
+    fdEl('fd-panel').hidden=sport!=='calcio';
+    bdEl('bd-panel').hidden=sport!=='basket';
+    try{sessionStorage.setItem('bs_data_sport',sport);}catch(_){}
+    if(sport==='calcio')fdInit();else bdInit();
+  };
+  buttons.forEach(b=>b.addEventListener('click',()=>select(b.dataset.sport)));
+  let initial='calcio';try{initial=sessionStorage.getItem('bs_data_sport')||'calcio';}catch(_){}
+  select(initial);
 }
 
 renderSportCatalog();
