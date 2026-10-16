@@ -222,6 +222,27 @@ input,select{max-width:100%}input:focus,select:focus{border-color:#00e676!import
 .si-card p{font-size:.81rem;line-height:1.6;color:#e1ebf5}
 .si-card small{display:block;margin-top:9px;color:var(--muted);font-size:.72rem;line-height:1.5}
 @media(max-width:600px){.si-grid{grid-template-columns:1fr}}
+
+/* STORM TRENDS — grafici HTML/CSS senza dipendenze esterne */
+.st-section{margin-top:20px;padding-top:17px;border-top:1px solid var(--border)}
+.st-title{display:flex;align-items:center;gap:8px;font:800 .95rem 'Syne',sans-serif;margin-bottom:7px}
+.st-title i{color:var(--green)}
+.st-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
+.st-card{border:1px solid rgba(149,178,208,.2);background:rgba(255,255,255,.025);border-radius:12px;padding:15px;min-width:0}
+.st-card h5{font-size:.88rem;margin-bottom:5px;overflow-wrap:anywhere}
+.st-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.73rem;color:#c5d2df;margin:10px 0}
+.st-key{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px}
+.st-bars{display:flex;align-items:end;gap:8px;min-height:138px;padding-top:15px;border-bottom:1px solid rgba(255,255,255,.2)}
+.st-col{flex:1;min-width:0;text-align:center;display:flex;flex-direction:column;justify-content:flex-end;gap:5px}
+.st-pair{display:flex;justify-content:center;align-items:flex-end;gap:3px;height:104px}
+.st-bar{width:min(22px,42%);min-height:3px;border-radius:4px 4px 0 0;position:relative}
+.st-bar.scored{background:#00e676}.st-bar.conceded{background:#ffab61}
+.st-bar span{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);font-size:.67rem;font-weight:700;color:#eaf5ff;padding-bottom:3px}
+.st-col small{color:#a8b9c9;font-size:.65rem;white-space:nowrap}
+.st-results{display:flex;gap:6px;margin-top:13px}
+.st-result{flex:1;min-width:0;text-align:center;padding:7px 2px;border-radius:7px;font-size:.75rem;font-weight:800;background:rgba(255,255,255,.06)}
+.st-result.win{color:#00e676}.st-result.draw{color:#ffd96a}.st-result.loss{color:#ff7777}
+@media(max-width:600px){.st-grid{grid-template-columns:1fr}.st-card{padding:12px}}
 </style>
 </head>
 <body>
@@ -717,6 +738,61 @@ function siRender(target,match){
   target.appendChild(section);
 }
 
+
+// Grafici descrittivi, in ordine cronologico, costruiti dai medesimi risultati del Match Center.
+function stRender(target,match){
+  const section=document.createElement('section');section.className='st-section';
+  const title=document.createElement('div');title.className='st-title';
+  const icon=document.createElement('i');icon.className='fas fa-chart-bar';icon.setAttribute('aria-hidden','true');
+  title.append(icon,document.createTextNode('Storm Trends'));section.appendChild(title);
+  const intro=document.createElement('p');intro.className='fd-small';
+  intro.textContent='Ultime 5 partite precedenti disponibili per squadra, dalla più vecchia alla più recente. Verde: gol segnati · Arancione: gol subiti. V = vittoria, N = pareggio, P = sconfitta.';
+  section.appendChild(intro);
+  const grid=document.createElement('div');grid.className='st-grid';
+  for(const team of [match.homeTeam,match.awayTeam]){
+    const card=document.createElement('article');card.className='st-card';
+    const name=document.createElement('h5');name.textContent=fdMatchTeamName(team);card.appendChild(name);
+    const st=fdTeamStats(team,match);
+    if(!st||!st.sample.length){const p=document.createElement('p');p.className='fd-small';p.textContent='Nessuna partita precedente disponibile nella risposta API.';card.appendChild(p);grid.appendChild(card);continue;}
+    const chronological=[...st.sample].reverse();
+    const legend=document.createElement('div');legend.className='st-legend';
+    for(const [cls,label] of [['scored','Gol fatti'],['conceded','Gol subiti']]){
+      const item=document.createElement('span');const key=document.createElement('span');key.className='st-key';key.style.background=cls==='scored'?'#00e676':'#ffab61';item.append(key,document.createTextNode(label));legend.appendChild(item);
+    }
+    card.appendChild(legend);
+    const chart=document.createElement('div');chart.className='st-bars';
+    chart.setAttribute('role','img');
+    const points=chronological.map(m=>{
+      const home=m.homeTeam?.id===team.id;
+      return {m,gf:home?m.score.fullTime.home:m.score.fullTime.away,ga:home?m.score.fullTime.away:m.score.fullTime.home};
+    });
+    const max=Math.max(1,...points.flatMap(p=>[p.gf,p.ga]));
+    chart.setAttribute('aria-label',points.map(p=>fdDate(p.m.utcDate)+': '+p.gf+' gol fatti e '+p.ga+' subiti').join('; '));
+    for(const point of points){
+      const col=document.createElement('div');col.className='st-col';
+      const pair=document.createElement('div');pair.className='st-pair';
+      for(const [cls,value] of [['scored',point.gf],['conceded',point.ga]]){
+        const bar=document.createElement('div');bar.className='st-bar '+cls;bar.style.height=Math.max(3,value/max*82)+'px';
+        const label=document.createElement('span');label.textContent=String(value);bar.appendChild(label);pair.appendChild(bar);
+      }
+      const date=document.createElement('small');date.textContent=new Date(point.m.utcDate).toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit'});
+      col.append(pair,date);chart.appendChild(col);
+    }
+    card.appendChild(chart);
+    const results=document.createElement('div');results.className='st-results';
+    for(const point of points){
+      const badge=document.createElement('span');const code=point.gf>point.ga?'V':point.gf===point.ga?'N':'P';
+      badge.className='st-result '+(code==='V'?'win':code==='N'?'draw':'loss');badge.textContent=code;badge.title=fdDate(point.m.utcDate);results.appendChild(badge);
+    }
+    card.appendChild(results);
+    const note=document.createElement('p');note.className='fd-small';note.textContent='Campione: '+points.length+' / 5 partite · Solo risultati terminati nella competizione selezionata.';card.appendChild(note);
+    grid.appendChild(card);
+  }
+  section.appendChild(grid);
+  const foot=document.createElement('p');foot.className='fd-small';foot.textContent='Fonte: football-data.org tramite il server BetStorm. La copertura può essere parziale. I grafici descrivono risultati passati, non probabilità di eventi futuri.';section.appendChild(foot);
+  target.appendChild(section);
+}
+
 function fdShowMatch(matchId){
   const match=fdCurrentMatches.find(m=>String(m.id)===String(matchId));if(!match)return;
   const target=fdEl('fd-match-center');target.replaceChildren();
@@ -732,6 +808,7 @@ function fdShowMatch(matchId){
   note.textContent='Fonte: football-data.org · Solo partite terminate e precedenti alla data dell’incontro, nella competizione selezionata e tra quelle restituite dall’API. Campione massimo: 5 incontri per squadra. Le statistiche casa/trasferta descrivono la composizione del campione, non un rendimento separato. Dati mancanti non sono stimati. Nessuna probabilità o previsione.';
   target.appendChild(note);
   siRender(target,match);
+  stRender(target,match);
   document.querySelectorAll('.fd-match-row').forEach(row=>row.setAttribute('aria-selected',String(row.dataset.matchId===String(matchId))));
 }
 function fdRenderMatches(matches){
