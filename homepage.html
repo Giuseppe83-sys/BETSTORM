@@ -85,7 +85,7 @@
 <a href="/blog.html">Blog</a>
 </nav>
 <div class="hp-nav__cta">
-<a class="hp-btn hp-btn--outline hp-btn--sm" data-auth-cta="" href="/dashboard.html">Accedi</a>
+<a class="hp-btn hp-btn--outline hp-btn--sm" data-auth-cta="" href="#betstorm-accesso">Accedi</a>
 <a class="hp-btn hp-btn--green hp-btn--sm" data-auth-hide="" href="#analisi-schedina">Analizza la tua schedina</a>
 </div>
 </div>
@@ -98,7 +98,7 @@
 <h1>Analisi e statistiche per comprendere le <span style="color:var(--green)">quote sportive</span></h1>
 <p class="hp-hero__sub">Consulta eventi e quote disponibili. Analizza le probabilità implicite delle tue selezioni: nessuna stima garantisce un risultato.</p>
 <div class="hp-hero__ctas">
-<a class="hp-btn hp-btn--green" data-auth-cta="" data-auth-hide="" href="#analisi-schedina">Analizza la tua schedina</a>
+<a class="hp-btn hp-btn--green" href="#analisi-schedina">Analizza la tua schedina</a>
 <a class="hp-btn hp-btn--outline" href="#analisi"><i class="fas fa-chart-line"></i> Vedi un esempio</a>
 </div>
 <div class="hp-hero__trust">
@@ -343,6 +343,48 @@
 <!-- ======== 7. CTA FINALE ======== -->
 <!-- ======== 6. ACCESSO GRATUITO + OFFERTE PARTNER ======== -->
 </main>
+<!-- ======== NEWSLETTER BETSTORM ======== -->
+<section class="hp-section hp-section--alt" id="newsletter" aria-labelledby="newsletter-title">
+  <div class="hp-container" style="max-width:680px;text-align:center">
+    <p class="hp-label">Newsletter gratuita</p>
+    <h2 class="hp-title" id="newsletter-title">Le novità di BetStorm via email</h2>
+    <p class="hp-sub hp-mx">Aggiornamenti informativi su quote e statistiche sportive. Iscrizione facoltativa, conferma via email e cancellazione in qualsiasi momento.</p>
+    <form id="bs-newsletter-form" style="margin:26px auto 0;max-width:480px;text-align:left">
+      <label for="bs-newsletter-email" style="display:block;margin-bottom:8px;font-weight:600">Indirizzo email</label>
+      <input id="bs-newsletter-email" type="email" autocomplete="email" maxlength="254" required placeholder="nome@esempio.it" style="width:100%;box-sizing:border-box;background:#111820;border:1px solid #536377;border-radius:10px;padding:13px;color:#fff;font-size:1rem"/>
+      <label style="display:flex;gap:10px;align-items:flex-start;margin:16px 0;font-size:.85rem;line-height:1.5;color:#bdcad9">
+        <input id="bs-newsletter-consent" type="checkbox" required style="margin-top:4px;accent-color:#00e676"/>
+        <span>Acconsento a ricevere la newsletter BetStorm all'indirizzo indicato. Ho letto l'<a href="/privacy.html" style="color:#00e676;text-decoration:underline">informativa sulla privacy</a>.</span>
+      </label>
+      <button id="bs-newsletter-submit" type="submit" class="hp-btn hp-btn--green" style="width:100%;justify-content:center;border:0;cursor:pointer">Iscriviti alla newsletter</button>
+      <p id="bs-newsletter-status" role="status" aria-live="polite" style="margin-top:14px;min-height:22px;font-size:.9rem"></p>
+    </form>
+    <p style="font-size:.76rem;color:var(--muted);margin-top:14px">Solo contenuti informativi. 18+. Nessuna garanzia sui risultati sportivi.</p>
+  </div>
+</section>
+<script>
+(function(){
+  var form=document.getElementById('bs-newsletter-form');
+  if(!form)return;
+  form.addEventListener('submit',async function(event){
+    event.preventDefault();
+    var email=document.getElementById('bs-newsletter-email').value.trim();
+    var consent=document.getElementById('bs-newsletter-consent').checked;
+    var button=document.getElementById('bs-newsletter-submit');
+    var status=document.getElementById('bs-newsletter-status');
+    if(!email||!consent){status.textContent='Inserisci una email valida e conferma il consenso.';status.style.color='#ff8b8b';return;}
+    button.disabled=true;status.textContent='Invio richiesta in corso...';status.style.color='#bdcad9';
+    try{
+      var response=await fetch('/api/newsletter-subscribe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,consent:true})});
+      var data=await response.json().catch(function(){return {};});
+      if(!response.ok)throw new Error(data.error||data.message||'Iscrizione non riuscita. Riprova.');
+      status.textContent='Richiesta ricevuta. Controlla la tua email per confermare l’iscrizione.';
+      status.style.color='#00e676';form.reset();
+    }catch(error){status.textContent=error.message||'Errore di connessione. Riprova.';status.style.color='#ff8b8b';}
+    finally{button.disabled=false;}
+  });
+})();
+</script>
 <!-- ======== FOOTER ======== -->
 <footer class="hp-footer">
 <div class="hp-container">
