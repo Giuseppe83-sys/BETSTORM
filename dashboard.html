@@ -178,6 +178,20 @@ input,select{max-width:100%}input:focus,select:focus{border-color:#00e676!import
 .combo-result{border-color:rgba(149,178,208,.19)}
 @media(max-width:700px){.dash-nav{padding:12px 16px}.dash-wrap{padding:26px 14px 50px}.combo-full{padding:20px 15px}.stat-card{padding:17px 14px}.bs-method-tag{margin:8px 0 0}.bs-dashboard-eyebrow{flex-wrap:wrap}.bs-dashboard-eyebrow span{margin-left:0}.nav-right{gap:6px}.nav-right .btn{padding:9px 11px}.combo-full .btn{font-size:.78rem}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* DATI CALCIO LIVE — football-data.org tramite proxy Vercel */
+.fd-tools{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-bottom:15px}
+.fd-tools>div{flex:1;min-width:200px}
+.fd-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0}
+.fd-kpi{padding:14px;border:1px solid var(--border);background:var(--glass);border-radius:11px}
+.fd-kpi strong{display:block;color:var(--green);font:800 1.25rem 'Syne',sans-serif;margin-top:6px}
+.fd-table-wrap{overflow:auto;max-height:420px}
+.fd-table{width:100%;border-collapse:collapse;font-size:.8rem;min-width:480px}
+.fd-table th,.fd-table td{padding:10px 9px;text-align:left;border-bottom:1px solid var(--border)}
+.fd-table th{color:#b4c5d8;font-size:.72rem;text-transform:uppercase}
+.fd-message{color:#b6c8d8;font-size:.84rem;line-height:1.65;padding:12px 0}
+.fd-subtitle{font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;margin:20px 0 10px}
+@media(max-width:600px){.fd-grid{grid-template-columns:1fr 1fr}.fd-tools{display:block}.fd-tools>div{margin-bottom:12px}}
 </style>
 </head>
 <body>
@@ -258,6 +272,28 @@ input,select{max-width:100%}input:focus,select:focus{border-color:#00e676!import
         <p class="bs-method-note">Le analisi vengono abilitate solo dopo la verifica di fonti, aggiornamento dei dati e validità del metodo. <a href="/metodologia.html">Scopri il metodo e i limiti</a>.</p>
       </div>
     </div>
+
+
+    <!-- DATI REALI CALCIO: la fonte non implica disponibilità di previsioni -->
+    <section class="combo-full" id="fd-panel" aria-labelledby="fd-title">
+      <div class="section-title" id="fd-title"><i class="fas fa-futbol"></i> Centro dati calcio <span class="bs-method-tag">FONTE ESTERNA</span></div>
+      <p class="bs-combo-intro">Consulta calendari, risultati e classifiche recuperati tramite il server BetStorm da football-data.org. Questi sono dati sportivi, non previsioni di esito.</p>
+      <div class="fd-tools">
+        <div><label for="fd-competition" class="event-row-label">Competizione</label><select id="fd-competition" class="sport-select" disabled><option>Caricamento competizioni...</option></select></div>
+        <button type="button" id="fd-refresh" class="btn btn-primary" onclick="fdLoadSelected()" disabled><i class="fas fa-sync-alt"></i> Aggiorna dati</button>
+      </div>
+      <div id="fd-state" class="fd-message" role="status" aria-live="polite">Connessione alla fonte in preparazione...</div>
+      <div class="fd-grid">
+        <div class="fd-kpi"><span class="stat-label">Fonte</span><strong style="font-size:.9rem">football-data.org</strong></div>
+        <div class="fd-kpi"><span class="stat-label">Partite ricevute</span><strong id="fd-match-count">—</strong></div>
+        <div class="fd-kpi"><span class="stat-label">Ultima richiesta</span><strong id="fd-updated" style="font-size:.9rem">—</strong></div>
+      </div>
+      <div class="fd-subtitle">Calendario e risultati <span id="fd-matches-label" style="color:var(--muted);font-weight:400;font-size:.76rem"></span></div>
+      <div class="fd-table-wrap" id="fd-matches"><p class="fd-message">Seleziona una competizione per consultare le partite.</p></div>
+      <div class="fd-subtitle">Classifica</div>
+      <div class="fd-table-wrap" id="fd-standings"><p class="fd-message">La classifica apparirà se disponibile nella copertura gratuita.</p></div>
+      <p class="bs-method-note">Dati: football-data.org, tramite <code>/api/football</code>. La copertura dipende dal piano API e dalla competizione. Le statistiche di questa sezione non abilitano automaticamente Storm Analysis: per le percentuali serve un modello distinto e verificato.</p>
+    </section>
 
     <div class="grid-2">
       <div class="section-card">
@@ -406,6 +442,7 @@ async function loadDashboard() {
     renderAnalyses(analyses);
     renderStats(analyses);
     if (!document.getElementById('combo-events').children.length) addComboEvent();
+    fdInit();
   } catch(e) { console.error(e); showNotLogged(); }
 }
 
@@ -536,6 +573,85 @@ function runComboAnalysis(){
   const status=document.getElementById('sport-status');status.textContent=msg;status.scrollIntoView({behavior:'smooth',block:'nearest'});
   showToast('Dati insufficienti: analisi non disponibile','error');
 }
+
+// FOOTBALL-DATA — solo dati osservati, nessuna probabilità inventata.
+const FD_CODES = new Set(['SA','PL','PD','BL1','FL1','DED','PPL','CL','EL','EC','WC']);
+let fdReady = false;
+const fdEl = id => document.getElementById(id);
+function fdText(id, text) { const el=fdEl(id); if(el) el.textContent=String(text); }
+function fdCell(tr, text, tag='td') { const el=document.createElement(tag);el.textContent=text==null?'—':String(text);tr.appendChild(el);return el; }
+function fdTable(containerId, headers, rows) {
+  const target=fdEl(containerId);target.replaceChildren();
+  if (!rows.length) {const p=document.createElement('p');p.className='fd-message';p.textContent='Nessun dato disponibile per questa selezione.';target.appendChild(p);return;}
+  const table=document.createElement('table');table.className='fd-table';
+  const head=document.createElement('thead'),hr=document.createElement('tr');headers.forEach(h=>fdCell(hr,h,'th'));head.appendChild(hr);table.appendChild(head);
+  const body=document.createElement('tbody');rows.forEach(cells=>{const tr=document.createElement('tr');cells.forEach(c=>fdCell(tr,c));body.appendChild(tr);});table.appendChild(body);target.appendChild(table);
+}
+function fdDate(s) {if(!s)return '—';const d=new Date(s);return isNaN(d)?'—':d.toLocaleString('it-IT',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});}
+async function fdFetch(type,code) {
+  const url='/api/football?type='+encodeURIComponent(type)+(code?'&code='+encodeURIComponent(code):'');
+  const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),13000);
+  try {
+    const r=await fetch(url,{headers:{Accept:'application/json'},signal:controller.signal});
+    let payload;try{payload=await r.json();}catch(_){throw new Error('La risposta del server non è JSON valido.');}
+    if(!r.ok)throw new Error(payload?.error||'Richiesta non riuscita ('+r.status+')');
+    if(payload?.source!=='football-data.org'||!payload?.data)throw new Error('Risposta API inattesa: impossibile verificare la fonte.');
+    return payload;
+  } finally {clearTimeout(timeout);}
+}
+async function fdInit() {
+  if(fdReady)return;fdReady=true;
+  const select=fdEl('fd-competition');if(!select)return;
+  fdText('fd-state','Recupero elenco competizioni...');
+  try {
+    const payload=await fdFetch('competitions');
+    const competitions=Array.isArray(payload.data.competitions)?payload.data.competitions:[];
+    const allowed=competitions.filter(c=>FD_CODES.has(c.code));
+    select.replaceChildren();
+    if(!allowed.length)throw new Error('Nessuna competizione disponibile nella risposta API.');
+    allowed.sort((a,b)=>(a.name||'').localeCompare(b.name||'','it'));
+    allowed.forEach(c=>{const opt=document.createElement('option');opt.value=c.code;opt.textContent=(c.name||c.code)+' ('+c.code+')';select.appendChild(opt);});
+    if(allowed.some(c=>c.code==='SA'))select.value='SA';
+    select.disabled=false;fdEl('fd-refresh').disabled=false;
+    select.addEventListener('change',fdLoadSelected);
+    await fdLoadSelected();
+  } catch(e) {fdText('fd-state','Fonte non disponibile: '+(e?.message||'Errore di connessione')+'. Riprova ricaricando la pagina.');select.replaceChildren();const opt=document.createElement('option');opt.textContent='Fonte non disponibile';select.appendChild(opt);}
+}
+async function fdLoadSelected(){
+  const code=fdEl('fd-competition')?.value;
+  if(!FD_CODES.has(code))return;
+  const refresh=fdEl('fd-refresh');refresh.disabled=true;
+  fdText('fd-state','Caricamento dati di '+fdEl('fd-competition').selectedOptions[0].textContent+'...');
+  fdText('fd-match-count','—');fdText('fd-updated','—');
+  fdEl('fd-matches').textContent='Caricamento partite...';fdEl('fd-standings').textContent='Caricamento classifica...';
+  try {
+    // Le due richieste sono sequenziali per rispettare il limite delle API gratuite.
+    let matchesError=null,standingsError=null,receivedAt=null;
+    try {
+      const result=await fdFetch('matches',code);receivedAt=result.fetched_at;
+      const matches=Array.isArray(result.data.matches)?result.data.matches:[];
+      fdText('fd-match-count',matches.length);
+      const today=Date.now();
+      const sorted=[...matches].sort((a,b)=>Math.abs(new Date(a.utcDate)-today)-Math.abs(new Date(b.utcDate)-today)).slice(0,35).sort((a,b)=>new Date(a.utcDate)-new Date(b.utcDate));
+      fdText('fd-matches-label',matches.length>35?'(35 incontri più vicini a oggi)':'');
+      fdTable('fd-matches',['Data','Casa','Ospite','Risultato','Stato'],sorted.map(m=>[
+        fdDate(m.utcDate),m.homeTeam?.shortName||m.homeTeam?.name||'Da definire',m.awayTeam?.shortName||m.awayTeam?.name||'Da definire',
+        Number.isFinite(m.score?.fullTime?.home)&&Number.isFinite(m.score?.fullTime?.away)?m.score.fullTime.home+' - '+m.score.fullTime.away:'—',
+        ({FINISHED:'Terminata',SCHEDULED:'Programmata',TIMED:'Programmata',IN_PLAY:'In corso',PAUSED:'Intervallo',POSTPONED:'Rinviata',CANCELLED:'Annullata'})[m.status]||m.status||'—'
+      ]));
+    } catch(e){matchesError=e.message||'Errore partite';fdEl('fd-matches').textContent='Partite non disponibili: '+matchesError;}
+    try {
+      const result=await fdFetch('standings',code);receivedAt=receivedAt||result.fetched_at;
+      const standings=Array.isArray(result.data.standings)?result.data.standings:[];
+      const total=standings.find(s=>s.type==='TOTAL')||standings.find(s=>Array.isArray(s.table));
+      const rows=Array.isArray(total?.table)?total.table:[];
+      fdTable('fd-standings',['Pos.','Squadra','PG','V','N','P','GF','GS','Punti'],rows.map(r=>[r.position,r.team?.shortName||r.team?.name||'—',r.playedGames,r.won,r.draw,r.lost,r.goalsFor,r.goalsAgainst,r.points]));
+    } catch(e){standingsError=e.message||'Errore classifica';fdEl('fd-standings').textContent='Classifica non disponibile: '+standingsError;}
+    if(receivedAt)fdText('fd-updated',fdDate(receivedAt));
+    fdText('fd-state',matchesError&&standingsError?'Dati non disponibili per questa competizione: '+matchesError+'; '+standingsError:matchesError||standingsError?'Dati parziali: '+(matchesError||standingsError):'Dati ricevuti dalla fonte. Ultima richiesta: '+fdDate(receivedAt)+'.');
+  } finally {refresh.disabled=false;}
+}
+
 renderSportCatalog();
 
 // LOGOUT / DELETE
