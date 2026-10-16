@@ -274,6 +274,26 @@ input,select{max-width:100%}input:focus,select:focus{border-color:#00e676!import
 .bd-trend{display:flex;gap:5px;margin-top:10px;align-items:end;min-height:65px}
 .bd-trend span{flex:1;max-width:28px;min-width:5px;background:var(--green);border-radius:4px 4px 0 0}
 @media(max-width:550px){.bd-match-center .bd-team-compare{grid-template-columns:1fr}.bs-sport-choice{flex:1}}
+
+/* STORM NBA INSIGHTS & TRENDS */
+.bni-section{margin-top:20px;padding-top:18px;border-top:1px solid var(--border)}
+.bni-title{font:800 .96rem 'Syne',sans-serif;display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.bni-title i{color:var(--green)}
+.bni-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:13px}
+.bni-card{border:1px solid rgba(149,178,208,.2);border-radius:12px;background:rgba(255,255,255,.025);padding:15px;min-width:0}
+.bni-card h5{font-size:.83rem;color:var(--green);margin-bottom:8px}
+.bni-card p{font-size:.81rem;line-height:1.65;color:var(--text)}
+.bni-card small{display:block;margin-top:9px;color:var(--muted);font-size:.72rem;line-height:1.5}
+.bni-chart{display:flex;align-items:flex-end;gap:8px;min-height:156px;margin:13px 0 6px;padding:22px 3px 0;border-bottom:1px solid var(--border)}
+.bni-col{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:7px}
+.bni-pair{height:115px;width:100%;display:flex;justify-content:center;align-items:flex-end;gap:4px}
+.bni-bar{width:min(25px,42%);border-radius:5px 5px 0 0;min-height:3px;position:relative}
+.bni-bar.for{background:var(--green)}.bni-bar.against{background:#ffab61}
+.bni-bar b{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);font-size:.65rem;padding-bottom:4px;white-space:nowrap}
+.bni-col small{font-size:.67rem;color:var(--muted)}
+.bni-legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.73rem;color:var(--muted);margin:9px 0}
+.bni-key{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px}
+@media(max-width:650px){.bni-grid{grid-template-columns:1fr}.bni-card{padding:12px}}
 </style>
 </head>
 <body>
@@ -1035,6 +1055,88 @@ function bdTeamCompare(team,selected){
   note.textContent='Campione parziale: solo le partite precedenti presenti nelle pagine NBA già caricate.';card.appendChild(note);
   return card;
 }
+// NBA Insights & Trends: risultati finali precedenti, nel solo campione caricato.
+function bniText(tag,cls,text){const el=document.createElement(tag);if(cls)el.className=cls;el.textContent=text;return el;}
+function bniSample(team,game){
+  if(team?.id==null)return [];
+  return bdTeamHistory(team.id,game).filter(g=>{
+    const pts=String(g.home_team?.id)===String(team.id)?g.home_team_score:g.visitor_team_score;
+    const against=String(g.home_team?.id)===String(team.id)?g.visitor_team_score:g.home_team_score;
+    return Number.isFinite(pts)&&Number.isFinite(against)&&pts!==against;
+  }).map(g=>{
+    const home=String(g.home_team?.id)===String(team.id);
+    return {date:g.datetime||g.date,scored:home?g.home_team_score:g.visitor_team_score,
+      conceded:home?g.visitor_team_score:g.home_team_score};
+  }).reverse(); // cronologia dal più vecchio al più recente
+}
+function bniSection(root,title,icon){
+  const sec=document.createElement('section');sec.className='bni-section';
+  const heading=document.createElement('h4');heading.className='bni-title';
+  const i=document.createElement('i');i.className='fas '+icon;i.setAttribute('aria-hidden','true');
+  heading.append(i,document.createTextNode(title));sec.appendChild(heading);root.appendChild(sec);return sec;
+}
+function bniInsightCard(team,game){
+  const history=bniSample(team,game),card=document.createElement('article');card.className='bni-card';
+  card.appendChild(bniText('h5','',team?.full_name||'Squadra'));
+  if(history.length<5){
+    card.appendChild(bniText('p','','Campione insufficiente: '+history.length+' risultati finali precedenti disponibili su 5 richiesti. Nessuna tendenza automatica formulata.'));
+    card.appendChild(bniText('small','','Le partite considerate provengono esclusivamente dalle pagine NBA già caricate.'));
+    return card;
+  }
+  const wins=history.filter(g=>g.scored>g.conceded).length;
+  const scored=history.reduce((v,g)=>v+g.scored,0),against=history.reduce((v,g)=>v+g.conceded,0);
+  const observations=[];
+  if(wins>=4)observations.push('Ha vinto '+wins+' delle ultime 5 partite disponibili.');
+  if(wins<=1)observations.push('Ha perso '+(5-wins)+' delle ultime 5 partite disponibili.');
+  const first=history.slice(0,2),last=history.slice(-2);
+  const early=first.reduce((v,g)=>v+g.scored,0)/2,late=last.reduce((v,g)=>v+g.scored,0)/2;
+  if(late-early>=10)observations.push('La media dei punti segnati nelle 2 gare più recenti supera di '+(late-early).toFixed(1).replace('.',',')+' quella delle prime 2 del campione.');
+  if(early-late>=10)observations.push('La media dei punti segnati nelle 2 gare più recenti è inferiore di '+(early-late).toFixed(1).replace('.',',')+' a quella delle prime 2 del campione.');
+  observations.push('Nelle ultime 5 gare disponibili: '+wins+' vittorie, '+(5-wins)+' sconfitte; '+scored+' punti segnati e '+against+' subiti.');
+  for(const sentence of observations.slice(0,3))card.appendChild(bniText('p','',sentence));
+  card.appendChild(bniText('small','','Campione: 5 risultati finali precedenti alla partita selezionata, fra quelli caricati. Osservazioni descrittive, non pronostici.'));
+  return card;
+}
+function bniTrendCard(team,game){
+  const sample=bniSample(team,game),card=document.createElement('article');card.className='bni-card';
+  card.appendChild(bniText('h5','',team?.full_name||'Squadra'));
+  if(!sample.length){card.appendChild(bniText('p','','Nessun risultato finale precedente disponibile per il grafico.'));return card;}
+  card.appendChild(bniText('small','','Ultime '+sample.length+' partite disponibili, in ordine cronologico (campione parziale).'));
+  const chart=document.createElement('div');chart.className='bni-chart';
+  const max=Math.max(1,...sample.flatMap(g=>[g.scored,g.conceded]));
+  for(let index=0;index<sample.length;index++){
+    const g=sample[index],col=document.createElement('div');col.className='bni-col';
+    const pair=document.createElement('div');pair.className='bni-pair';
+    for(const [value,kind] of [[g.scored,'for'],[g.conceded,'against']]){
+      const bar=document.createElement('div');bar.className='bni-bar '+kind;
+      bar.style.height=Math.max(3,Math.round(value/max*102))+'px';
+      bar.title=(kind==='for'?'Punti segnati: ':'Punti subiti: ')+value;
+      bar.appendChild(bniText('b','',String(value)));pair.appendChild(bar);
+    }
+    col.append(pair,bniText('small','',new Date(g.date).toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit'})));chart.appendChild(col);
+  }
+  card.appendChild(chart);
+  const legend=document.createElement('div');legend.className='bni-legend';
+  for(const [label,color] of [['Segnati','var(--green)'],['Subiti','#ffab61']]){
+    const item=document.createElement('span'),key=document.createElement('span');key.className='bni-key';key.style.background=color;
+    item.append(key,document.createTextNode(label));legend.appendChild(item);
+  }
+  card.appendChild(legend);
+  const wins=sample.filter(g=>g.scored>g.conceded).length;
+  card.appendChild(bniText('small','','Sequenza (da sinistra): '+sample.map(g=>g.scored>g.conceded?'V':'P').join(' · ')+' · '+wins+' vittorie e '+(sample.length-wins)+' sconfitte.'));
+  return card;
+}
+function bdRenderInsightsTrends(root,game){
+  const teams=[game.home_team,game.visitor_team];
+  const insights=bniSection(root,'Storm NBA Insights','fa-bolt');
+  insights.appendChild(bniText('p','fd-small','Osservazioni automatiche soltanto con 5 risultati finali precedenti disponibili per squadra.'));
+  const insightGrid=document.createElement('div');insightGrid.className='bni-grid';
+  teams.forEach(t=>insightGrid.appendChild(bniInsightCard(t,game)));insights.appendChild(insightGrid);
+  const trends=bniSection(root,'Storm NBA Trends','fa-chart-bar');
+  trends.appendChild(bniText('p','fd-small','Grafici dei punti segnati e subiti, ricavati dalle partite finali precedenti presenti nelle pagine caricate.'));
+  const trendGrid=document.createElement('div');trendGrid.className='bni-grid';
+  teams.forEach(t=>trendGrid.appendChild(bniTrendCard(t,game)));trends.appendChild(trendGrid);
+}
 function bdOpenMatch(id){
   const game=bdCurrentGames.find(g=>String(g.id)===String(id));if(!game)return;
   bdSelectedGameId=String(id);
@@ -1046,6 +1148,7 @@ function bdOpenMatch(id){
   if(bdIsFinal(game)){const score=document.createElement('p');score.style.cssText='font:800 1.5rem Syne,sans-serif;color:var(--green);margin-top:8px';score.textContent=game.home_team_score+' – '+game.visitor_team_score;root.appendChild(score);}
   const compare=document.createElement('div');compare.className='bd-team-compare';
   compare.append(bdTeamCompare(game.home_team,game),bdTeamCompare(game.visitor_team,game));root.appendChild(compare);
+  bdRenderInsightsTrends(root,game);
   const warning=document.createElement('p');warning.className='fd-small';warning.textContent='Statistiche descrittive, non pronostici. Il campione dipende dalle pagine caricate e potrebbe non includere tutte le partite della stagione.';root.appendChild(warning);
 }
 function bdRenderGames(games,append){
