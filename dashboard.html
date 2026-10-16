@@ -211,6 +211,17 @@ input,select{max-width:100%}input:focus,select:focus{border-color:#00e676!import
 .fd-form .win{color:#00e676}.fd-form .loss{color:#ff7777}.fd-form .draw{color:#ffd96a}
 .fd-small{color:var(--muted);font-size:.75rem;line-height:1.65;margin-top:13px}
 @media(max-width:550px){.fd-match-card{padding:13px}.fd-compare{grid-template-columns:1fr}.fd-versus>div{font-size:.87rem}}
+
+/* STORM INSIGHTS — osservazioni descrittive su risultati verificabili */
+.si-section{margin-top:20px;padding-top:17px;border-top:1px solid var(--border)}
+.si-title{display:flex;align-items:center;gap:8px;font:800 .95rem 'Syne',sans-serif;margin-bottom:6px}
+.si-title i{color:var(--green)}
+.si-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin-top:13px}
+.si-card{border:1px solid rgba(149,178,208,.2);border-radius:12px;background:rgba(255,255,255,.025);padding:14px;min-width:0}
+.si-card h5{font-size:.8rem;color:#00e676;margin-bottom:8px}
+.si-card p{font-size:.81rem;line-height:1.6;color:#e1ebf5}
+.si-card small{display:block;margin-top:9px;color:var(--muted);font-size:.72rem;line-height:1.5}
+@media(max-width:600px){.si-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -659,6 +670,53 @@ function fdTeamCard(team,match){
   else fdMetric(card,'Classifica','Non disponibile');
   return card;
 }
+// Insights deterministici: nessuna previsione, soglie applicate solo a campioni completi.
+function siGenerate(team, match){
+  const st=fdTeamStats(team,match);
+  if(!st || st.sample.length<5)return [];
+  const name=fdMatchTeamName(team);
+  const out=[];
+  const add=(title,body)=>out.push({title,body,team:name,sample:st.sample});
+  if(st.wins>=4)add('Forma recente',name+' ha vinto '+st.wins+' delle ultime 5 partite disponibili.');
+  if(st.losses>=4)add('Risultati recenti',name+' ha perso '+st.losses+' delle ultime 5 partite disponibili.');
+  if(st.draws>=3)add('Pareggi recenti',name+' ha pareggiato '+st.draws+' delle ultime 5 partite disponibili.');
+  if(st.gf>=10)add('Gol segnati',name+' ha segnato '+st.gf+' gol nelle ultime 5 partite (media '+(st.gf/5).toFixed(1).replace('.',',')+').');
+  if(st.ga>=10)add('Gol subiti',name+' ha subito '+st.ga+' gol nelle ultime 5 partite (media '+(st.ga/5).toFixed(1).replace('.',',')+').');
+  if(st.ga<=2)add('Solidità nei risultati',name+' ha subito '+st.ga+' gol nelle ultime 5 partite disponibili.');
+  if(st.gf-st.ga>=6)add('Differenza reti recente',name+' presenta una differenza reti di +'+(st.gf-st.ga)+' nelle ultime 5 partite ('+st.gf+' fatti, '+st.ga+' subiti).');
+  if(st.gf-st.ga<=-6)add('Differenza reti recente',name+' presenta una differenza reti di '+(st.gf-st.ga)+' nelle ultime 5 partite ('+st.gf+' fatti, '+st.ga+' subiti).');
+  return out;
+}
+function siRender(target,match){
+  const section=document.createElement('section');section.className='si-section';
+  const heading=document.createElement('div');heading.className='si-title';
+  const icon=document.createElement('i');icon.className='fas fa-bolt';icon.setAttribute('aria-hidden','true');
+  heading.append(icon,document.createTextNode('Storm Insights'));section.appendChild(heading);
+  const intro=document.createElement('p');intro.className='fd-small';intro.textContent='Osservazioni automatiche sui risultati precedenti all’incontro. Non sono pronostici né probabilità.';section.appendChild(intro);
+  const home=fdTeamStats(match.homeTeam,match),away=fdTeamStats(match.awayTeam,match);
+  const insights=[...siGenerate(match.homeTeam,match),...siGenerate(match.awayTeam,match)].slice(0,6);
+  if(!insights.length){
+    const note=document.createElement('p');note.className='fd-small';
+    note.textContent=(home?.sample.length<5||away?.sample.length<5||!home||!away)?'Dati insufficienti per evidenziare tendenze affidabili: sono necessarie 5 partite precedenti disponibili per ciascuna squadra analizzata.':'Nessuna delle soglie descrittive è stata raggiunta nelle ultime 5 partite disponibili.';
+    section.appendChild(note);target.appendChild(section);return;
+  }
+  const grid=document.createElement('div');grid.className='si-grid';
+  for(const item of insights){
+    const card=document.createElement('article');card.className='si-card';
+    const title=document.createElement('h5');title.textContent=item.title;
+    const body=document.createElement('p');body.textContent=item.body;
+    const meta=document.createElement('small');
+    const dates=item.sample.map(m=>new Date(m.utcDate).getTime()).filter(Number.isFinite);
+    const first=new Date(Math.min(...dates)),last=new Date(Math.max(...dates));
+    const fmt=d=>d.toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit',year:'numeric'});
+    meta.textContent='Campione: 5 partite · '+fmt(first)+' – '+fmt(last)+' · Fonte: football-data.org';
+    card.append(title,body,meta);grid.appendChild(card);
+  }
+  section.appendChild(grid);
+  const note=document.createElement('p');note.className='fd-small';note.textContent='Si usano solo risultati terminati, antecedenti alla partita selezionata e restituiti dall’API nella competizione scelta. La copertura potrebbe essere incompleta; le soglie sono descrittive, non validate per prevedere esiti.';section.appendChild(note);
+  target.appendChild(section);
+}
+
 function fdShowMatch(matchId){
   const match=fdCurrentMatches.find(m=>String(m.id)===String(matchId));if(!match)return;
   const target=fdEl('fd-match-center');target.replaceChildren();
@@ -673,6 +731,7 @@ function fdShowMatch(matchId){
   const note=document.createElement('p');note.className='fd-small';
   note.textContent='Fonte: football-data.org · Solo partite terminate e precedenti alla data dell’incontro, nella competizione selezionata e tra quelle restituite dall’API. Campione massimo: 5 incontri per squadra. Le statistiche casa/trasferta descrivono la composizione del campione, non un rendimento separato. Dati mancanti non sono stimati. Nessuna probabilità o previsione.';
   target.appendChild(note);
+  siRender(target,match);
   document.querySelectorAll('.fd-match-row').forEach(row=>row.setAttribute('aria-selected',String(row.dataset.matchId===String(matchId))));
 }
 function fdRenderMatches(matches){
