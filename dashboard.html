@@ -306,6 +306,23 @@ input,select{max-width:100%}input:focus,select:focus{border-color:#00e676!import
 .bs-date-input{background:#101923;border:1px solid var(--border);color:var(--text);border-radius:9px;padding:9px 10px;font:500 .82rem 'DM Sans',sans-serif;color-scheme:dark;max-width:180px}
 .bs-calendar-count{font-size:.79rem;color:#c3d2e0;margin-top:12px;line-height:1.6}
 @media(max-width:550px){.bs-calendar{padding:13px}.bs-date-btn{flex:1}.bs-date-input{width:100%;max-width:none}}
+
+/* STORM FAVORITES — preferiti locali, distinti per account e sport */
+.sf-panel{border:1px solid rgba(255,215,0,.23);border-radius:16px;background:linear-gradient(120deg,rgba(255,215,0,.045),rgba(16,25,35,.96));padding:21px;margin-bottom:25px}
+.sf-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.sf-head h2{font:800 1.03rem 'Syne',sans-serif}.sf-head h2 i{color:var(--gold)}
+.sf-help{color:var(--muted);font-size:.8rem;line-height:1.65;margin-bottom:12px}
+.sf-list{display:flex;gap:8px;flex-wrap:wrap}.sf-chip{display:inline-flex;align-items:center;gap:9px;padding:8px 10px;border:1px solid rgba(255,215,0,.23);background:rgba(255,215,0,.045);border-radius:9px;font-size:.79rem;max-width:100%}
+.sf-chip span{overflow-wrap:anywhere}.sf-remove{background:transparent;border:0;color:#ff9999;cursor:pointer;font-size:.95rem;padding:2px 5px}
+.sf-star{display:inline-flex;align-items:center;justify-content:center;min-width:33px;min-height:32px;border:1px solid var(--border);background:rgba(255,255,255,.04);border-radius:8px;color:#a9b7c6;cursor:pointer;font-size:1rem;vertical-align:middle}
+.sf-star[aria-pressed="true"]{color:#ffd700;border-color:rgba(255,215,0,.5);background:rgba(255,215,0,.1)}
+.sf-star:hover,.sf-star:focus-visible{border-color:#ffd700;outline:2px solid rgba(255,215,0,.25)}
+.sf-team-line{display:flex;align-items:center;gap:8px}.sf-team-line span{flex:1;min-width:0;overflow-wrap:anywhere}
+.sf-only{display:inline-flex;gap:8px;align-items:center;color:#e8edf5;font-size:.8rem;cursor:pointer;margin:7px 0 12px}
+.sf-only input{accent-color:var(--green);width:16px;height:16px}
+.sf-empty{font-size:.8rem;color:var(--muted);line-height:1.6}
+.sf-cell{white-space:nowrap;width:44px}.sf-star-group{display:flex;gap:4px}
+@media(max-width:600px){.sf-panel{padding:15px}.sf-star{min-width:29px;min-height:30px}}
 </style>
 </head>
 <body>
@@ -355,6 +372,13 @@ input,select{max-width:100%}input:focus,select:focus{border-color:#00e676!import
         <button type="button" class="bs-sport-choice" data-sport="basket" aria-pressed="false">🏀 Basket NBA</button>
       </div>
     </nav>
+
+
+    <section class="sf-panel" aria-labelledby="sf-title">
+      <div class="sf-head"><h2 id="sf-title"><i class="fas fa-star"></i> Storm Favorites</h2><span id="sf-total" class="bs-method-tag">0 SQUADRE</span></div>
+      <p class="sf-help">Salva le tue squadre con ⭐ nei calendari o nell'elenco NBA. I preferiti rimangono in questo browser, separati per account: non vengono sincronizzati tra dispositivi.</p>
+      <div id="sf-list" class="sf-list" aria-live="polite"><p class="sf-empty">Non hai ancora aggiunto squadre preferite.</p></div>
+    </section>
 
     <div class="stats-grid">
       <div class="stat-card">
@@ -424,6 +448,7 @@ input,select{max-width:100%}input:focus,select:focus{border-color:#00e676!import
         </div>
         <div class="bs-calendar-count" id="fd-calendar-count" role="status" aria-live="polite">In attesa dei dati sportivi...</div>
       </div>
+      <label class="sf-only"><input type="checkbox" id="sf-only-fd"> Mostra solo partite delle squadre preferite ⭐</label>
       <div class="fd-subtitle">Calendario e risultati <span id="fd-matches-label" style="color:var(--muted);font-weight:400;font-size:.76rem"></span></div>
       <div class="fd-table-wrap" id="fd-matches"><p class="fd-message">Seleziona una competizione per consultare le partite.</p></div>
 
@@ -465,6 +490,7 @@ input,select{max-width:100%}input:focus,select:focus{border-color:#00e676!import
         </div>
         <div class="bs-calendar-count" id="bd-calendar-count" role="status" aria-live="polite">In attesa dei dati sportivi...</div>
       </div>
+      <label class="sf-only"><input type="checkbox" id="sf-only-bd"> Mostra solo partite delle squadre preferite ⭐</label>
       <div class="fd-subtitle">Calendario e risultati <span id="bd-games-label" style="color:var(--muted);font-size:.75rem;font-weight:400"></span></div>
       <div id="bd-games-status" class="fd-message">La disponibilità delle partite dipende dal piano API.</div>
       <div id="bd-games" class="fd-table-wrap"></div>
@@ -608,6 +634,7 @@ async function loadDashboard() {
       profile = r.data;
     }
     currentProfile = profile;
+    sfLoad();
     const { data: analyses } = await sb.from('analyses').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false }).limit(20);
     document.getElementById('loading-state').style.display = 'none';
     document.getElementById('dashboard').style.display     = 'block';
@@ -941,12 +968,16 @@ function fdRenderMatches(matches){
   if(!matches.length){const p=document.createElement('p');p.className='fd-message';p.textContent='Nessuna partita disponibile.';target.appendChild(p);return;}
   const table=document.createElement('table');table.className='fd-table';
   const thead=document.createElement('thead'),hr=document.createElement('tr');
-  ['Data','Casa','Ospite','Risultato','Stato'].forEach(h=>fdCell(hr,h,'th'));thead.appendChild(hr);table.appendChild(thead);
+  ['Data','Casa','Ospite','Risultato','Stato','⭐'].forEach(h=>fdCell(hr,h,'th'));thead.appendChild(hr);table.appendChild(thead);
   const tbody=document.createElement('tbody');
   for(const m of matches){
     const tr=document.createElement('tr');tr.className='fd-match-row';tr.tabIndex=0;tr.dataset.matchId=String(m.id);tr.setAttribute('role','button');tr.setAttribute('aria-selected','false');
     tr.setAttribute('aria-label','Apri confronto: '+fdMatchTeamName(m.homeTeam)+' contro '+fdMatchTeamName(m.awayTeam));
     [fdDate(m.utcDate),fdMatchTeamName(m.homeTeam),fdMatchTeamName(m.awayTeam),fdFinished(m)?m.score.fullTime.home+' - '+m.score.fullTime.away:'—',({FINISHED:'Terminata',SCHEDULED:'Programmata',TIMED:'Programmata',IN_PLAY:'In corso',PAUSED:'Intervallo',POSTPONED:'Rinviata',CANCELLED:'Annullata'})[m.status]||m.status||'—'].forEach(v=>fdCell(tr,v));
+    const favCell=document.createElement('td');favCell.className='sf-cell';const favGroup=document.createElement('div');favGroup.className='sf-star-group';
+    if(m.homeTeam?.id!=null)favGroup.appendChild(sfStar('fd',m.homeTeam.id,fdMatchTeamName(m.homeTeam)));
+    if(m.awayTeam?.id!=null)favGroup.appendChild(sfStar('fd',m.awayTeam.id,fdMatchTeamName(m.awayTeam)));
+    favCell.appendChild(favGroup);tr.appendChild(favCell);
     tr.addEventListener('click',()=>fdShowMatch(m.id));tr.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();fdShowMatch(m.id);}});
     tbody.appendChild(tr);
   }
@@ -1038,6 +1069,7 @@ async function bdFetch(type,params={}){
   }finally{clearTimeout(timer);}
 }
 function bdRenderTeams(teams){
+  sfNbaTeams=Array.isArray(teams)?teams:[];
   const root=bdEl('bd-teams');root.replaceChildren();
   const filtered=teams.filter(t=>t&&t.id!=null&&t.full_name);
   filtered.sort((a,b)=>String(a.full_name).localeCompare(String(b.full_name),'it'));
@@ -1045,7 +1077,7 @@ function bdRenderTeams(teams){
     const card=document.createElement('div');card.className='bd-team';
     const name=document.createElement('strong');name.textContent=team.full_name;
     const info=document.createElement('small');info.textContent=[team.abbreviation,team.conference,team.division].filter(Boolean).join(' · ')||'Informazioni aggiuntive non disponibili';
-    card.append(name,info);root.appendChild(card);
+    card.append(name,info);card.appendChild(sfStar("bd",team.id,team.full_name));root.appendChild(card);
   }
   bdSet('bd-team-count',filtered.length);
   bdSet('bd-team-status',filtered.length?'Squadre ricevute dalla fonte: '+filtered.length+'.':'Nessuna squadra disponibile nella risposta.');
@@ -1191,7 +1223,7 @@ function bdRenderGames(games,append){
   let table=root.querySelector('table'),tbody=table?.querySelector('tbody');
   if(!append||!table){root.replaceChildren();table=document.createElement('table');table.className='fd-table';
     const head=document.createElement('thead'),tr=document.createElement('tr');
-    ['Data','Casa','Ospite','Punteggio','Stato'].forEach(label=>fdCell(tr,label,'th'));
+    ['Data','Casa','Ospite','Punteggio','Stato','⭐'].forEach(label=>fdCell(tr,label,'th'));
     head.appendChild(tr);table.appendChild(head);tbody=document.createElement('tbody');table.appendChild(tbody);root.appendChild(table);
   }
   for(const game of games){
@@ -1206,6 +1238,10 @@ function bdRenderGames(games,append){
     const status=String(game.status||'—');
     const date=game.datetime||game.date;
     [bdDate(date),home,away,hasScores?hs+' – '+as:'—',status].forEach(v=>fdCell(tr,v));
+    const favCell=document.createElement('td');favCell.className='sf-cell';const favGroup=document.createElement('div');favGroup.className='sf-star-group';
+    if(game.home_team?.id!=null)favGroup.appendChild(sfStar('bd',game.home_team.id,home));
+    if(game.visitor_team?.id!=null)favGroup.appendChild(sfStar('bd',game.visitor_team.id,away));
+    favCell.appendChild(favGroup);tr.appendChild(favCell);
     tbody.appendChild(tr);
   }
 }
@@ -1307,12 +1343,13 @@ function bsCalendarRender(sport){
     if(bsCalendars.fd.mode==='all'){
       const now=Date.now();matches=[...all].sort((a,b)=>Math.abs(new Date(a.utcDate)-now)-Math.abs(new Date(b.utcDate)-now)).slice(0,35);
     }else matches=all.filter(m=>bsCalendarMatch('fd',m.utcDate));
+    if(document.getElementById('sf-only-fd')?.checked)matches=matches.filter(m=>sfHas('fd',m.homeTeam?.id)||sfHas('fd',m.awayTeam?.id));
     matches.sort((a,b)=>new Date(a.utcDate)-new Date(b.utcDate));
     fdRenderMatches(matches);bsCalendarCount('fd',matches.length,all.length);
     fdText('fd-matches-label',bsCalendars.fd.mode==='all'&&all.length>35?'(35 incontri più vicini a oggi)':'');
   }else{
     const all=bdCurrentGames.filter(g=>g&&(g.datetime||g.date));
-    const shown=all.filter(g=>bsCalendarMatch('bd',g.datetime||g.date)).sort((a,b)=>new Date(a.datetime||a.date)-new Date(b.datetime||b.date));
+    const shown=all.filter(g=>bsCalendarMatch('bd',g.datetime||g.date)).filter(g=>!document.getElementById('sf-only-bd')?.checked||sfHas('bd',g.home_team?.id)||sfHas('bd',g.visitor_team?.id)).sort((a,b)=>new Date(a.datetime||a.date)-new Date(b.datetime||b.date));
     bdRenderGames(shown,false);bsCalendarCount('bd',shown.length,all.length);
     bdSet('bd-games-label',bsCalendars.bd.mode==='all'?'(pagine ricevute, ordinate per data)':'(filtrate per data · pagine ricevute)');
   }
@@ -1331,6 +1368,51 @@ function bsCalendarInit(){
     date.addEventListener('change',()=>{if(date.value)set('date',date.value);else set('all');});
   }
 }
+
+// Storm Favorites: localStorage per account; nessun invio al server.
+let sfItems=[];
+function sfKey(){return 'betstorm_favorites_v1_'+String(currentUser?.id||'guest');}
+function sfLoad(){
+  try{const v=JSON.parse(localStorage.getItem(sfKey())||'[]');sfItems=Array.isArray(v)?v.filter(x=>x&&['fd','bd'].includes(x.sport)&&x.id!=null&&typeof x.name==='string').slice(0,300):[];}
+  catch(_){sfItems=[];}
+  sfRender();
+}
+function sfHas(sport,id){return id!=null&&sfItems.some(x=>x.sport===sport&&x.id===String(id));}
+function sfStar(sport,id,name){
+  const b=document.createElement('button');b.type='button';b.className='sf-star';
+  const saved=sfHas(sport,id);b.textContent=saved?'★':'☆';b.setAttribute('aria-pressed',String(saved));
+  b.setAttribute('aria-label',(saved?'Rimuovi dai':'Aggiungi ai')+' preferiti: '+name);
+  b.title=(saved?'Rimuovi':'Aggiungi')+' preferito: '+name;
+  b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();sfToggle(sport,id,name);});
+  b.addEventListener('keydown',e=>e.stopPropagation());return b;
+}
+function sfToggle(sport,id,name){
+  if(id==null||!['fd','bd'].includes(sport))return;
+  const key=String(id),idx=sfItems.findIndex(x=>x.sport===sport&&x.id===key);
+  if(idx>=0)sfItems.splice(idx,1);
+  else sfItems.push({sport,id:key,name:String(name||'Squadra')});
+  try{localStorage.setItem(sfKey(),JSON.stringify(sfItems));}catch(_){showToast('Impossibile salvare i preferiti in questo browser.','error');}
+  sfRender();sfRefresh();
+}
+function sfRender(){
+  const root=document.getElementById('sf-list');if(!root)return;root.replaceChildren();
+  const total=document.getElementById('sf-total');if(total)total.textContent=sfItems.length+' SQUADRE';
+  if(!sfItems.length){const p=document.createElement('p');p.className='sf-empty';p.textContent='Nessuna squadra salvata. Usa ☆ accanto alle squadre nei centri dati.';root.appendChild(p);return;}
+  for(const item of [...sfItems].sort((a,b)=>a.sport.localeCompare(b.sport)||a.name.localeCompare(b.name,'it'))){
+    const chip=document.createElement('div');chip.className='sf-chip';
+    const name=document.createElement('span');name.textContent=(item.sport==='fd'?'⚽ ':'🏀 ')+item.name;
+    const remove=document.createElement('button');remove.type='button';remove.className='sf-remove';remove.textContent='×';remove.title='Rimuovi '+item.name;remove.setAttribute('aria-label','Rimuovi '+item.name+' dai preferiti');
+    remove.addEventListener('click',()=>sfToggle(item.sport,item.id,item.name));chip.append(name,remove);root.appendChild(chip);
+  }
+}
+function sfRefresh(){
+  if(typeof bsCalendarRender==='function'){bsCalendarRender('fd');bsCalendarRender('bd');}
+  if(typeof bdRenderTeams==='function'&&Array.isArray(sfNbaTeams)&&sfNbaTeams.length)bdRenderTeams(sfNbaTeams);
+}
+let sfNbaTeams=[];
+document.getElementById('sf-only-fd')?.addEventListener('change',()=>bsCalendarRender('fd'));
+document.getElementById('sf-only-bd')?.addEventListener('change',()=>bsCalendarRender('bd'));
+
 bsCalendarInit();
 
 renderSportCatalog();
