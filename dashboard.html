@@ -294,6 +294,18 @@ input,select{max-width:100%}input:focus,select:focus{border-color:#00e676!import
 .bni-legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.73rem;color:var(--muted);margin:9px 0}
 .bni-key{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px}
 @media(max-width:650px){.bni-grid{grid-template-columns:1fr}.bni-card{padding:12px}}
+
+/* CALENDARIO SPORTIVO — filtri sulle partite realmente ricevute */
+.bs-calendar{border:1px solid rgba(0,230,118,.2);border-radius:13px;background:rgba(0,230,118,.035);padding:17px;margin:16px 0}
+.bs-calendar-title{font:800 .94rem 'Syne',sans-serif;margin-bottom:6px}
+.bs-calendar-title i{color:var(--green)}
+.bs-calendar-help{color:var(--muted);font-size:.78rem;line-height:1.6;margin-bottom:13px}
+.bs-calendar-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.bs-date-btn{border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text);border-radius:9px;padding:9px 12px;cursor:pointer;font:600 .8rem 'DM Sans',sans-serif}
+.bs-date-btn[aria-pressed="true"]{border-color:var(--green);color:var(--green);background:rgba(0,230,118,.11)}
+.bs-date-input{background:#101923;border:1px solid var(--border);color:var(--text);border-radius:9px;padding:9px 10px;font:500 .82rem 'DM Sans',sans-serif;color-scheme:dark;max-width:180px}
+.bs-calendar-count{font-size:.79rem;color:#c3d2e0;margin-top:12px;line-height:1.6}
+@media(max-width:550px){.bs-calendar{padding:13px}.bs-date-btn{flex:1}.bs-date-input{width:100%;max-width:none}}
 </style>
 </head>
 <body>
@@ -399,6 +411,19 @@ input,select{max-width:100%}input:focus,select:focus{border-color:#00e676!import
         <div class="fd-kpi"><span class="stat-label">Partite ricevute</span><strong id="fd-match-count">—</strong></div>
         <div class="fd-kpi"><span class="stat-label">Ultima richiesta</span><strong id="fd-updated" style="font-size:.9rem">—</strong></div>
       </div>
+      <div class="bs-calendar" data-calendar="fd" aria-label="Filtri calendario Calcio">
+        <div class="bs-calendar-title"><i class="far fa-calendar-alt"></i> Calendario sportivo · Calcio</div>
+        <p class="bs-calendar-help">Filtra per data le partite ricevute dalla fonte. Orari e giorni nel fuso italiano. Per tornare all'elenco iniziale scegli “Tutte”.</p>
+        <div class="bs-calendar-actions" role="group" aria-label="Periodo calendario">
+          <button type="button" class="bs-date-btn" data-range="all" aria-pressed="true">Tutte</button>
+          <button type="button" class="bs-date-btn" data-range="today" aria-pressed="false">Oggi</button>
+          <button type="button" class="bs-date-btn" data-range="tomorrow" aria-pressed="false">Domani</button>
+          <button type="button" class="bs-date-btn" data-range="week" aria-pressed="false">Prossimi 7 giorni</button>
+          <label class="event-row-label" style="margin:0" for="fd-date">Data</label>
+          <input id="fd-date" class="bs-date-input" type="date" aria-label="Seleziona data Calcio">
+        </div>
+        <div class="bs-calendar-count" id="fd-calendar-count" role="status" aria-live="polite">In attesa dei dati sportivi...</div>
+      </div>
       <div class="fd-subtitle">Calendario e risultati <span id="fd-matches-label" style="color:var(--muted);font-weight:400;font-size:.76rem"></span></div>
       <div class="fd-table-wrap" id="fd-matches"><p class="fd-message">Seleziona una competizione per consultare le partite.</p></div>
 
@@ -427,6 +452,19 @@ input,select{max-width:100%}input:focus,select:focus{border-color:#00e676!import
       <div class="fd-subtitle">Squadre NBA</div>
       <div id="bd-team-status" class="fd-message">Caricamento elenco squadre...</div>
       <div id="bd-teams" class="bd-teams"></div>
+      <div class="bs-calendar" data-calendar="bd" aria-label="Filtri calendario NBA">
+        <div class="bs-calendar-title"><i class="far fa-calendar-alt"></i> Calendario sportivo · NBA</div>
+        <p class="bs-calendar-help">Filtra per data le partite ricevute dalla fonte. Orari e giorni nel fuso italiano. Per tornare all'elenco iniziale scegli “Tutte”.</p>
+        <div class="bs-calendar-actions" role="group" aria-label="Periodo calendario">
+          <button type="button" class="bs-date-btn" data-range="all" aria-pressed="true">Tutte</button>
+          <button type="button" class="bs-date-btn" data-range="today" aria-pressed="false">Oggi</button>
+          <button type="button" class="bs-date-btn" data-range="tomorrow" aria-pressed="false">Domani</button>
+          <button type="button" class="bs-date-btn" data-range="week" aria-pressed="false">Prossimi 7 giorni</button>
+          <label class="event-row-label" style="margin:0" for="bd-date">Data</label>
+          <input id="bd-date" class="bs-date-input" type="date" aria-label="Seleziona data NBA">
+        </div>
+        <div class="bs-calendar-count" id="bd-calendar-count" role="status" aria-live="polite">In attesa dei dati sportivi...</div>
+      </div>
       <div class="fd-subtitle">Calendario e risultati <span id="bd-games-label" style="color:var(--muted);font-size:.75rem;font-weight:400"></span></div>
       <div id="bd-games-status" class="fd-message">La disponibilità delle partite dipende dal piano API.</div>
       <div id="bd-games" class="fd-table-wrap"></div>
@@ -960,10 +998,7 @@ async function fdLoadSelected(){
       const matches=Array.isArray(result.data.matches)?result.data.matches:[];
        if(fdCurrentCode===code)fdCurrentMatches=matches;
       fdText('fd-match-count',matches.length);
-      const today=Date.now();
-      const sorted=[...matches].sort((a,b)=>Math.abs(new Date(a.utcDate)-today)-Math.abs(new Date(b.utcDate)-today)).slice(0,35).sort((a,b)=>new Date(a.utcDate)-new Date(b.utcDate));
-      fdText('fd-matches-label',matches.length>35?'(35 incontri più vicini a oggi)':'');
-       fdRenderMatches(sorted);
+      bsCalendarRender('fd');
        fdEl('fd-match-center').textContent='Seleziona una partita nella tabella per aprire Storm Match Center.';
     } catch(e){matchesError=e.message||'Errore partite';fdEl('fd-matches').textContent='Partite non disponibili: '+matchesError;fdEl('fd-match-center').textContent='Confronto non disponibile senza dati sulle partite.';}
     try {
@@ -1198,12 +1233,12 @@ async function bdLoadGames(append=false){
     if(!append){bdCurrentGames=[];bdSelectedGameId=null;bdSet('bd-match-center','Seleziona una partita NBA nella tabella per aprire Storm NBA Match Center.');}
     const ids=new Set(bdCurrentGames.map(g=>String(g.id)));
     for(const g of games){if(g&&g.id!=null&&!ids.has(String(g.id))){bdCurrentGames.push(g);ids.add(String(g.id));}}
-    bdRenderGames(games,append);
+    bsCalendarRender('bd');
     if(bdSelectedGameId)bdOpenMatch(bdSelectedGameId);
     const cursor=result.data.meta?.next_cursor;
     bdNextCursor=(cursor!==undefined&&cursor!==null&&/^\d+$/.test(String(cursor)))?String(cursor):null;
     more.style.display=bdNextCursor?'inline-flex':'none';
-    bdSet('bd-games-label','(pagine fino a 100 partite, ordinate dalla fonte)');
+
     bdSet('bd-games-status',games.length?'Ricevute '+games.length+' partite'+(append?' aggiuntive':'')+'. Usa “Carica altre partite” per continuare, se disponibile.':'Nessuna partita restituita per la stagione selezionata.');
     bdSet('bd-updated',bdDate(result.fetched_at));
   }catch(e){
@@ -1244,6 +1279,59 @@ function bsSportInit(){
   let initial='calcio';try{initial=sessionStorage.getItem('bs_data_sport')||'calcio';}catch(_){}
   select(initial);
 }
+
+
+// FILTRI CALENDARIO: confronto delle date in Europe/Rome (inclusi cambi ora legale).
+const bsCalendars={fd:{mode:'all',date:''},bd:{mode:'all',date:''}};
+const bsRomeDay=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Rome',year:'numeric',month:'2-digit',day:'2-digit'});
+function bsDay(value){const d=new Date(value);return Number.isNaN(d.getTime())?'':bsRomeDay.format(d);}
+function bsDayOffset(day,offset){const d=new Date(day+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+offset);return d.toISOString().slice(0,10);}
+function bsCalendarMatch(sport,value){
+  const state=bsCalendars[sport];if(state.mode==='all')return true;
+  const day=bsDay(value);if(!day)return false;
+  const today=bsDay(new Date());
+  if(state.mode==='today')return day===today;
+  if(state.mode==='tomorrow')return day===bsDayOffset(today,1);
+  if(state.mode==='week')return day>=today&&day<=bsDayOffset(today,6);
+  return state.mode==='date'&&day===state.date;
+}
+function bsCalendarCount(sport,visible,total){
+  const el=document.getElementById(sport+'-calendar-count');if(!el)return;
+  const note=sport==='bd'?' Sono conteggiate solo le pagine NBA caricate; puoi usare “Carica altre partite”.':' Sono conteggiate solo le partite ricevute per la competizione.';
+  el.textContent=visible+' partite visualizzate su '+total+' ricevute.'+note;
+}
+function bsCalendarRender(sport){
+  if(sport==='fd'){
+    const all=fdCurrentMatches.filter(m=>m&&m.utcDate);
+    let matches;
+    if(bsCalendars.fd.mode==='all'){
+      const now=Date.now();matches=[...all].sort((a,b)=>Math.abs(new Date(a.utcDate)-now)-Math.abs(new Date(b.utcDate)-now)).slice(0,35);
+    }else matches=all.filter(m=>bsCalendarMatch('fd',m.utcDate));
+    matches.sort((a,b)=>new Date(a.utcDate)-new Date(b.utcDate));
+    fdRenderMatches(matches);bsCalendarCount('fd',matches.length,all.length);
+    fdText('fd-matches-label',bsCalendars.fd.mode==='all'&&all.length>35?'(35 incontri più vicini a oggi)':'');
+  }else{
+    const all=bdCurrentGames.filter(g=>g&&(g.datetime||g.date));
+    const shown=all.filter(g=>bsCalendarMatch('bd',g.datetime||g.date)).sort((a,b)=>new Date(a.datetime||a.date)-new Date(b.datetime||b.date));
+    bdRenderGames(shown,false);bsCalendarCount('bd',shown.length,all.length);
+    bdSet('bd-games-label',bsCalendars.bd.mode==='all'?'(pagine ricevute, ordinate per data)':'(filtrate per data · pagine ricevute)');
+  }
+}
+function bsCalendarInit(){
+  for(const sport of ['fd','bd']){
+    const root=document.querySelector('[data-calendar="'+sport+'"]');if(!root)continue;
+    const date=root.querySelector('input[type="date"]');
+    const set=(mode,selected='')=>{
+      bsCalendars[sport]={mode,date:selected};
+      root.querySelectorAll('[data-range]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.range===mode)));
+      if(mode!=='date')date.value='';
+      bsCalendarRender(sport);
+    };
+    root.querySelectorAll('[data-range]').forEach(b=>b.addEventListener('click',()=>set(b.dataset.range)));
+    date.addEventListener('change',()=>{if(date.value)set('date',date.value);else set('all');});
+  }
+}
+bsCalendarInit();
 
 renderSportCatalog();
 
