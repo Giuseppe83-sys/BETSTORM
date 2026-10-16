@@ -60,18 +60,6 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .section-title i{color:var(--green)}
 
 /* PIANO */
-.plan-card{background:var(--glass);border:1px solid var(--border);border-radius:12px;padding:20px;display:flex;align-items:center;gap:16px;margin-bottom:16px}
-.plan-card.pro{border-color:rgba(0,230,118,.3)}
-.plan-card.elite{border-color:rgba(255,215,0,.3)}
-.plan-avatar{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
-.plan-avatar.free{background:rgba(255,255,255,.05)}
-.plan-avatar.pro{background:rgba(0,230,118,.1)}
-.plan-avatar.elite{background:rgba(255,215,0,.1)}
-.plan-info{flex:1}
-.plan-name{font-weight:700;font-size:1rem}
-.plan-status{font-size:.8rem;color:var(--muted);margin-top:2px}
-.plan-status.active{color:var(--green)}
-.plan-actions{display:flex;gap:8px;flex-wrap:wrap}
 
 /* ANALISI */
 .analysis-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
@@ -149,7 +137,6 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
   .grid-2{grid-template-columns:1fr}
   .event-row{grid-template-columns:1fr 1fr}
   .event-row>div:first-child,.event-row>div:nth-child(4){grid-column:1/-1}
-  .plan-card{flex-direction:column;align-items:flex-start}
 }
 @media(max-width:480px){
   .stats-grid{grid-template-columns:1fr}
@@ -263,15 +250,9 @@ input,select{max-width:100%}input:focus,select:focus{border-color:#00e676!import
 
     <div class="grid-2">
       <div class="section-card">
-        <div class="section-title"><i class="fas fa-crown"></i> Il tuo piano</div>
-        <div class="plan-card" id="plan-card">
-          <div class="plan-avatar free" id="plan-avatar">⚡</div>
-          <div class="plan-info">
-            <div class="plan-name" id="plan-name">Piano Free</div>
-            <div class="plan-status" id="plan-status">3 analisi/giorno</div>
-          </div>
-        </div>
-        <div class="plan-actions" id="plan-actions"></div>
+        <div class="section-title"><i class="fas fa-tags"></i> Offerte e opportunità</div>
+        <p style="color:var(--muted);font-size:.88rem;line-height:1.7;margin:0">Al momento non sono presenti offerte attive. Eventuali iniziative future saranno identificate chiaramente come contenuti commerciali e separate dalle analisi sportive.</p>
+        <p style="color:var(--muted);font-size:.76rem;line-height:1.6;margin:12px 0 0">BetStorm è uno strumento informativo: non accetta scommesse. 18+ · Gioca responsabilmente.</p>
       </div>
       <div class="section-card">
         <div class="section-title"><i class="fas fa-history"></i> Analisi recenti</div>
@@ -298,8 +279,6 @@ input,select{max-width:100%}input:focus,select:focus{border-color:#00e676!import
       <div class="section-card">
         <div class="section-title"><i class="fas fa-user-circle"></i> Account</div>
         <div class="acc-row"><span class="acc-label">Email</span><span class="acc-val" id="acc-email">—</span></div>
-        <div class="acc-row"><span class="acc-label">Piano attivo</span><span class="acc-val" id="acc-plan">—</span></div>
-        <div class="acc-row"><span class="acc-label">Stato abbonamento</span><span class="acc-val" id="acc-status">—</span></div>
         <div class="acc-row"><span class="acc-label">Membro dal</span><span class="acc-val" id="acc-since">—</span></div>
         <div style="display:flex;gap:8px;margin-top:20px;flex-wrap:wrap">
           <button onclick="handleLogout()" class="btn btn-outline"><i class="fas fa-sign-out-alt"></i> Disconnetti</button>
@@ -411,23 +390,12 @@ async function loadDashboard() {
     document.getElementById('stat-today').textContent    = profile?.analyses_today || 0;
     const since = new Date(currentUser.created_at);
     document.getElementById('stat-member').textContent = since.toLocaleDateString('it-IT', { month:'short', year:'numeric' });
-    const plan = profile?.plan || 'free';
-    renderPlan(plan);
     document.getElementById('acc-email').textContent  = currentUser.email;
-    document.getElementById('acc-plan').textContent   = plan.charAt(0).toUpperCase() + plan.slice(1);
-    document.getElementById('acc-status').textContent = plan === 'free' ? '— Piano gratuito' : '✅ Attivo';
     document.getElementById('acc-since').textContent  = since.toLocaleDateString('it-IT', { day:'numeric', month:'long', year:'numeric' });
     renderAnalyses(analyses);
     renderStats(analyses);
     if (!document.getElementById('combo-events').children.length) addComboEvent();
   } catch(e) { console.error(e); showNotLogged(); }
-}
-
-function renderPlan(plan) {
-  const av = document.getElementById('plan-avatar'), nm = document.getElementById('plan-name'), st = document.getElementById('plan-status'), ac = document.getElementById('plan-actions');
-  if (plan === 'pro') { av.textContent='⚡'; av.className='plan-avatar pro'; nm.textContent='Piano Pro'; st.textContent='✅ Abbonamento attivo'; st.className='plan-status active'; ac.innerHTML=`<button onclick="startCheckout('elite')" class="btn btn-outline"><i class="fas fa-crown"></i> Upgrade a Elite — €19.99/mese</button>`; }
-  else if (plan === 'elite') { av.textContent='👑'; av.className='plan-avatar elite'; nm.textContent='Piano Elite'; st.textContent='✅ Abbonamento attivo'; st.className='plan-status active'; ac.innerHTML=`<span style="font-size:.8rem;color:var(--muted)">Hai il piano più completo 🎉</span>`; }
-  else { av.textContent='⚡'; av.className='plan-avatar free'; nm.textContent='Piano Free'; st.textContent='3 analisi/giorno'; ac.innerHTML=`<button onclick="startCheckout('pro')" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px"><i class="fas fa-bolt"></i> Upgrade a Pro — €9.99/mese</button><button onclick="startCheckout('elite')" class="btn btn-outline" style="width:100%;justify-content:center;margin-top:8px"><i class="fas fa-crown"></i> Upgrade a Elite — €19.99/mese</button>`; }
 }
 
 function renderAnalyses(analyses) {
@@ -550,63 +518,9 @@ async function runComboAnalysis() {
   const grad=pct>=70?'linear-gradient(90deg,#00b248,#00e676)':pct>=50?'linear-gradient(90deg,#f57f17,#ffd600)':'linear-gradient(90deg,#b71c1c,#ff5252)';
   document.getElementById('combo-pct-display').textContent=pct+'%'; document.getElementById('combo-pct-display').style.color=color;
   const fill=document.getElementById('combo-fill'); fill.style.background=grad; fill.style.width='0'; setTimeout(()=>fill.style.width=pct+'%',50);
-  document.getElementById('combo-verdict').innerHTML=pct>=70?`🔥 <strong>Alta probabilità!</strong> Combinata al ${pct}%`:pct>=50?`⚠️ <strong>Nella media.</strong> Probabilità del ${pct}%`:`❌ <strong>Rischio elevato.</strong> Solo ${pct}%`;
+  document.getElementById('combo-verdict').innerHTML=pct>=70?`Stima indicativa elevata: ${pct}%`:pct>=50?`Stima indicativa intermedia: ${pct}%`:`Stima indicativa bassa: ${pct}%`;
   document.getElementById('combo-events-summary').innerHTML=events.map(e=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:.82rem"><span>${e.home} vs ${e.away}</span><span style="color:var(--muted)">${e.bet}</span><span style="color:${e.prob>=70?'var(--green)':e.prob>=50?'#ffd600':'#ff5252'};font-weight:600">${e.prob}%</span></div>`).join('');
   if(currentUser) sb.from('analyses').insert({user_id:currentUser.id,events,result_pct:pct}).then(()=>sb.from('analyses').select('*').eq('user_id',currentUser.id).order('created_at',{ascending:false}).limit(20).then(r=>{renderAnalyses(r.data);renderStats(r.data);}));
-}
-
-// PAYPAL CHECKOUT
-const PAYPAL_PRICES = { pro: 9.99, elite: 24.99 };
-const PAYPAL_ME = 'https://paypal.me/peppecapitano'; // ⬅️ CAMBIA CON IL TUO
-
-function startCheckout(plan) {
-  const amount   = PAYPAL_PRICES[plan] || 9.99;
-  const planName = plan === 'pro' ? 'Pro' : 'Elite';
-
-  const existing = document.getElementById('paypal-modal');
-  if (existing) existing.remove();
-
-  const modal = document.createElement('div');
-  modal.id = 'paypal-modal';
-  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.7);backdrop-filter:blur(8px)';
-  modal.innerHTML = `
-    <div style="background:#0d1117;border:1px solid rgba(0,230,118,.3);border-radius:20px;padding:36px;max-width:460px;width:100%;position:relative">
-      <button onclick="document.getElementById('paypal-modal').remove()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:#6b7a8d;font-size:1.4rem;cursor:pointer">×</button>
-      <div style="text-align:center;margin-bottom:24px">
-        <div style="font-size:2.5rem;margin-bottom:8px">💳</div>
-        <h2 style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:6px">Upgrade a ${planName}</h2>
-        <div style="color:#00e676;font-size:1.8rem;font-weight:800">€${amount.toFixed(2)}<span style="font-size:.9rem;color:#6b7a8d;font-weight:400"> /mese</span></div>
-      </div>
-      <div style="background:rgba(255,255,255,.03);border-radius:12px;padding:20px;margin-bottom:24px">
-        <p style="font-weight:600;margin-bottom:12px;font-size:.9rem">Come procedere:</p>
-        <div style="display:flex;gap:12px;margin-bottom:10px;font-size:.85rem">
-          <span style="background:#00e676;color:#000;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0">1</span>
-          <span>Clicca <strong>Paga con PayPal</strong> qui sotto</span>
-        </div>
-        <div style="display:flex;gap:12px;margin-bottom:10px;font-size:.85rem">
-          <span style="background:#00e676;color:#000;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0">2</span>
-          <span>Invia <strong>€${amount.toFixed(2)}</strong> e nella nota scrivi: <strong style="color:#00e676">${currentUser?.email || 'la tua email'}</strong></span>
-        </div>
-        <div style="display:flex;gap:12px;font-size:.85rem">
-          <span style="background:#00e676;color:#000;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0">3</span>
-          <span>Il tuo piano viene attivato entro <strong>pochi minuti</strong> ⚡</span>
-        </div>
-      </div>
-      <button onclick="goPayPal('${plan}',${amount})" style="width:100%;padding:14px;background:#0070ba;border:none;border-radius:10px;color:#fff;font-family:'DM Sans',sans-serif;font-weight:700;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px" onmouseover="this.style.background='#005ea6'" onmouseout="this.style.background='#0070ba'">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-.013.076-.026.175-.041.254-.93 4.778-4.005 7.201-9.138 7.201h-2.19a.563.563 0 0 0-.556.479l-1.187 7.527h-.506l-.24 1.516a.56.56 0 0 0 .554.647h3.882c.46 0 .85-.334.922-.788.06-.26.76-4.852.816-5.09a.932.932 0 0 1 .923-.788h.58c3.76 0 6.705-1.528 7.565-5.946.36-1.847.174-3.388-.777-4.471z"/></svg>
-        Paga con PayPal
-      </button>
-      <p style="text-align:center;font-size:.75rem;color:#6b7a8d">Hai già pagato? <a href="mailto:support@betstorm.it" style="color:#00e676">Contattaci</a></p>
-    </div>
-  `;
-  document.body.appendChild(modal);
-  modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
-}
-
-function goPayPal(plan, amount) {
-  try { navigator.clipboard.writeText(currentUser?.email || ''); } catch(_) {}
-  showToast('📋 Email copiata! Incollala nella nota PayPal', 'success');
-  setTimeout(() => { window.open(`${PAYPAL_ME}/${amount.toFixed(2)}EUR`, '_blank'); }, 800);
 }
 
 // LOGOUT / DELETE
