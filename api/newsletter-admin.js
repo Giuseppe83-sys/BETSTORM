@@ -4,7 +4,7 @@ const BASE = (process.env.SUPABASE_URL || '').replace(/\/$/, '');
 const KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const sha = s => crypto.createHash('sha256').update(s).digest('hex');
 const dbHeaders = () => ({ apikey:KEY, Authorization:`Bearer ${KEY}`, 'Content-Type':'application/json' });
-const db = async (path, opts={}) => { const r=await fetch(`${BASE}/rest/v1/${path}`,{...opts,headers:{...dbHeaders(),...(opts.headers||{})}});if(!r.ok)throw Error(`Database ${r.status}: ${(await r.text()).slice(0,180)}`);return r.status===204?[]:r.json() };
+const db = async (path, opts={}) => { const r=await fetch(`${BASE}/rest/v1/${path}`,{...opts,headers:{...dbHeaders(),...(opts.headers||{})}});const raw=await r.text();if(!r.ok)throw Error(`Database ${r.status}: ${raw.slice(0,180)}`);if(!raw.trim())return [];try{return JSON.parse(raw)}catch{throw Error(`Risposta JSON Supabase non valida (HTTP ${r.status})`)} };
 function escape(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 async function authorize(req){
  const match=/^Bearer\s+(.+)$/i.exec(req.headers.authorization||'');if(!match) return false;
