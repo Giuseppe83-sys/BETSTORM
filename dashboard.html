@@ -537,18 +537,19 @@ input,select{max-width:100%}input:focus,select:focus{border-color:#00e676!import
     <!-- STORM TENNIS CENTER: dati soltanto da API server verificata -->
     <section class="combo-full bs-sport-panel" id="tn-panel" hidden aria-labelledby="tn-title">
       <div class="section-title" id="tn-title"><i class="fas fa-table-tennis"></i> Storm Tennis Center <span class="bs-method-tag">ATP / WTA</span></div>
-      <p class="bs-combo-intro">Calendario e risultati del tennis professionistico. I dati vengono visualizzati soltanto quando è configurata una fonte API autorizzata sul server BetStorm: nessun incontro dimostrativo viene spacciato per reale.</p>
+      <p class="bs-combo-intro">Risultati ATP/WTA ricevuti da AcesAPI tramite il server BetStorm. La copertura è parziale: il proxy consulta un campione dei primi 100 incontri per stagione, non un calendario completo né un servizio live.</p>
       <div class="tn-tools">
         <div><label for="tn-tour" class="event-row-label">Circuito</label><select id="tn-tour" class="sport-select"><option value="all">ATP e WTA</option><option value="atp">ATP</option><option value="wta">WTA</option></select></div>
         <div><label for="tn-date" class="event-row-label">Giorno (ora italiana)</label><input type="date" id="tn-date" class="bs-date-input" style="width:100%;max-width:none"></div>
         <button type="button" class="btn btn-primary" id="tn-refresh"><i class="fas fa-sync-alt"></i> Aggiorna tennis</button>
+        <button type="button" class="btn btn-outline" id="tn-example"><i class="fas fa-history"></i> Prova risultati verificati · 05/01/2025</button>
       </div>
       <div id="tn-status" class="tn-status" role="status" aria-live="polite">Seleziona Tennis per verificare la disponibilità della fonte.</div>
       <div id="tn-count" class="bs-calendar-count">0 incontri caricati</div>
       <div id="tn-matches" class="tn-list"></div>
       <div class="fd-subtitle"><i class="fas fa-chart-line" style="color:var(--green)"></i> Storm Tennis Match Center</div>
       <div id="tn-center" class="tn-center" aria-live="polite"><p class="fd-message">Seleziona un incontro disponibile per vedere i dettagli effettivamente forniti dalla fonte.</p></div>
-      <p class="bs-method-note">Integrazione predisposta per <code>/api/tennis</code>. Il servizio server e la relativa chiave API, se richiesta, devono essere configurati separatamente. Senza una fonte collegata, BetStorm mostra un messaggio trasparente anziché risultati inventati.</p>
+      <p class="bs-method-note">Fonte: AcesAPI tramite <code>/api/tennis</code>. Copertura limitata ai primi incontri restituiti dalla fonte per stagione: un giorno vuoto non indica necessariamente assenza di partite. Il pulsante di prova consulta risultati storici reali, non incontri dimostrativi. Nessuna previsione.</p>
     </section>
 
     <div class="grid-2">
@@ -1514,7 +1515,7 @@ function swOpen(item){
 
 
 // Tennis: client API. Richiede /api/tennis sul server; nessun dato fittizio.
-let tnReady=false,tnMatches=[];
+let tnReady=false,tnMatches=[],tnRequestId=0;
 const tnGet=id=>document.getElementById(id);
 const tnText=v=>String(v==null?'':v);
 function tnInit(){
@@ -1523,25 +1524,31 @@ function tnInit(){
   tnGet('tn-refresh').addEventListener('click',tnLoad);
   tnGet('tn-date').addEventListener('change',tnLoad);
   tnGet('tn-tour').addEventListener('change',tnLoad);
+  tnGet('tn-example').addEventListener('click',()=>{tnGet('tn-date').value='2025-01-05';tnGet('tn-tour').value='atp';tnLoad();});
   tnLoad();
 }
 async function tnLoad(){
+  const requestId=++tnRequestId;
   const status=tnGet('tn-status'),root=tnGet('tn-matches');
+  const refresh=tnGet('tn-refresh');refresh.disabled=true;
   root.replaceChildren();tnMatches=[];tnGet('tn-count').textContent='0 incontri caricati';
   tnGet('tn-center').textContent='Seleziona un incontro per visualizzare i dettagli disponibili.';
-  status.textContent='Caricamento dati tennis dalla fonte server...';
+  status.textContent='Caricamento dati AcesAPI tramite BetStorm...';
   const url='/api/tennis?date='+encodeURIComponent(tnGet('tn-date').value)+'&tour='+encodeURIComponent(tnGet('tn-tour').value);
   try{
     const response=await fetch(url,{headers:{Accept:'application/json'}});
+    const payload=await response.json().catch(()=>null);
+    if(requestId!==tnRequestId)return;
     if(!response.ok){
-      status.textContent=response.status===404?'Fonte tennis non ancora configurata: occorre aggiungere /api/tennis al progetto Vercel.':'Fonte tennis non disponibile (HTTP '+response.status+'). Verifica il collegamento API sul server.';
+      status.textContent='Errore dal server tennis (HTTP '+response.status+'): '+tnText(payload&&payload.error||'Fonte temporaneamente non disponibile')+'.';
       return;
     }
-    const payload=await response.json();
     if(!payload||!Array.isArray(payload.matches))throw Error('Formato API non riconosciuto');
     tnMatches=payload.matches.filter(m=>m&&typeof m==='object'&&m.player1&&m.player2);
     tnGet('tn-count').textContent=tnMatches.length+' incontri ricevuti';
-    status.textContent=tnMatches.length?'Fonte: '+tnText(payload.source||'API tennis configurata')+' · Incontri realmente ricevuti.':'Nessun incontro disponibile per questa data e circuito nella fonte collegata.';
+    status.textContent=tnMatches.length
+      ?'Fonte: '+tnText(payload.source||'AcesAPI')+' · '+tnMatches.length+' incontri nel campione disponibile. Il calendario non è completo.'
+      :'Nessun incontro trovato nel campione disponibile per questa data e circuito. Non significa che non si siano giocate partite. Prova il pulsante «Risultati verificati».';
     tnMatches.forEach((m,index)=>{
       const b=document.createElement('button');b.type='button';b.className='tn-match';
       const meta=document.createElement('small');meta.textContent=[m.tour,m.tournament,m.round].filter(Boolean).map(tnText).join(' · ');
@@ -1551,20 +1558,30 @@ async function tnLoad(){
       details.textContent=[date&&!isNaN(date.getTime())?date.toLocaleString('it-IT',{timeZone:'Europe/Rome',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'',m.status,m.score].filter(Boolean).map(tnText).join(' · ');
       b.append(meta,names,details);b.addEventListener('click',()=>tnOpen(index));root.appendChild(b);
     });
-  }catch(e){status.textContent='Impossibile leggere i dati tennis. La fonte API potrebbe non essere ancora configurata o non rispettare il formato previsto.';}
+  }catch(e){if(requestId===tnRequestId)status.textContent='Impossibile leggere i dati tennis: '+tnText(e.message)+'.';}
+  finally{if(requestId===tnRequestId)refresh.disabled=false;}
 }
 function tnOpen(index){
   const m=tnMatches[index],root=tnGet('tn-center');if(!m)return;
   root.replaceChildren();
   const title=document.createElement('h3');title.textContent=tnText(m.player1)+' — '+tnText(m.player2);title.style.marginBottom='12px';root.appendChild(title);
-  for(const [label,value] of [['Circuito',m.tour],['Torneo',m.tournament],['Turno',m.round],['Stato',m.status],['Punteggio',m.score],['Superficie',m.surface]]){
+  for(const [label,value] of [['Circuito',m.tour],['Torneo',m.tournament],['Turno',m.round],['Data',m.startTime?new Date(m.startTime).toLocaleString('it-IT',{timeZone:'Europe/Rome'}):''],['Stato',m.status],['Esito',m.outcome],['Punteggio',m.score],['Superficie',m.surface],['Paese giocatore 1',m.player1Country],['Paese giocatore 2',m.player2Country]]){
     if(value==null||value==='')continue;
     const p=document.createElement('p');p.className='fd-metric';
     const span=document.createElement('span');span.textContent=label;
     const strong=document.createElement('strong');strong.textContent=tnText(value);
     p.append(span,strong);root.appendChild(p);
   }
-  const note=document.createElement('p');note.className='fd-small';note.textContent='Mostriamo soltanto le informazioni ricevute dalla fonte. Nessuna previsione di esito.';root.appendChild(note);
+  if(Array.isArray(m.sets)&&m.sets.length){
+    const heading=document.createElement('h4');heading.textContent='Dettaglio set';heading.style.margin='15px 0 8px';root.appendChild(heading);
+    m.sets.forEach((set,i)=>{
+      const p=document.createElement('p');p.className='fd-metric';
+      const label=document.createElement('span');label.textContent='Set '+tnText(set.set||i+1);
+      const score=document.createElement('strong');score.textContent=tnText(set.games1??'—')+' – '+tnText(set.games2??'—');
+      p.append(label,score);root.appendChild(p);
+    });
+  }
+  const note=document.createElement('p');note.className='fd-small';note.textContent='Dati sportivi forniti da AcesAPI. Nessuna previsione di esito.';root.appendChild(note);
 }
 
 // LOGOUT / DELETE
