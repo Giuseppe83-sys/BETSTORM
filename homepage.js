@@ -9,6 +9,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 let sbClient = null;
 let currentUser = null;
+let passwordRecoveryActive = false;
 
 // --- Init Supabase ---
 async function initAuth() {
@@ -20,7 +21,21 @@ async function initAuth() {
       currentUser = session.user;
       updateCTAs(true);
     }
-    sbClient.auth.onAuthStateChange((_event, session) => { currentUser = session?.user || null; updateCTAs(!!currentUser); });
+    sbClient.auth.onAuthStateChange((event, session) => {
+      currentUser = session?.user || null;
+      updateCTAs(!!currentUser);
+      if (event === 'PASSWORD_RECOVERY') {
+        passwordRecoveryActive = true;
+        window.openBetStormPasswordRecovery?.();
+      }
+    });
+    // Supabase can process the recovery URL before the listener is attached.
+    // The recovery type is also present in the URL fragment during that redirect.
+    if (window.location.hash.includes('type=recovery') ||
+        new URLSearchParams(window.location.search).get('type') === 'recovery') {
+      passwordRecoveryActive = true;
+      window.openBetStormPasswordRecovery?.();
+    }
   } catch (e) {
     console.warn('Supabase init:', e.message);
   }
@@ -48,6 +63,9 @@ function setupAuthModal() {
     #bs-auth-panel label{display:block;margin:14px 0 6px;font-size:.85rem}
     #bs-auth-panel input{width:100%;box-sizing:border-box;background:#0a1018;color:white;border:1px solid #43536a;border-radius:8px;padding:12px;font-size:1rem}
     #bs-auth-panel button{cursor:pointer}
+    #bs-auth-password-row[hidden]{display:none!important}
+    #bs-auth-email-row[hidden]{display:none!important}
+    #bs-auth-secondary[hidden]{display:none!important}
     .bs-auth-primary{width:100%;background:#00d87c;border:0;border-radius:9px;padding:12px;margin-top:18px;font-weight:800;color:#06130e}
     .bs-auth-link{border:0;background:none;color:#00e676;padding:8px 3px;text-decoration:underline}
     #bs-auth-msg{margin-top:12px;font-size:.87rem;line-height:1.5;min-height:20px}
@@ -61,12 +79,12 @@ function setupAuthModal() {
     <h2 id="bs-auth-title">Accedi a BetStorm</h2>
     <p id="bs-auth-description" style="color:#a8b7c9;font-size:.88rem">Entra con il tuo account.</p>
     <form id="bs-auth-form">
-      <label for="bs-auth-email">Email</label><input id="bs-auth-email" type="email" autocomplete="email" required maxlength="254"/>
+      <div id="bs-auth-email-row"><label for="bs-auth-email">Email</label><input id="bs-auth-email" type="email" autocomplete="email" required maxlength="254"/></div>
       <div id="bs-auth-password-row"><label for="bs-auth-password">Password</label><input id="bs-auth-password" type="password" autocomplete="current-password" required minlength="6"/></div>
       <button class="bs-auth-primary" id="bs-auth-submit" type="submit">Accedi</button>
     </form>
     <div id="bs-auth-msg" role="status" aria-live="polite"></div>
-    <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:10px">
+    <div id="bs-auth-secondary" style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:10px">
       <button class="bs-auth-link" id="bs-auth-switch" type="button">Crea un account</button>
       <button class="bs-auth-link" id="bs-auth-reset" type="button">Password dimenticata?</button>
     </div>
@@ -78,25 +96,35 @@ function setupAuthModal() {
   const desc = modal.querySelector('#bs-auth-description');
   const msg = modal.querySelector('#bs-auth-msg');
   const passwordRow = modal.querySelector('#bs-auth-password-row');
+  const emailRow = modal.querySelector('#bs-auth-email-row');
+  const emailInput = modal.querySelector('#bs-auth-email');
+  const secondary = modal.querySelector('#bs-auth-secondary');
   const password = modal.querySelector('#bs-auth-password');
   const submit = modal.querySelector('#bs-auth-submit');
   const switchBtn = modal.querySelector('#bs-auth-switch');
   const resetBtn = modal.querySelector('#bs-auth-reset');
   function setMode(next) {
     mode = next;
-    title.textContent = next === 'signup' ? 'Crea un account BetStorm' : next === 'reset' ? 'Recupera la password' : 'Accedi a BetStorm';
-    desc.textContent = next === 'signup' ? 'Registrazione gratuita. Potrebbe essere richiesta la conferma via email.' : next === 'reset' ? 'Ti invieremo un link per reimpostare la password.' : 'Entra con il tuo account.';
+    submit.hidden = false;
+    msg.style.color = '';
+    title.textContent = next === 'new-password' ? 'Imposta nuova password' : next === 'signup' ? 'Crea un account BetStorm' : next === 'reset' ? 'Recupera la password' : 'Accedi a BetStorm';
+    desc.textContent = next === 'new-password' ? 'Scegli una nuova password per il tuo account BetStorm.' : next === 'signup' ? 'Registrazione gratuita. Potrebbe essere richiesta la conferma via email.' : next === 'reset' ? 'Ti invieremo un link per reimpostare la password.' : 'Entra con il tuo account.';
     passwordRow.hidden = next === 'reset';
+    emailRow.hidden = next === 'new-password';
+    emailInput.required = next !== 'new-password';
+    secondary.hidden = next === 'new-password';
     password.required = next !== 'reset';
-    password.autocomplete = next === 'signup' ? 'new-password' : 'current-password';
-    submit.textContent = next === 'signup' ? 'Registrati' : next === 'reset' ? 'Invia link di recupero' : 'Accedi';
+    password.autocomplete = (next === 'signup' || next === 'new-password') ? 'new-password' : 'current-password';
+    password.minLength = next === 'new-password' ? 8 : 6;
+    password.value = '';
+    submit.textContent = next === 'new-password' ? 'Salva nuova password' : next === 'signup' ? 'Registrati' : next === 'reset' ? 'Invia link di recupero' : 'Accedi';
     switchBtn.textContent = next === 'login' ? 'Crea un account' : 'Torna ad Accedi';
     resetBtn.hidden = next !== 'login';
     msg.textContent = '';
   }
   function openModal() {
     lastFocus = document.activeElement;
-    setMode('login'); modal.hidden = false;
+    setMode(passwordRecoveryActive ? 'new-password' : 'login'); modal.hidden = false;
     document.body.style.overflow = 'hidden';
     modal.querySelector('#bs-auth-email').focus();
   }
@@ -104,6 +132,11 @@ function setupAuthModal() {
     modal.hidden = true; document.body.style.overflow = '';
     if (lastFocus?.isConnected) lastFocus.focus();
   }
+  window.openBetStormPasswordRecovery = function() {
+    passwordRecoveryActive = true;
+    openModal();
+    password.focus();
+  };
   document.addEventListener('click', e => {
     const link = e.target.closest('a[data-auth-cta]');
     if (link && !currentUser) { e.preventDefault(); openModal(); }
@@ -116,11 +149,22 @@ function setupAuthModal() {
   modal.querySelector('#bs-auth-form').addEventListener('submit', async e => {
     e.preventDefault();
     if (!sbClient) { msg.textContent = 'Servizio di accesso non disponibile. Ricarica la pagina.'; return; }
-    const email = modal.querySelector('#bs-auth-email').value.trim();
+    const email = emailInput.value.trim();
     const pass = password.value;
     submit.disabled = true; msg.textContent = 'Attendere...';
     try {
-      if (mode === 'signup') {
+      if (mode === 'new-password') {
+        if (pass.length < 8) throw new Error('La nuova password deve avere almeno 8 caratteri.');
+        const { error } = await sbClient.auth.updateUser({ password: pass });
+        if (error) throw error;
+        passwordRecoveryActive = false;
+        msg.textContent = 'Password aggiornata correttamente. Ora puoi accedere con la nuova password.';
+        msg.style.color = '#00e676';
+        passwordRow.hidden = true;
+        submit.hidden = true;
+        // Remove the one-time recovery credentials from the address bar.
+        window.history.replaceState({}, document.title, window.location.pathname);
+      } else if (mode === 'signup') {
         const { data, error } = await sbClient.auth.signUp({ email, password: pass, options: { emailRedirectTo: 'https://www.betstorm.it/' } });
         if (error) throw error;
         if (data.session) { window.location.assign('/dashboard.html'); return; }
