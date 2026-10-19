@@ -921,7 +921,7 @@ setInterval(loadLiveScores, 180000);
         <span>Acconsento a ricevere via email la newsletter BetStorm. Potrò revocare il consenso in qualsiasi momento.</span>
       </label>
       <div id="newsletter-result" role="status" aria-live="polite" style="margin-top:14px;font-size:.82rem;display:none"></div>
-      <p style="font-size:.72rem;color:var(--muted);margin-top:14px">🔒 Nessuna iscrizione senza consenso. Non inviamo email finché il servizio di invio non è attivo.</p>
+      <p style="font-size:.72rem;color:var(--muted);margin-top:14px">🔒 Nessuna iscrizione senza consenso. Riceverai un link di conferma via email.</p>
     </div>
   </div>
 </section>
@@ -2042,35 +2042,32 @@ addEvent();
 
 async function subscribeNewsletter() {
   const input = document.getElementById('newsletter-email');
-  const email = input?.value?.trim().toLowerCase();
   const consent = document.getElementById('newsletter-consent');
   const res = document.getElementById('newsletter-result');
   const button = document.querySelector('#newsletter-form button');
+  const email = input?.value?.trim().toLowerCase();
   function notice(message, success) {
     if (!res) return;
     res.textContent = message;
     res.style.color = success ? 'var(--green)' : '#ff7777';
     res.style.display = 'block';
   }
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    notice('Inserisci un indirizzo email valido.', false); return;
-  }
-  if (!consent?.checked) {
-    notice('Per iscriverti devi accettare di ricevere la newsletter.', false); return;
-  }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return notice('Inserisci un indirizzo email valido.', false);
+  if (!consent?.checked) return notice('Per iscriverti devi accettare di ricevere la newsletter.', false);
   if (button) { button.disabled = true; button.textContent = 'Invio in corso…'; }
   try {
-    if (!window.supabase?.createClient) throw new Error('Servizio temporaneamente non disponibile');
-    const sbc = window.supabase.createClient('https://zvftggieqlxujjtotvwg.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp2ZnRnZ2llcWx4dWpqdG90dndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE0OTQ3NjIsImV4cCI6MjA4NzA3MDc2Mn0.ZatmSARBUZpibKPTBNhpXj0c07Thzu8RvT4NjMR6lxg');
-    const { error } = await sbc.from('newsletter').insert({ email, created_at: new Date().toISOString() });
-    if (error) throw error;
-    notice('Iscrizione registrata! Ti avviseremo quando la newsletter sarà attiva.', true);
+    const response = await fetch('/api/newsletter', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, consent: true })
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Invio non riuscito');
+    notice(data.message || 'Controlla la tua email per confermare l’iscrizione.', true);
     if (input) input.value = '';
     if (consent) consent.checked = false;
   } catch (error) {
-    console.error('Newsletter: iscrizione non riuscita', error);
-    notice('Iscrizione non riuscita. Riprova più tardi: nessuna conferma è stata registrata.', false);
+    console.error('Newsletter:', error);
+    notice(error.message || 'Servizio temporaneamente non disponibile.', false);
   } finally {
     if (button) { button.disabled = false; button.innerHTML = '<i class="fas fa-bell"></i> Iscriviti'; }
   }
