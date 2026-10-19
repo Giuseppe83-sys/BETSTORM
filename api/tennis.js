@@ -5,6 +5,29 @@
 const ENDPOINT = 'https://mcp.acesapi.com/v1/get_matches';
 const validDate = /^\d{4}-\d{2}-\d{2}$/;
 const clean = v => v == null ? '' : String(v).slice(0, 240);
+// AcesAPI may return a direct object or an MCP-style envelope.
+function extractPayload(raw) {
+  const candidates = [raw, raw?.data, raw?.result, raw?.result?.data];
+  for (const candidate of candidates) {
+    if (candidate && Array.isArray(candidate.matches)) return candidate;
+  }
+  for (const part of [...(Array.isArray(raw?.content) ? raw.content : []),
+                       ...(Array.isArray(raw?.result?.content) ? raw.result.content : [])]) {
+    if (typeof part?.text !== 'string') continue;
+    try {
+      const parsed = JSON.parse(part.text);
+      for (const candidate of [parsed, parsed?.data, parsed?.result]) {
+        if (candidate && Array.isArray(candidate.matches)) return candidate;
+      }
+    } catch (_) { /* Not JSON */ }
+  }
+  return null;
+}
+function shapeOf(value) {
+  return value && typeof value === 'object' && !Array.isArray(value)
+    ? Object.keys(value).filter(k => !/key|token|secret|password|auth/i.test(k)).slice(0, 15)
+    : [];
+}
 
 module.exports = async function handler(req, res) {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
@@ -30,8 +53,14 @@ module.exports = async function handler(req, res) {
     });
     if (upstream.status===429) return res.status(429).json({error:'Limite AcesAPI raggiunto'});
     if (!upstream.ok) return res.status(502).json({error:'AcesAPI non disponibile (HTTP '+upstream.status+')'});
-    const data = await upstream.json();
-    if (!data || !Array.isArray(data.matches)) return res.status(502).json({error:'Formato AcesAPI inatteso'});
+    const raw = await upstream.json();
+    const data = extractPayload(raw);
+    if (!data) return res.status(502).json({
+      error:'Formato AcesAPI inatteso',
+      diagnostic:{topLevelKeys:shapeOf(raw), resultKeys:shapeOf(raw?.result),
+        dataKeys:shapeOf(raw?.data), contentTypes:Array.isArray(raw?.content)
+          ? raw.content.slice(0,3).map(x=>typeof x?.type==='string'?x.type:'unknown') : []}
+    });
     const matches = data.matches.filter(m => {
       if (!m || typeof m !== 'object' || !m.player1 || !m.player2) return false;
       if (m.match_date !== date) return false;
