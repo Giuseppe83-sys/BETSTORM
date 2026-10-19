@@ -2056,7 +2056,7 @@ async function subscribeNewsletter() {
   if (!consent?.checked) return notice('Per iscriverti devi accettare di ricevere la newsletter.', false);
   if (button) { button.disabled = true; button.textContent = 'Invio in corso…'; }
   try {
-    const response = await fetch('/api/newsletter', {
+    const response = await fetch('/api/newsletter-subscribe', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, consent: true })
     });
