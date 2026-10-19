@@ -168,7 +168,8 @@ function setupAuthModal() {
         const { data, error } = await sbClient.auth.signUp({ email, password: pass, options: { emailRedirectTo: 'https://www.betstorm.it/' } });
         if (error) throw error;
         if (data.session) { window.location.assign('/dashboard.html'); return; }
-        msg.textContent = 'Se previsto, controlla la casella email e conferma la registrazione. Poi torna qui per accedere.';
+        msg.textContent = 'Richiesta di registrazione ricevuta. Se puoi completare la registrazione, riceverai le istruzioni via email. Se hai già un account, usa Accedi o Password dimenticata?.';
+        msg.style.color = '#00e676';
       } else if (mode === 'reset') {
         const { error } = await sbClient.auth.resetPasswordForEmail(email, { redirectTo: 'https://www.betstorm.it/' });
         if (error) throw error;
