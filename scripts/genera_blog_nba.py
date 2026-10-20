@@ -1,12 +1,13 @@
 
 import html
 import json
+import urllib.error
 import urllib.request
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-BASE_URL = "https://www.betstorm.it/api/basket"
+URL = "https://www.betstorm.it/api/basket?type=games&season=2026"
 ROME = ZoneInfo("Europe/Rome")
 OUTPUT = Path("bozze/bozza-nba.html")
 
@@ -15,123 +16,104 @@ def esc(value):
     return html.escape(str(value), quote=True)
 
 
-def fetch_games(season, cursor=None):
-    url = f"{BASE_URL}?type=games&season={season}"
-
-    if cursor is not None:
-        url += f"&cursor={cursor}"
-
+def fetch_games():
     request = urllib.request.Request(
-        url,
-        headers={"User-Agent": "BetStorm-SEO-NBA/1.0"}
+        URL,
+        headers={"User-Agent": "BetStorm-SEO-NBA/2.0"}
     )
 
-    with urllib.request.urlopen(request, timeout=30) as response:
-        payload = json.load(response)
+    try:
+        with urllib.request.urlopen(
+            request, timeout=30
+        ) as response:
+            payload = json.load(response)
+
+    except urllib.error.HTTPError as exc:
+        if exc.code == 429:
+            raise RuntimeError(
+                "API NBA temporaneamente limitata (429). "
+                "Riprovare più tardi."
+            ) from exc
+        raise
 
     if payload.get("source") != "balldontlie":
         raise RuntimeError("Fonte NBA non riconosciuta")
 
-    data = payload.get("data", {})
-    games = data.get("data")
+    games = payload.get("data", {}).get("data")
 
     if not isinstance(games, list):
-        raise RuntimeError("Elenco NBA non valido")
+        raise RuntimeError("Elenco partite NBA non valido")
 
-    return games, data.get("meta", {}).get("next_cursor")
+    return games
 
 
-def load_upcoming():
+def get_upcoming(games):
     now = datetime.now(timezone.utc)
     end = now + timedelta(days=7)
 
-    # Una stagione NBA attraversa due anni solari.
-    seasons = {now.year, now.year - 1}
     selected = []
-    seen = set()
 
-    for season in sorted(seasons):
-        cursor = None
-        visited = set()
+    for game in games:
+        if game.get("status_state") != "scheduled":
+            continue
 
-        for _ in range(30):
-            games, next_cursor = fetch_games(season, cursor)
+        date_text = game.get("datetime")
 
-            for game in games:
-                try:
-                    date_text = game["date"]
-                    when = datetime.fromisoformat(
-                        date_text.replace("Z", "+00:00")
-                    )
-                    if when.tzinfo is None:
-                        when = when.replace(tzinfo=timezone.utc)
-                except (KeyError, ValueError, TypeError):
-                    continue
+        if not date_text:
+            continue
 
-                if not (now <= when < end):
-                    continue
-
-                state = str(
-                    game.get("status_state", "")
-                ).lower()
-
-                if state != "scheduled":
-                    continue
-
-                home = (game.get("home_team") or {}).get(
-                    "full_name"
-                )
-                away = (game.get("visitor_team") or {}).get(
-                    "full_name"
-                )
-
-                if not home or not away:
-                    continue
-
-                key = game.get("id") or (
-                    date_text, home, away
-                )
-
-                if key in seen:
-                    continue
-
-                seen.add(key)
-                selected.append((when, home, away))
-
-            if next_cursor is None:
-                break
-
-            if next_cursor in visited:
-                raise RuntimeError("Paginazione NBA ripetuta")
-
-            visited.add(next_cursor)
-            cursor = next_cursor
-        else:
-            raise RuntimeError(
-                "Limite pagine NBA raggiunto: "
-                "calendario potenzialmente incompleto"
+        try:
+            when = datetime.fromisoformat(
+                date_text.replace("Z", "+00:00")
             )
+
+            if when.tzinfo is None:
+                continue
+
+        except (ValueError, TypeError):
+            continue
+
+        if not now <= when < end:
+            continue
+
+        home = (game.get("home_team") or {}).get(
+            "full_name"
+        )
+        away = (game.get("visitor_team") or {}).get(
+            "full_name"
+        )
+
+        if not home or not away:
+            continue
+
+        selected.append((when, home, away))
 
     return sorted(selected)
 
 
 def main():
-    games = load_upcoming()
+    games = fetch_games()
+    upcoming = get_upcoming(games)
 
-    if not games:
+    if not upcoming:
         raise RuntimeError(
-            "Nessuna partita NBA futura verificata: "
-            "bozza non generata"
+            "Nessuna partita NBA futura trovata "
+            "nei dati ricevuti. "
+            "La bozza non viene generata."
         )
 
     today = datetime.now(ROME).strftime("%d/%m/%Y")
-    title = f"NBA: calendario della settimana dal {today} | BetStorm"
+
+    title = (
+        f"NBA: calendario e partite "
+        f"della settimana dal {today} | BetStorm"
+    )
 
     rows = []
 
-    for when, home, away in games:
+    for when, home, away in upcoming:
         local = when.astimezone(ROME).strftime(
-            "%d/%m/%Y %H:%M"
+            "%d/%m/%Y alle %H:%M"
         )
 
         rows.append(
@@ -146,15 +128,16 @@ def main():
 <html lang="it">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport"
+content="width=device-width,initial-scale=1">
 <title>{esc(title)}</title>
 <meta name="description"
-content="Calendario NBA dei prossimi sette giorni: squadre e date delle partite disponibili nei dati BetStorm.">
+content="Calendario NBA della settimana: partite, squadre e orari italiani dai dati disponibili su BetStorm.">
 <meta name="robots" content="noindex,nofollow">
 <style>
 body {{
   font-family:Arial,sans-serif;
-  max-width:900px;
+  max-width:920px;
   margin:40px auto;
   padding:20px;
   background:#070b10;
@@ -162,12 +145,17 @@ body {{
   line-height:1.7;
 }}
 a {{color:#00e57b}}
-table {{width:100%;border-collapse:collapse}}
+h1 {{line-height:1.3}}
+table {{
+  width:100%;
+  border-collapse:collapse;
+}}
 th,td {{
-  border:1px solid #394454;
+  border-bottom:1px solid #394454;
   padding:12px;
   text-align:left;
 }}
+th {{color:#00e57b}}
 </style>
 </head>
 <body>
@@ -176,45 +164,77 @@ th,td {{
 </header>
 <main>
 <article>
+
+<p>BOZZA EDITORIALE NON PUBBLICATA</p>
+
 <h1>{esc(title)}</h1>
-<p>Bozza editoriale non pubblicata.</p>
+
 <p>
-Calendario NBA basato sui dati disponibili
-tramite l'API Basket di BetStorm.
+Scopri le partite NBA programmate nei prossimi
+sette giorni secondo i dati attualmente
+disponibili tramite BetStorm.
+Gli orari sono convertiti nel fuso italiano.
 </p>
-<h2>Le partite dei prossimi sette giorni</h2>
-<p>Incontri trovati: {len(games)}.</p>
+
+<h2>Calendario NBA della settimana</h2>
+
+<p>
+Incontri individuati: {len(upcoming)}.
+</p>
+
 <table>
 <thead>
 <tr>
-<th>Data e ora riportata dalla fonte</th>
-<th>Casa</th>
-<th>Trasferta</th>
+<th>Data e ora italiana</th>
+<th>Squadra di casa</th>
+<th>Squadra ospite</th>
 </tr>
 </thead>
 <tbody>
 {chr(10).join(rows)}
 </tbody>
 </table>
-<h2>Informazioni sul calendario</h2>
+
+<h2>Come leggere il calendario NBA</h2>
+
 <p>
-Gli incontri sono ordinati cronologicamente.
-Le date e gli orari possono cambiare.
+Le date e gli orari sono convertiti
+nel fuso Europe/Rome.
+Eventuali modifiche al programma
+potrebbero non essere ancora presenti
+nei dati consultati.
 </p>
+
+<h2>Domande frequenti</h2>
+
+<h3>Gli orari NBA sono italiani?</h3>
 <p>
-Attenzione: la data fornita dall'API potrebbe
-non includere l'orario effettivo di inizio.
-Verificare gli orari prima della pubblicazione.
+Sì. Gli orari indicati nella tabella
+sono convertiti nel fuso italiano.
 </p>
+
+<h3>Il calendario comprende tutta la settimana?</h3>
 <p>
-Fonte: BALLDONTLIE tramite BetStorm.
-Dati consultati il {esc(today)}.
+La tabella mostra gli incontri futuri
+trovati nei dati ricevuti.
+La fonte potrebbe restituire soltanto
+una parte del calendario.
 </p>
+
+<h3>Dove leggere altri articoli sportivi?</h3>
 <p>
+Visita il
 <a href="https://www.betstorm.it/blog.html">
-Altri articoli BetStorm
-</a>
+blog BetStorm
+</a>.
 </p>
+
+<p>
+Fonte: BALLDONTLIE tramite API BetStorm.
+Dati consultati il {esc(today)}.
+Nessuna quota o probabilità non verificata.
+</p>
+
 </article>
 </main>
 </body>
@@ -224,7 +244,11 @@ Altri articoli BetStorm
     OUTPUT.write_text(page, encoding="utf-8")
 
     print(f"Bozza NBA creata: {OUTPUT}")
-    print(f"Partite incluse: {len(games)}")
+    print(f"Partite incluse: {len(upcoming)}")
+    print(
+        "Attenzione: elenco potenzialmente parziale "
+        "perché l'API restituisce una sola pagina."
+    )
     print("Nessun articolo pubblicato.")
 
 
