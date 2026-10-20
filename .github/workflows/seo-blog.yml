@@ -11,12 +11,23 @@ on:
       - "scripts/genera_blog_nba.py"
 
   workflow_dispatch:
+    inputs:
+      proposta:
+        description: "Crea una proposta di pubblicazione?"
+        required: true
+        type: choice
+        default: "nessuna"
+        options:
+          - "nessuna"
+          - "serie-a"
+          - "nba"
 
   schedule:
     - cron: "0 8 * * 1"
 
 permissions:
-  contents: read
+  contents: write
+  pull-requests: write
 
 jobs:
   seo-blog:
@@ -166,3 +177,80 @@ jobs:
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "Nessun articolo pubblicato." \
             >> "$GITHUB_STEP_SUMMARY"
+
+  proposta-pubblicazione:
+    name: Prepara proposta da revisionare
+    needs: seo-blog
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.proposta != 'nessuna' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Scarica il repository
+        uses: actions/checkout@v4
+
+      - name: Scarica la bozza selezionata
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.proposta == 'nba' && 'bozza-seo-nba' || 'bozza-seo-serie-a' }}
+          path: bozza-da-revisionare
+
+      - name: Prepara articolo HTML
+        env:
+          SPORT: ${{ inputs.proposta }}
+        shell: bash
+        run: |
+          python3 - <<'PYCODE'
+          import datetime
+          import os
+          import pathlib
+          import re
+
+          sport = os.environ['SPORT']
+          source = pathlib.Path('bozza-da-revisionare') / ('bozza-nba.html' if sport == 'nba' else 'bozza-serie-a.html')
+          content = source.read_text(encoding='utf-8')
+          today = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d')
+          slug = f"calendario-{sport}-{today}"
+          canonical = f"https://betstorm.it/blog/{slug}.html"
+
+          # Il contenuto è una proposta: resta noindex finché non viene approvato.
+          # Dopo la revisione, rimuovere il meta robots noindex prima del merge.
+          content = re.sub(r'<p>Bozza editoriale non pubblicata\.</p>',
+                           '<p><strong>IN REVISIONE EDITORIALE — NON PUBBLICARE SENZA CONTROLLO DEI DATI.</strong></p>',
+                           content, flags=re.I)
+          content = content.replace('</head>', f'<link rel="canonical" href="{canonical}">\n</head>', 1)
+          if sport == 'nba':
+              note = ('<p><strong>Nota editoriale:</strong> la fonte NBA potrebbe restituire '
+                      'un elenco parziale. Verificare il calendario prima della pubblicazione.</p>')
+              content = content.replace('<article>', '<article>\n' + note, 1)
+          if 'noindex' not in content.lower():
+              raise SystemExit('Blocco di sicurezza noindex mancante')
+          if '<html' not in content.lower():
+              raise SystemExit('HTML non valido')
+          destination = pathlib.Path('blog') / f'{slug}.html'
+          destination.parent.mkdir(exist_ok=True)
+          if destination.exists():
+              raise SystemExit(f'Articolo già presente: {destination}')
+          destination.write_text(content, encoding='utf-8')
+          print(f'Proposta creata: {destination}')
+          PYCODE
+
+      - name: Apri Pull Request per revisione
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          add-paths: blog/*.html
+          branch: proposte-seo/${{ inputs.proposta }}
+          delete-branch: true
+          title: "Revisione articolo SEO ${{ inputs.proposta }}"
+          body: |
+            Proposta generata automaticamente, **non ancora pubblicata**.
+
+            Prima del merge:
+            - Verificare date, squadre, orari e fonti.
+            - Per NBA verificare che il calendario non sia parziale.
+            - Rimuovere il testo «IN REVISIONE EDITORIALE» e il meta `noindex,nofollow`.
+            - Controllare titolo, canonical e contenuto.
+
+            **Importante:** questo workflow non aggiorna Supabase `articles.json` né la sitemap.
+            Dopo il deploy, aggiornare l'indice del blog e la sitemap separatamente.
+          commit-message: "Prepara articolo SEO ${{ inputs.proposta }} per revisione"
+          labels: ""
