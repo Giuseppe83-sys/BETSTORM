@@ -65,3 +65,14 @@ jobs:
           path: bozze/bozza-serie-a.html
           if-no-files-found: error
           retention-days: 30
+          
+      - name: Genera bozza SEO NBA
+        run: python3 scripts/genera_blog_nba.py
+
+      - name: Rendi scaricabile la bozza NBA
+        uses: actions/upload-artifact@v4
+        with:
+          name: bozza-seo-nba
+          path: bozze/bozza-nba.html
+          if-no-files-found: error
+          retention-days: 30
