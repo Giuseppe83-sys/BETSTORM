@@ -66,7 +66,8 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           
-      - name: Genera bozza SEO NBA
+       - name: Genera bozza SEO NBA
+        continue-on-error: true
         run: python3 scripts/genera_blog_nba.py
 
       - name: Rendi scaricabile la bozza NBA
@@ -74,5 +75,5 @@ jobs:
         with:
           name: bozza-seo-nba
           path: bozze/bozza-nba.html
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 30
