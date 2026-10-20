@@ -1,0 +1,21 @@
+
+name: BetStorm SEO Blog
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 7 * * 1'
+      timezone: 'Europe/Rome'
+
+permissions:
+  contents: read
+
+jobs:
+  seo-blog:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verifica automazione
+        run: |
+          echo "BetStorm SEO Blog avviato"
+          echo "Data: $(date -u)"
+          echo "Modalita: test - nessuna pubblicazione"
