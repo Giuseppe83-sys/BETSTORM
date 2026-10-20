@@ -2,18 +2,36 @@
 name: BetStorm SEO Blog
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/seo-blog.yml"
+      - "scripts/genera_blog.py"
+      - "scripts/genera_blog_nba.py"
+
   workflow_dispatch:
+
   schedule:
-    - cron: '0 8 * * 1'
+    - cron: "0 8 * * 1"
 
 permissions:
   contents: read
 
 jobs:
   seo-blog:
+    name: Generazione bozze SEO
     runs-on: ubuntu-latest
 
     steps:
+      - name: Scarica il repository
+        uses: actions/checkout@v4
+
+      - name: Configura Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
       - name: Controlla API Calcio e Basket
         shell: bash
         run: |
@@ -22,58 +40,129 @@ jobs:
           import urllib.request
 
           sources = {
-              "Calcio": "https://www.betstorm.it/api/football?type=matches&code=SA",
-              "Basket": "https://www.betstorm.it/api/basket?type=games&season=2026",
+              "Calcio": (
+                  "https://www.betstorm.it/api/football"
+                  "?type=matches&code=SA"
+              ),
+              "Basket": (
+                  "https://www.betstorm.it/api/basket"
+                  "?type=games&season=2026"
+              ),
           }
 
           for sport, url in sources.items():
               print(f"\nControllo {sport}...", flush=True)
+
               try:
-                  req = urllib.request.Request(
+                  request = urllib.request.Request(
                       url,
-                      headers={"User-Agent": "BetStorm-SEO-Check/1.0"}
+                      headers={
+                          "User-Agent": "BetStorm-SEO-Check/1.0"
+                      }
                   )
-                  with urllib.request.urlopen(req, timeout=25) as response:
+
+                  with urllib.request.urlopen(
+                      request, timeout=30
+                  ) as response:
                       payload = json.load(response)
 
                   if "error" in payload:
-                      raise ValueError(payload["error"])
+                      raise RuntimeError(
+                          str(payload["error"])
+                      )
 
                   if sport == "Calcio":
-                      count = len(payload.get("data", {}).get("matches", []))
-                  else:
-                      count = len(payload.get("data", {}).get("data", []))
+                      if payload.get("source") != "football-data.org":
+                          raise RuntimeError(
+                              "Fonte Calcio non riconosciuta"
+                          )
 
-                  print(f"OK - {sport}: {count} partite ricevute")
+                      matches = payload.get(
+                          "data", {}
+                      ).get("matches")
+
+                  else:
+                      if payload.get("source") != "balldontlie":
+                          raise RuntimeError(
+                              "Fonte Basket non riconosciuta"
+                          )
+
+                      matches = payload.get(
+                          "data", {}
+                      ).get("data")
+
+                  if not isinstance(matches, list):
+                      raise RuntimeError(
+                          "Formato dati non valido"
+                      )
+
+                  print(
+                      f"OK - {sport}: "
+                      f"{len(matches)} partite ricevute"
+                  )
+
               except Exception as exc:
                   print(f"ERRORE - {sport}: {exc}")
-                  raise SystemExit(1)
 
-          print("\nTest completato. Nessun articolo pubblicato.")
+                  if sport == "Calcio":
+                      raise SystemExit(1)
+
+                  print(
+                      "Avviso: controllo Basket non riuscito. "
+                      "Proseguo con le bozze."
+                  )
+
+          print("\nControllo API terminato.")
           PY
-
-      - name: Scarica il repository
-        uses: actions/checkout@v4
 
       - name: Genera bozza SEO Serie A
         run: python3 scripts/genera_blog.py
 
-      - name: Rendi scaricabile la bozza
+      - name: Rendi scaricabile la bozza Serie A
         uses: actions/upload-artifact@v4
         with:
           name: bozza-seo-serie-a
           path: bozze/bozza-serie-a.html
           if-no-files-found: error
           retention-days: 30
-          
-       - name: Genera bozza SEO NBA
+
+      - name: Genera bozza SEO NBA
+        id: genera_nba
         continue-on-error: true
         run: python3 scripts/genera_blog_nba.py
 
       - name: Rendi scaricabile la bozza NBA
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: bozza-seo-nba
           path: bozze/bozza-nba.html
           if-no-files-found: warn
           retention-days: 30
+
+      - name: Riepilogo
+        if: always()
+        shell: bash
+        run: |
+          echo "## BetStorm SEO Blog" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+
+          if [ -f bozze/bozza-serie-a.html ]; then
+            echo "- Serie A: bozza generata" \
+              >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "- Serie A: bozza non disponibile" \
+              >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          if [ -f bozze/bozza-nba.html ]; then
+            echo "- NBA: bozza generata" \
+              >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "- NBA: bozza non disponibile" \
+              >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Nessun articolo pubblicato." \
+            >> "$GITHUB_STEP_SUMMARY"
