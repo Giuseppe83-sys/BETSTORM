@@ -4,8 +4,7 @@ name: BetStorm SEO Blog
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 7 * * 1'
-      timezone: 'Europe/Rome'
+    - cron: '0 8 * * 1'
 
 permissions:
   contents: read
@@ -13,9 +12,42 @@ permissions:
 jobs:
   seo-blog:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Verifica automazione
+      - name: Controlla API Calcio e Basket
+        shell: bash
         run: |
-          echo "BetStorm SEO Blog avviato"
-          echo "Data: $(date -u)"
-          echo "Modalita: test - nessuna pubblicazione"
+          python3 - <<'PY'
+          import json
+          import urllib.request
+
+          sources = {
+              "Calcio": "https://www.betstorm.it/api/football?type=matches&code=SA",
+              "Basket": "https://www.betstorm.it/api/basket?type=games&season=2026",
+          }
+
+          for sport, url in sources.items():
+              print(f"\nControllo {sport}...", flush=True)
+              try:
+                  req = urllib.request.Request(
+                      url,
+                      headers={"User-Agent": "BetStorm-SEO-Check/1.0"}
+                  )
+                  with urllib.request.urlopen(req, timeout=25) as response:
+                      payload = json.load(response)
+
+                  if "error" in payload:
+                      raise ValueError(payload["error"])
+
+                  if sport == "Calcio":
+                      count = len(payload.get("data", {}).get("matches", []))
+                  else:
+                      count = len(payload.get("data", {}).get("data", []))
+
+                  print(f"OK - {sport}: {count} partite ricevute")
+              except Exception as exc:
+                  print(f"ERRORE - {sport}: {exc}")
+                  raise SystemExit(1)
+
+          print("\nTest completato. Nessun articolo pubblicato.")
+          PY
