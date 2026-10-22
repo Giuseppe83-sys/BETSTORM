@@ -1,11 +1,31 @@
-
 {
   "articles": [
+    {
+      "slug": "pronostici-partite-13-ottobre-2026",
+      "title": "Pronostici Partite 13 Ottobre 2026 | BetStorm",
+      "excerpt": "Scopri i pronostici e le quote delle partite in programma oggi 13 ottobre 2026, con analisi di Champions League e campionati.",
+      "date": "2026-10-22",
+      "category": "Sport"
+    },
+    {
+      "slug": "pronostici-calcio-partite-10-ottobre-2026",
+      "title": "Pronostici Calcio: Partite in Programma il 10 Ottobre | BetStorm",
+      "excerpt": "Scopri i pronostici e le analisi delle partite di calcio in programma il 10 ottobre 2026 tra Serie A, Premier League, Liga e altri campionati.",
+      "date": "2026-10-22",
+      "category": "Sport"
+    },
     {
       "slug": "calendario-serie-a-2026-10-22",
       "title": "Serie A dal 22/10/2026: calendario e analisi Storm",
       "excerpt": "Calendario Serie A e analisi Storm Match Center, Insights e Trends basate sui risultati recenti delle squadre.",
       "date": "2026-10-22",
+      "category": "Serie A"
+    },
+    {
+      "slug": "calendario-serie-a-2026-10-20",
+      "title": "Serie A: calendario e orari 23–25 ottobre 2026 | BetStorm",
+      "excerpt": "Calendario Serie A dal 23 al 25 ottobre 2026: 10 partite, squadre e orari italiani secondo i dati disponibili al 20 ottobre. Verifica eventuali aggiornamenti.",
+      "date": "2026-10-20",
       "category": "Serie A"
     }
   ]
