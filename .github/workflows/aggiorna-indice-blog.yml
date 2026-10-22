@@ -1,1 +1,172 @@
 
+name: BetStorm - Aggiorna indice blog
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "blog/*.html"
+      - ".github/workflows/aggiorna-indice-blog.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  aggiorna-indice:
+    name: Aggiorna articoli pubblicati
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Scarica il repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Configura Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Genera indice degli articoli
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          import pathlib
+          import re
+          from datetime import datetime, timezone
+          from html import unescape
+
+          blog = pathlib.Path("blog")
+          index_file = blog / "articles-index.json"
+
+          existing = {}
+
+          if index_file.exists():
+              data = json.loads(
+                  index_file.read_text(encoding="utf-8")
+              )
+              for item in data.get("articles", []):
+                  slug = item.get("slug", "")
+                  if slug:
+                      existing[slug] = item
+
+          def clean_html(value):
+              value = re.sub(r"<[^>]+>", " ", value)
+              value = unescape(value)
+              return " ".join(value.split())
+
+          def extract(pattern, html):
+              match = re.search(
+                  pattern,
+                  html,
+                  flags=re.IGNORECASE | re.DOTALL
+              )
+              return clean_html(match.group(1)) if match else ""
+
+          for file in sorted(blog.glob("*.html")):
+              slug = file.stem
+
+              if not re.fullmatch(r"[a-z0-9][a-z0-9-]*", slug):
+                  continue
+
+              html = file.read_text(encoding="utf-8")
+
+              # Non indicizzare bozze o pagine noindex.
+              if re.search(
+                  r'<meta[^>]+name=["\']robots["\'][^>]+'
+                  r'content=["\'][^"\']*noindex',
+                  html,
+                  flags=re.IGNORECASE
+              ):
+                  print(f"Bozza esclusa: {file}")
+                  continue
+
+              if "BOZZA EDITORIALE" in html.upper():
+                  print(f"Bozza esclusa: {file}")
+                  continue
+
+              title = extract(
+                  r"<title[^>]*>(.*?)</title>",
+                  html
+              ) or slug.replace("-", " ").title()
+
+              description = extract(
+                  r'<meta[^>]+name=["\']description["\']'
+                  r'[^>]+content=["\'](.*?)["\']',
+                  html
+              )
+
+              match = re.search(
+                  r"(\d{4}-\d{2}-\d{2})$",
+                  slug
+              )
+
+              date = (
+                  match.group(1)
+                  if match
+                  else datetime.now(timezone.utc)
+                  .strftime("%Y-%m-%d")
+              )
+
+              if "serie-a" in slug:
+                  category = "Serie A"
+              elif "nba" in slug:
+                  category = "NBA"
+              else:
+                  category = "Sport"
+
+              previous = existing.get(slug, {})
+
+              existing[slug] = {
+                  "slug": slug,
+                  "title": previous.get("title") or title,
+                  "excerpt": (
+                      previous.get("excerpt")
+                      or description
+                  ),
+                  "date": previous.get("date") or date,
+                  "category": previous.get("category") or category
+              }
+
+          articles = sorted(
+              existing.values(),
+              key=lambda a: (a.get("date", ""), a.get("slug", "")),
+              reverse=True
+          )
+
+          index_file.parent.mkdir(
+              parents=True,
+              exist_ok=True
+          )
+
+          index_file.write_text(
+              json.dumps(
+                  {"articles": articles},
+                  ensure_ascii=False,
+                  indent=2
+              ) + "\n",
+              encoding="utf-8"
+          )
+
+          print(f"Indice aggiornato: {len(articles)} articoli")
+          PY
+
+      - name: Salva indice aggiornato
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add blog/articles-index.json
+
+          if git diff --cached --quiet; then
+            echo "Indice già aggiornato."
+            exit 0
+          fi
+
+          git commit -m "Aggiorna automaticamente indice blog"
+
+          git push origin HEAD:main
+
