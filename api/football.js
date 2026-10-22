@@ -1,8 +1,4 @@
 
-```javascript
-// BetStorm — proxy sicuro football-data.org (Vercel Serverless Function)
-// Posizione nel repository: api/football.js
-
 const BASE = 'https://api.football-data.org/v4';
 
 const ALLOWED_COMPETITIONS = new Set([
@@ -23,13 +19,15 @@ const ALLOWED_STATUSES = new Set([
 ]);
 
 function validDate(value) {
-  if (typeof value !== 'string') return false;
+  if (typeof value !== 'string') {
+    return false;
+  }
 
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
     return false;
   }
 
-  const date = new Date(`${value}T00:00:00Z`);
+  const date = new Date(value + 'T00:00:00Z');
 
   return (
     !Number.isNaN(date.getTime()) &&
@@ -86,9 +84,9 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    path = `/competitions/${code}/${type}`;
+    path = '/competitions/' + code + '/' + type;
 
-    // Filtri facoltativi per i risultati storici
+    // Filtri facoltativi per le partite
     if (type === 'matches') {
       const params = new URLSearchParams();
 
@@ -116,11 +114,7 @@ module.exports = async function handler(req, res) {
         params.set('dateTo', dateTo);
       }
 
-      if (
-        dateFrom &&
-        dateTo &&
-        dateFrom > dateTo
-      ) {
+      if (dateFrom && dateTo && dateFrom > dateTo) {
         return res.status(400).json({
           error: 'dateFrom deve precedere dateTo'
         });
@@ -142,7 +136,7 @@ module.exports = async function handler(req, res) {
       const query = params.toString();
 
       if (query) {
-        path += `?${query}`;
+        path += '?' + query;
       }
     }
 
@@ -179,8 +173,7 @@ module.exports = async function handler(req, res) {
       }
 
       return res.status(502).json({
-        error:
-          'Fonte sportiva temporaneamente non disponibile'
+        error: 'Fonte sportiva temporaneamente non disponibile'
       });
     }
 
@@ -194,14 +187,12 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({
       source: 'football-data.org',
       fetched_at: new Date().toISOString(),
-      data
+      data: data
     });
 
   } catch (error) {
     return res.status(504).json({
-      error:
-        'Tempo di risposta della fonte scaduto'
+      error: 'Tempo di risposta della fonte scaduto'
     });
   }
 };
-```
