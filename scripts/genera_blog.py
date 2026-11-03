@@ -164,7 +164,7 @@ def main():
     parser.add_argument('--refresh-today', action='store_true',
                         help='Aggiorna il solo articolo di oggi, se esiste')
     parser.add_argument('--require-cups', action='store_true',
-                        help='Non aggiornare se Champions o Europa League non sono accessibili')
+                        help='Non aggiornare se nessuna tra Champions ed Europa League ha partite future accessibili')
     args = parser.parse_args()
     now = datetime.now(timezone.utc)
     local = now.astimezone(ROME)
@@ -179,7 +179,7 @@ def main():
     upcoming = []
     history_by_code = {}
     available = []
-    successful_codes = set()
+    available_codes = set()
     for code, name in COMPETITIONS.items():
         try:
             future = fetch_matches(code, dateFrom=now.date().isoformat(),
@@ -194,8 +194,8 @@ def main():
             past = [m for m in past if m.get('status') == 'FINISHED' and date_of(m)
                     and date_of(m) <= now and result(m) is not None
                     and team_id(m, 'homeTeam') and team_id(m, 'awayTeam')]
-            successful_codes.add(code)
             if future:
+                available_codes.add(code)
                 for match in future:
                     upcoming.append((code, name, match))
                 history_by_code[code] = past
@@ -204,8 +204,8 @@ def main():
         except (urllib.error.URLError, TimeoutError, ValueError, KeyError, OSError) as exc:
             print(f'{name}: dati non disponibili ({exc}); competizione saltata')
 
-    if args.require_cups and not {'CL', 'EL'}.issubset(successful_codes):
-        raise RuntimeError('Champions/Europa League non disponibili: articolo esistente conservato')
+    if args.require_cups and not any(code in available_codes for code in ('CL', 'EL')):
+        raise RuntimeError('Nessuna partita disponibile di Champions o Europa League: articolo esistente conservato')
 
     upcoming.sort(key=lambda item: date_of(item[2]))
     if len(upcoming) < 3 or not any(history_by_code.get(code) for code, _, _ in upcoming):
