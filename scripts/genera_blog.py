@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """BetStorm: pubblica un articolo settimanale di calcio, solo con dati verificati."""
+import argparse
 import html
+import time
 import json
 import re
 import urllib.error
@@ -14,12 +16,15 @@ from zoneinfo import ZoneInfo
 BASE = 'https://betstorm.it/api/football'
 ROME = ZoneInfo('Europe/Rome')
 COMPETITIONS = {
-    'SA': 'Serie A', 'PL': 'Premier League', 'PD': 'Liga',
-    'BL1': 'Bundesliga', 'FL1': 'Ligue 1', 'CL': 'Champions League',
-    'EL': 'Europa League', 'EC': 'Conference League',
+    'CL': 'Champions League', 'EL': 'Europa League',
+    'EC': 'Conference League', 'SA': 'Serie A',
+    'PL': 'Premier League', 'PD': 'Liga',
+    'BL1': 'Bundesliga', 'FL1': 'Ligue 1',
     'DED': 'Eredivisie', 'PPL': 'Primeira Liga',
 }
 BLOG = Path('blog')
+MIN_REQUEST_INTERVAL = 7.0  # Protegge il limite della fonte (richieste/minuto).
+_last_request = 0.0
 
 
 def esc(value):
@@ -27,16 +32,35 @@ def esc(value):
 
 
 def fetch_matches(code, **filters):
+    """Richieste distanziate e tentativi limitati per HTTP 429."""
+    global _last_request
     url = BASE + '?' + urllib.parse.urlencode({'type': 'matches', 'code': code, **filters})
-    request = urllib.request.Request(url, headers={'User-Agent': 'BetStorm-SEO-Blog/3.0'})
-    with urllib.request.urlopen(request, timeout=35) as response:
-        payload = json.load(response)
-    if payload.get('source') != 'football-data.org':
-        raise ValueError('Fonte dati non verificata')
-    matches = payload.get('data', {}).get('matches')
-    if not isinstance(matches, list):
-        raise ValueError('Elenco partite mancante')
-    return matches
+    request = urllib.request.Request(url, headers={'User-Agent': 'BetStorm-SEO-Blog/4.0'})
+    for attempt in range(3):
+        elapsed = time.monotonic() - _last_request
+        if elapsed < MIN_REQUEST_INTERVAL:
+            time.sleep(MIN_REQUEST_INTERVAL - elapsed)
+        _last_request = time.monotonic()
+        try:
+            with urllib.request.urlopen(request, timeout=35) as response:
+                payload = json.load(response)
+            if payload.get('source') != 'football-data.org':
+                raise ValueError('Fonte dati non verificata')
+            matches = payload.get('data', {}).get('matches')
+            if not isinstance(matches, list):
+                raise ValueError('Elenco partite mancante')
+            return matches
+        except urllib.error.HTTPError as exc:
+            if exc.code != 429 or attempt == 2:
+                raise
+            retry_after = exc.headers.get('Retry-After')
+            try:
+                delay = min(120, max(20, int(retry_after)))
+            except (ValueError, TypeError):
+                delay = 30 * (attempt + 1)
+            print(f'{code}: limite API (429), nuovo tentativo tra {delay}s', flush=True)
+            time.sleep(delay)
+    raise RuntimeError('Impossibile ottenere le partite')
 
 
 def date_of(match):
@@ -136,12 +160,18 @@ def update_sitemap(slug, date):
 
 
 def main():
+    parser = argparse.ArgumentParser(description='Genera articolo settimanale BetStorm')
+    parser.add_argument('--refresh-today', action='store_true',
+                        help='Aggiorna il solo articolo di oggi, se esiste')
+    parser.add_argument('--require-cups', action='store_true',
+                        help='Non aggiornare se Champions o Europa League non sono accessibili')
+    args = parser.parse_args()
     now = datetime.now(timezone.utc)
     local = now.astimezone(ROME)
     date = local.strftime('%Y-%m-%d')
     slug = f'calcio-europeo-{date}'
     target = BLOG / f'{slug}.html'
-    if target.exists():
+    if target.exists() and not args.refresh_today:
         print(f'Articolo già presente, nessun duplicato: {target}')
         return
 
@@ -149,6 +179,7 @@ def main():
     upcoming = []
     history_by_code = {}
     available = []
+    successful_codes = set()
     for code, name in COMPETITIONS.items():
         try:
             future = fetch_matches(code, dateFrom=now.date().isoformat(),
@@ -163,6 +194,7 @@ def main():
             past = [m for m in past if m.get('status') == 'FINISHED' and date_of(m)
                     and date_of(m) <= now and result(m) is not None
                     and team_id(m, 'homeTeam') and team_id(m, 'awayTeam')]
+            successful_codes.add(code)
             if future:
                 for match in future:
                     upcoming.append((code, name, match))
@@ -171,6 +203,9 @@ def main():
             print(f'{name}: {len(future)} partite future, {len(past)} risultati conclusi')
         except (urllib.error.URLError, TimeoutError, ValueError, KeyError, OSError) as exc:
             print(f'{name}: dati non disponibili ({exc}); competizione saltata')
+
+    if args.require_cups and not {'CL', 'EL'}.issubset(successful_codes):
+        raise RuntimeError('Champions/Europa League non disponibili: articolo esistente conservato')
 
     upcoming.sort(key=lambda item: date_of(item[2]))
     if len(upcoming) < 3 or not any(history_by_code.get(code) for code, _, _ in upcoming):
@@ -227,7 +262,7 @@ th,td{{padding:11px;border-bottom:1px solid var(--line);text-align:left}}th{{col
     target.write_text(article, encoding='utf-8')
     update_index(slug, title, description, date)
     update_sitemap(slug, date)
-    print(f'PUBBLICATO: {target}; {len(upcoming)} partite, {len(available)} competizioni')
+    print(f'PUBBLICATO/AGGIORNATO: {target}; {len(upcoming)} partite, {len(available)} competizioni')
 
 
 if __name__ == '__main__':
