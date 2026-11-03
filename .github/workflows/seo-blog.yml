@@ -2,8 +2,14 @@ name: BetStorm SEO Blog - Calcio automatico
 
 on:
   workflow_dispatch:
+    inputs:
+      aggiorna_oggi:
+        description: 'Aggiorna articolo di oggi (richiede Champions ed Europa League accessibili)'
+        required: true
+        type: boolean
+        default: false
   schedule:
-    # Martedì: 07:00 UTC in ora legale, 08:00 UTC in ora solare.
+    # Martedì 09:00 a Roma: 07 UTC in estate, 08 UTC in inverno.
     - cron: '0 7 * * 2'
     - cron: '0 8 * * 2'
 
@@ -39,16 +45,24 @@ jobs:
           from datetime import datetime
           from zoneinfo import ZoneInfo
           local = datetime.now(ZoneInfo('Europe/Rome'))
-          # Consentiamo qualche ritardo del pianificatore GitHub.
           ok = os.environ['EVENT_NAME'] == 'workflow_dispatch' or (local.weekday() == 1 and 9 <= local.hour < 12)
           with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
               f.write(f'publish={str(ok).lower()}\n')
           print(f'Ora italiana: {local.isoformat()}; esegui: {ok}')
           PY
 
-      - name: Genera articolo, indice e sitemap
+      - name: Genera o aggiorna articolo, indice e sitemap
         if: steps.orario.outputs.publish == 'true'
-        run: python3 scripts/genera_blog.py
+        env:
+          AGGIORNA_OGGI: ${{ inputs.aggiorna_oggi || 'false' }}
+        shell: bash
+        run: |
+          if [ "$AGGIORNA_OGGI" = 'true' ]; then
+            echo 'Aggiornamento controllato: richiedo dati accessibili di Champions ed Europa League.'
+            python3 scripts/genera_blog.py --refresh-today --require-cups
+          else
+            python3 scripts/genera_blog.py
+          fi
 
       - name: Pubblica su main
         if: steps.orario.outputs.publish == 'true'
