@@ -1,256 +1,65 @@
-
-name: BetStorm SEO Blog
+name: BetStorm SEO Blog - Calcio automatico
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - ".github/workflows/seo-blog.yml"
-      - "scripts/genera_blog.py"
-      - "scripts/genera_blog_nba.py"
-
   workflow_dispatch:
-    inputs:
-      proposta:
-        description: "Crea una proposta di pubblicazione?"
-        required: true
-        type: choice
-        default: "nessuna"
-        options:
-          - "nessuna"
-          - "serie-a"
-          - "nba"
-
   schedule:
-    - cron: "0 8 * * 1"
+    # Martedì: 07:00 UTC in ora legale, 08:00 UTC in ora solare.
+    - cron: '0 7 * * 2'
+    - cron: '0 8 * * 2'
 
 permissions:
   contents: write
-  pull-requests: write
+
+concurrency:
+  group: betstorm-calcio-settimanale
+  cancel-in-progress: false
 
 jobs:
-  seo-blog:
-    name: Generazione bozze SEO
+  pubblica-calcio:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Scarica il repository
+      - name: Scarica repository
         uses: actions/checkout@v4
+        with:
+          persist-credentials: true
 
       - name: Configura Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: '3.12'
 
-      - name: Controlla API Calcio e Basket
+      - name: Verifica martedì ore 09 italiane
+        id: orario
+        env:
+          EVENT_NAME: ${{ github.event_name }}
         shell: bash
         run: |
           python3 - <<'PY'
-          import json
-          import urllib.request
-
-          sources = {
-              "Calcio": (
-                  "https://www.betstorm.it/api/football"
-                  "?type=matches&code=SA"
-              ),
-              "Basket": (
-                  "https://www.betstorm.it/api/basket"
-                  "?type=games&season=2026"
-              ),
-          }
-
-          for sport, url in sources.items():
-              print(f"\nControllo {sport}...", flush=True)
-
-              try:
-                  request = urllib.request.Request(
-                      url,
-                      headers={
-                          "User-Agent": "BetStorm-SEO-Check/1.0"
-                      }
-                  )
-
-                  with urllib.request.urlopen(
-                      request, timeout=30
-                  ) as response:
-                      payload = json.load(response)
-
-                  if "error" in payload:
-                      raise RuntimeError(
-                          str(payload["error"])
-                      )
-
-                  if sport == "Calcio":
-                      if payload.get("source") != "football-data.org":
-                          raise RuntimeError(
-                              "Fonte Calcio non riconosciuta"
-                          )
-
-                      matches = payload.get(
-                          "data", {}
-                      ).get("matches")
-
-                  else:
-                      if payload.get("source") != "balldontlie":
-                          raise RuntimeError(
-                              "Fonte Basket non riconosciuta"
-                          )
-
-                      matches = payload.get(
-                          "data", {}
-                      ).get("data")
-
-                  if not isinstance(matches, list):
-                      raise RuntimeError(
-                          "Formato dati non valido"
-                      )
-
-                  print(
-                      f"OK - {sport}: "
-                      f"{len(matches)} partite ricevute"
-                  )
-
-              except Exception as exc:
-                  print(f"ERRORE - {sport}: {exc}")
-
-                  if sport == "Calcio":
-                      raise SystemExit(1)
-
-                  print(
-                      "Avviso: controllo Basket non riuscito. "
-                      "Proseguo con le bozze."
-                  )
-
-          print("\nControllo API terminato.")
+          import os
+          from datetime import datetime
+          from zoneinfo import ZoneInfo
+          local = datetime.now(ZoneInfo('Europe/Rome'))
+          # Consentiamo qualche ritardo del pianificatore GitHub.
+          ok = os.environ['EVENT_NAME'] == 'workflow_dispatch' or (local.weekday() == 1 and 9 <= local.hour < 12)
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write(f'publish={str(ok).lower()}\n')
+          print(f'Ora italiana: {local.isoformat()}; esegui: {ok}')
           PY
 
-      - name: Genera bozza SEO Serie A
+      - name: Genera articolo, indice e sitemap
+        if: steps.orario.outputs.publish == 'true'
         run: python3 scripts/genera_blog.py
 
-      - name: Rendi scaricabile la bozza Serie A
-        uses: actions/upload-artifact@v4
-        with:
-          name: bozza-seo-serie-a
-          path: bozze/bozza-serie-a.html
-          if-no-files-found: error
-          retention-days: 30
-
-      - name: Genera bozza SEO NBA
-        id: genera_nba
-        continue-on-error: true
-        run: python3 scripts/genera_blog_nba.py
-
-      - name: Rendi scaricabile la bozza NBA
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: bozza-seo-nba
-          path: bozze/bozza-nba.html
-          if-no-files-found: warn
-          retention-days: 30
-
-      - name: Riepilogo
-        if: always()
+      - name: Pubblica su main
+        if: steps.orario.outputs.publish == 'true'
         shell: bash
         run: |
-          echo "## BetStorm SEO Blog" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-
-          if [ -f bozze/bozza-serie-a.html ]; then
-            echo "- Serie A: bozza generata" \
-              >> "$GITHUB_STEP_SUMMARY"
-          else
-            echo "- Serie A: bozza non disponibile" \
-              >> "$GITHUB_STEP_SUMMARY"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add blog/*.html blog/articles-index.json sitemap.xml
+          if git diff --cached --quiet; then
+            echo 'Nessuna modifica: articolo settimanale già pubblicato.'
+            exit 0
           fi
-
-          if [ -f bozze/bozza-nba.html ]; then
-            echo "- NBA: bozza generata" \
-              >> "$GITHUB_STEP_SUMMARY"
-          else
-            echo "- NBA: bozza non disponibile" \
-              >> "$GITHUB_STEP_SUMMARY"
-          fi
-
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "Nessun articolo pubblicato." \
-            >> "$GITHUB_STEP_SUMMARY"
-
-  proposta-pubblicazione:
-    name: Prepara proposta da revisionare
-    needs: seo-blog
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.proposta != 'nessuna' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Scarica il repository
-        uses: actions/checkout@v4
-
-      - name: Scarica la bozza selezionata
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ inputs.proposta == 'nba' && 'bozza-seo-nba' || 'bozza-seo-serie-a' }}
-          path: bozza-da-revisionare
-
-      - name: Prepara articolo HTML
-        env:
-          SPORT: ${{ inputs.proposta }}
-        shell: bash
-        run: |
-          python3 - <<'PYCODE'
-          import datetime
-          import os
-          import pathlib
-          import re
-
-          sport = os.environ['SPORT']
-          source = pathlib.Path('bozza-da-revisionare') / ('bozza-nba.html' if sport == 'nba' else 'bozza-serie-a.html')
-          content = source.read_text(encoding='utf-8')
-          today = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d')
-          slug = f"calendario-{sport}-{today}"
-          canonical = f"https://betstorm.it/blog/{slug}.html"
-
-          # Il contenuto è una proposta: resta noindex finché non viene approvato.
-          # Dopo la revisione, rimuovere il meta robots noindex prima del merge.
-          content = re.sub(r'<p>Bozza editoriale non pubblicata\.</p>',
-                           '<p><strong>IN REVISIONE EDITORIALE — NON PUBBLICARE SENZA CONTROLLO DEI DATI.</strong></p>',
-                           content, flags=re.I)
-          content = content.replace('</head>', f'<link rel="canonical" href="{canonical}">\n</head>', 1)
-          if sport == 'nba':
-              note = ('<p><strong>Nota editoriale:</strong> la fonte NBA potrebbe restituire '
-                      'un elenco parziale. Verificare il calendario prima della pubblicazione.</p>')
-              content = content.replace('<article>', '<article>\n' + note, 1)
-          if 'noindex' not in content.lower():
-              raise SystemExit('Blocco di sicurezza noindex mancante')
-          if '<html' not in content.lower():
-              raise SystemExit('HTML non valido')
-          destination = pathlib.Path('blog') / f'{slug}.html'
-          destination.parent.mkdir(exist_ok=True)
-          if destination.exists():
-              raise SystemExit(f'Articolo già presente: {destination}')
-          destination.write_text(content, encoding='utf-8')
-          print(f'Proposta creata: {destination}')
-          PYCODE
-
-      - name: Apri Pull Request per revisione
-        uses: peter-evans/create-pull-request@v7
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          add-paths: blog/*.html
-          branch: proposte-seo/${{ inputs.proposta }}
-          delete-branch: true
-          title: "Revisione articolo SEO ${{ inputs.proposta }}"
-          body: |
-            Proposta generata automaticamente, **non ancora pubblicata**.
-
-            Prima del merge:
-            - Verificare date, squadre, orari e fonti.
-            - Per NBA verificare che il calendario non sia parziale.
-            - Rimuovere il testo «IN REVISIONE EDITORIALE» e il meta `noindex,nofollow`.
-            - Controllare titolo, canonical e contenuto.
-
-            **Importante:** questo workflow non aggiorna Supabase `articles.json` né la sitemap.
-            Dopo il deploy, aggiornare l'indice del blog e la sitemap separatamente.
-          commit-message: "Prepara articolo SEO ${{ inputs.proposta }} per revisione"
-          labels: ""
+          git commit -m 'Pubblica automaticamente blog calcio settimanale'
+          git push origin HEAD:main
